@@ -212,7 +212,7 @@ public:
 	Statement();
 	~Statement();
 
-	string func_codeGeneration();
+	string	func_codeGeneration();
 	void	func_checkType();
 
 
@@ -235,8 +235,6 @@ public:
 	~Parameter_List();
 
 	string func_codeGeneration();
-
-
 
 private:
 	int m_lineno;
@@ -540,14 +538,24 @@ public:
 	Parameter();
 	~Parameter();
 
-	string func_codeGeneration();
-	void	func_isVal();
+	string	func_codeGeneration();
+	bool	func_isVal() {
+		return m_isVal;
+	}
+	vector<Id*> func_get_mv_id() {
+		return mp_Id_List->func_get_mv_Id();
+	}
+	int			func_get_m_type() {
+		return m_Type;
+	}
+
 
 
 private:
 	// define whether the parameter is variable element
 	bool	m_isVal;
 	int		m_lineno;
+	int		m_Type;
 
 	Id_List	*mp_Id_List;
 
@@ -615,6 +623,9 @@ public:
 	string	func_getName() {
 		return m_name;
 	}
+	bool	func_isVal() {
+		return m_isVal;
+	}
 
 
 private:
@@ -622,6 +633,13 @@ private:
 	int		m_idType;
 	int		m_lineno;
 
+	// This note only used in function and procedure 
+	// to identify whether the id 
+	// is a variable element parameter declaration
+	// 
+	// default to be false
+	//
+	bool	m_isVal;
 };
 
 class Id_List {

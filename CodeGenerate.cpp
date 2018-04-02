@@ -199,22 +199,132 @@ string Function::func_codeGeneration() {
 
 	switch (func_checkReturnType()) {
 	case TYPE_INTERGER:
+		Code_return += "int ";
 		break;
+
 	case TYPE_REAL:
+		Code_return += "float ";
 		break;
+
 	case TYPE_CHAR:
+		Code_return += "char ";
 		break;
+
 	case TYPE_BOOLEAN:
+		Code_return += "bool ";
 		break;
+
 	default:
+		throw "Invalid Type!!!";
 		break;
 	}
 	
-	return 
+	Code_return += mp_Id->func_codeGeneration();
+	Code_return += "(";
+	Code_return += mp_Parameter_List->func_codeGeneration();
+	Code_return += ") {\n";
+
+	Code_return += mp_Const_Declarations->func_codeGeneration();
+	Code_return += mp_Var_Declarations->func_codeGeneration();
+	Code_return += mp_Statement_List->func_codeGeneration();
+
+	Code_return += "}\n";
+	Code_return += "\n";
+
+	return Code_return;
+}
+
+string Statement::func_codeGeneration() {
+	string Code_return = "";
+
+	switch (m_stateType) {
+	case STATEMENT_ASSIGN:
+		Code_return += mp_Assignop->func_codeGeneration();
+		break;
+
+	case STATEMENT_PROCEDURE:
+		Code_return += mp_Procedure_call->func_codeGeneration();
+		break;
+
+	case STATEMENT_COMPOUND:
+		Code_return += mp_Statement_List->func_codeGeneration();
+		break;
+
+	case STATEMENT_IF:
+		Code_return += mp_If_Then_Else->func_codeGeneration();
+		break;
+
+	case STATEMENT_FOR:
+		Code_return += mp_For->func_codeGeneration();
+		break;
+
+	default:
+		throw "Invalid statement TYPE!!!";
+		break;
+	}
+
+	return Code_return;
+}
+
+string Parameter_List::func_codeGeneration() {
+	string Code_return = "";
+	
+	for (int i = 0; i < mv_Patameter.size(); i++) {
+		Code_return += mv_Patameter[i]->func_codeGeneration();
+		if (i != mv_Patameter.size() - 1) {
+			Code_return += ", ";
+		}
+	}
+
+	return Code_return;
+}
+
+string Parameter::func_codeGeneration() {
+	string Code_return = "";
+	string Code_Type = "";
+	vector<Id*>mv_id = func_get_mv_id();
+
+	switch (m_Type) {
+	case TYPE_INTERGER:
+		Code_Type += "int ";
+		break;
+
+	case TYPE_REAL:
+		Code_Type += "float ";
+		break;
+
+	case TYPE_CHAR:
+		Code_Type += "char ";
+		break;
+
+	case TYPE_BOOLEAN:
+		Code_Type += "bool ";
+		break;
+
+	default:
+		throw "Invalid Type!!!";
+		break;
+	}
+
+	for (int i = 0; i < mv_id.size(); i++) {
+		Code_return += Code_Type;
+		Code_return += mv_id[i]->func_codeGeneration();
+		if (i != mv_id.size - 1)
+			Code_return += ", ";
+	}
+	
+	return Code_return;
 }
 
 string Id::func_codeGeneration() {
-	return m_name;
+	string Code_return = "";
+
+	if (m_isVal) {
+		Code_return += "*";
+	}
+	Code_return += m_name;
+
+	return Code_return;
 }
 
 string Const_Value::func_codeGeneration() {
