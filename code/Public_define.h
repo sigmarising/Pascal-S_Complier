@@ -19,7 +19,6 @@
 #define CONST_POSTNEG_POSITIVE	1
 #define	CONST_POSTNEG_NEGATIVE	2
 
-
 // the procedure call type
 #define	PROCECALL_NORMAL		0
 #define PROCECALL_READ			1
@@ -57,3 +56,14 @@
 #define STATEMENT_COMPOUND		2
 #define STATEMENT_IF			3
 #define STATEMENT_FOR			4
+
+// the factor Type
+#define FACTOR_VAR			0
+#define FACTOR_FUNCCALL		1
+#define FACTOR_BRACKETS		2
+#define FACTOR_NOT			3
+#define FACTOR_UMINUS		4
+
+// the uminus type
+#define UMINUS_POSITIVE		0
+#define UMINUS_NEGATIVE		1

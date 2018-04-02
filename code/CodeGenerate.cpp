@@ -247,7 +247,9 @@ string Statement::func_codeGeneration() {
 		break;
 
 	case STATEMENT_COMPOUND:
+		Code_return += "{\n";
 		Code_return += mp_Statement_List->func_codeGeneration();
+		Code_return += "}\n";
 		break;
 
 	case STATEMENT_IF:
@@ -312,6 +314,264 @@ string Parameter::func_codeGeneration() {
 		if (i != mv_id.size - 1)
 			Code_return += ", ";
 	}
+	
+	return Code_return;
+}
+
+string Variable::func_codeGeneration() {
+	string Code_return = "";
+
+	Code_return += mp_Id->func_codeGeneration();
+
+	if (m_isArray) {
+		vector<Expression*>mv_Expression = mp_Expression_List->func_get_mv_exp();
+		
+		for (int i = 0; i < mv_Expression.size(); i++) {
+			Code_return += "[";
+
+			Code_return += mv_Expression[i]->func_codeGeneration();
+
+			Code_return += "]";
+		}
+	}
+	
+	return Code_return;
+}
+
+string Procedure_Call::func_codeGeneration() {
+	string Code_return = "";
+	string Code_FormateStr = "";
+	vector<int>mv_Type = mp_Expression_List->func_get_mv_type();
+
+	if (m_proCall_Tpye != PROCECALL_NORMAL) {
+		for (int i = 0; i < mv_Type.size(); i++) {
+			switch (mv_Type[i]) {
+			case TYPE_INTERGER:
+				Code_FormateStr += "%d";
+				break;
+
+			case TYPE_REAL:
+				Code_FormateStr += "%f";
+				break;
+
+			case TYPE_CHAR:
+				Code_FormateStr += "%c";
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	switch (m_proCall_Tpye) {
+	case PROCECALL_NORMAL:
+		Code_return += mp_Id->func_codeGeneration();
+		Code_return += "(";
+		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += ");";
+		break;
+
+	case PROCECALL_READ:
+		Code_return += "scanf(\"";
+		Code_return += Code_FormateStr;
+		Code_return += "\", ";
+		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += ");";
+		break;
+
+	case PROCECALL_READLN:
+		Code_return += "scanf(\"";
+		Code_return += Code_FormateStr;
+		Code_return += "\\n\", ";
+		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += ");";
+		break;
+
+	case PROCECALL_WRITE:
+		Code_return += "printf(\"";
+		Code_return += Code_FormateStr;
+		Code_return += "\", ";
+		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += ");";
+		break;
+
+	case PROCECALL_WRITELN:
+		Code_return += "scanf(\"";
+		Code_return += Code_FormateStr;
+		Code_return += "\\n\", ";
+		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += ");";
+		break;
+	
+	default:
+		throw "Invalid PROCECALL!!!";
+		break;
+	}
+
+	return Code_return;
+}
+
+string Function_Call::func_codeGeneration() {
+	string Code_return = "";
+
+	Code_return += mp_Id->func_codeGeneration();
+	Code_return += "(";
+	Code_return += mp_Expression_List->func_codeGeneration();
+	Code_return += ")";
+
+	return Code_return;
+}
+
+string Expression::func_codeGeneration() {
+	string Code_return = "";
+
+	if (mp_Relop != NULL) {
+		Code_return += mp_Relop->func_codeGeneration();
+	}
+	else {
+		Code_return += mp_Simple_Expression->func_codeGeneration();
+	}
+	
+	return Code_return;
+}
+
+string Simple_Expression::func_codeGeneration() {
+	string Code_return = "";
+
+	if (mp_Addop != NULL) {
+		Code_return += mp_Addop->func_codeGeneration();
+	}
+	else {
+		Code_return += mp_Term->func_codeGeneration();
+	}
+	
+	return Code_return;
+}
+
+string Term::func_codeGeneration() {
+	string Code_return = "";
+
+	if (mp_Mulop != NULL) {
+		Code_return += mp_Mulop->func_codeGeneration();
+	}
+	else {
+		Code_return += mp_Factor->func_codeGeneration();
+	}
+	
+	return Code_return;
+}
+
+string Factor::func_codeGeneration() {
+	string Code_return = "";
+
+	switch (m_factorType) {
+	case FACTOR_VAR:
+		Code_return += mp_Variable->func_codeGeneration();
+		break;
+
+	case FACTOR_FUNCCALL:
+		Code_return += mp_Function_Call->func_codeGeneration();
+		break;
+
+	case FACTOR_BRACKETS:
+		Code_return += "(";
+		Code_return += mp_Expression->func_codeGeneration();
+		Code_return += ")";
+		break;
+
+	case FACTOR_NOT:
+		Code_return += mp_Not->func_codeGeneration();
+		break;
+
+	case FACTOR_UMINUS:
+		Code_return += mp_Uminus->func_codeGeneration();
+		break;
+
+	default:
+		break;
+	}
+
+	return Code_return;
+}
+
+string Not::func_codeGeneration() {
+	string Code_return = "!";
+
+	Code_return += mp_Factor->func_codeGeneration();
+	
+	return Code_return;
+}
+
+string Uminus::func_codeGeneration() {
+	string Code_return = "";
+
+	switch (m_unimusType) {
+	case UMINUS_POSITIVE:
+		Code_return += "+";
+		break;
+
+	case UMINUS_NEGATIVE:
+		Code_return += "-";
+		break;
+
+	default:
+		throw "Invalid UMINUS_TYPE!!!";
+		break;
+	}
+	
+	Code_return += mp_Factor->func_codeGeneration();
+
+	return Code_return;
+}
+
+string Assignop::func_codeGeneration() {
+	string Code_return = "";
+
+	Code_return += mp_Variable->func_codeGeneration();
+	Code_return += " = ";
+	Code_return += mp_Expression->func_codeGeneration();
+	Code_return += ";";
+
+	
+	return Code_return;
+}
+
+string If_Then_Else::func_codeGeneration() {
+	string Code_return = "if (";
+
+	Code_return += mp_Expression->func_codeGeneration();
+	Code_return += ") {\n";
+	Code_return += mp_Statement_1->func_codeGeneration();
+	Code_return += "\n}";
+
+	if (mp_Statement_2 != NULL) {
+		Code_return += "\nelse {\n";
+		Code_return += mp_Statement_2->func_codeGeneration();
+		Code_return += "\n}";
+	}
+	
+	return Code_return;
+}
+
+string For::func_codeGeneration() {
+	string Code_return = "for (";
+
+	Code_return += mp_Id->func_codeGeneration();
+	Code_return += " = ";
+	Code_return += mp_Expression_1->func_codeGeneration();
+	Code_return += " ; ";
+
+	Code_return += mp_Id->func_codeGeneration();
+	Code_return += " <= ";
+	Code_return += mp_Expression_2->func_codeGeneration();
+	Code_return += " ; ";
+
+	Code_return += mp_Id->func_codeGeneration();
+	Code_return += "++ ) {\n";
+
+	Code_return += mp_Statment->func_codeGeneration();
+	Code_return += "\n}";
 	
 	return Code_return;
 }
@@ -426,5 +686,121 @@ string Period::func_codeGeneration() {
 		Code_return += "]";
 	}
 
+	return Code_return;
+}
+
+string Relop::func_codeGeneration() {
+	string Code_return = "";
+
+	Code_return += mp_Simple_Expression_1->func_codeGeneration();
+
+	switch (m_relopType) {
+	case RELOP_EQUAL:
+		Code_return += " == ";
+		break;
+
+	case RELOP_NOT_EQUAL:
+		Code_return += " != ";
+		break;
+
+	case RELOP_LESS:
+		Code_return += " < ";
+		break;
+
+	case RELOP_LESS_EQUAL:
+		Code_return += " <= ";
+		break;
+
+	case RELOP_LARGE:
+		Code_return += " > ";
+		break;
+
+	case RELOP_LARGE_EQUAL:
+		Code_return += " >= ";
+		break;
+	
+	default:
+		throw "Invalid RELOP_TYPE!!!";
+		break;
+	}
+
+	Code_return += mp_Simple_Expression_2->func_codeGeneration();
+	
+	return Code_return;
+}
+
+string Addop::func_codeGeneration() {
+	string Code_return;
+
+	Code_return += mp_Simple_Expression->func_codeGeneration();
+	
+	switch (m_addopType) {
+	case ADDOP_ADD:
+		Code_return += " + ";
+		break;
+
+	case ADDOP_SUB:
+		Code_return += " - ";
+		break;
+
+	case ADDOP_OR:
+		Code_return += " || ";
+		break;
+
+	default:
+		throw "Invalid AddopType!!!";
+		break;
+	}
+	
+	Code_return += mp_Term->func_codeGeneration();
+	
+	return Code_return;
+}
+
+string Mulop::func_codeGeneration() {
+	string Code_return = "";
+
+	Code_return += mp_Term->func_codeGeneration();
+
+	switch (m_mulopType) {
+	case MULOP_MULTIPLY:
+		Code_return += " * ";
+		break;
+
+	case MULOP_READ_DIV:
+		Code_return += " / ";
+		break;
+
+	case MULOP_INT_DIV:
+		Code_return += " / ";
+		break;
+
+	case MULOP_MOD:
+		Code_return += " % ";
+		break;
+
+	case MULOP_AND:
+		Code_return += " && ";
+		break;
+
+	default:
+		throw "Invalid MULTYPE!!!";
+		break;
+	}
+
+	Code_return += mp_Factor->func_codeGeneration();
+	
+	return Code_return;
+}
+
+string Expression_List::func_codeGeneration() {
+	string Code_return = "";
+
+	for (int i = 0; i < mv_Expression.size(); i++) {
+		Code_return += mv_Expression[i]->func_codeGeneration();
+		if (i != mv_Expression.size() - 1)
+			Code_return += ", ";
+	}
+	
 	return Code_return;
 }

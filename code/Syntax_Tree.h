@@ -221,6 +221,9 @@ private:
 	int m_stateType;
 	int m_lineno;
 
+	//	the below pointers
+	//	only one can be assigned to non-NULL
+	//	the others must be null
 	Assignop		*mp_Assignop;
 	Procedure_Call	*mp_Procedure_call;		// which include the read and write call
 	Statement_List	*mp_Statement_List;		// which refered to begin-block-end
@@ -249,8 +252,7 @@ public:
 	~Variable();
 
 	string func_codeGeneration();
-
-
+	
 
 private:
 	bool	m_isArray;
@@ -262,7 +264,7 @@ private:
 	//
 	//	if m_isArray == true
 	//	this pointer point to the index of array(multi-dimension)
-	//		partition by ','
+	//		partition by ',' in pascal
 	Expression_List	*mp_Expression_List;
 };
 
@@ -273,8 +275,7 @@ public:
 	~Procedure_Call();
 
 	string func_codeGeneration();
-
-
+	
 
 private:
 	int	m_proCall_Tpye;
@@ -293,8 +294,6 @@ public:
 
 	string func_codeGeneration();
 
-
-
 private:
 	int m_expNum;
 	int m_lineno;
@@ -310,8 +309,6 @@ public:
 	~Expression();
 
 	string func_codeGeneration();
-
-
 
 private:
 	int m_lineno;
@@ -330,9 +327,7 @@ public:
 	~Simple_Expression();
 
 	string func_codeGeneration();
-
-
-
+	
 private:
 	int m_lineno;
 
@@ -349,8 +344,6 @@ public:
 	~Term();
 
 	string func_codeGeneration();
-
-
 
 private:
 	int m_lineno;
@@ -369,9 +362,9 @@ public:
 	~Factor();
 
 	string func_codeGeneration();
-	void	func_checkFactorType();
-
-
+	int	func_checkFactorType() {
+		return m_factorType;
+	}
 
 private:
 	int m_num;
@@ -396,8 +389,6 @@ public:
 
 	string func_codeGeneration();
 
-
-
 private:
 	int m_lineno;
 
@@ -414,10 +405,9 @@ public:
 
 	string func_codeGeneration();
 
-
-
 private:
 	int m_lineno;
+	int m_unimusType;
 
 	Factor	*mp_Factor;
 };
@@ -489,8 +479,6 @@ public:
 
 	string func_codeGeneration();
 
-
-
 private:
 	int m_lineno;
 
@@ -504,8 +492,6 @@ public:
 	~If_Then_Else();
 
 	string func_codeGeneration();
-
-
 
 private:
 	int m_lineno;
@@ -521,8 +507,6 @@ public:
 	~For();
 
 	string func_codeGeneration();
-
-
 
 private:
 	int m_lineno;
@@ -548,9 +532,7 @@ public:
 	int			func_get_m_type() {
 		return m_Type;
 	}
-
-
-
+	
 private:
 	// define whether the parameter is variable element
 	bool	m_isVal;
@@ -566,10 +548,10 @@ public:
 	Relop();
 	~Relop();
 
-	string func_codeGeneration();
-	void	func_checkRelopType();
-
-
+	string	func_codeGeneration();
+	int		func_checkRelopType() {
+		return m_relopType;
+	}
 
 private:
 	int m_relopType;
@@ -584,8 +566,10 @@ public:
 	Addop();
 	~Addop();
 
-	string func_codeGeneration();
-	void	func_checkAddopType();
+	string	func_codeGeneration();
+	int		func_checkAddopType() {
+		return m_addopType;
+	}
 
 
 private:
@@ -601,8 +585,10 @@ public:
 	Mulop();
 	~Mulop();
 
-	string func_codeGeneration();
-	void	func_checkMulopType();
+	string	func_codeGeneration();
+	int		func_checkMulopType() {
+		return m_mulopType;
+	}
 
 
 private:
@@ -680,11 +666,23 @@ public:
 	Expression_List();
 	~Expression_List();
 	string func_codeGeneration();
+	vector<Expression*> func_get_mv_exp() {
+		return mv_Expression;
+	}
+	vector<int>			func_get_mv_type() {
+		return mv_Type;
+	}
 
 private:
 
 	vector<Expression*>mv_Expression;
 
+	// store the Type of each expression
+	// allowed type:
+	//		TYPE_INTERGER
+	//		TYPE_REAL
+	//		TYPE_CHAR
+	vector<int>mv_Type;
 };
 
 
