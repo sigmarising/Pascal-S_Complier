@@ -86,7 +86,7 @@ public:
 	string func_codeGeneration();
 
 private:
-	Const_Declarations * mp_Const_Declarations;
+	Const_Declarations		*mp_Const_Declarations;
 	Var_Declarations		*mp_Var_Declarations;
 	SubProgram_Declarations	*mp_SubProgram_Declarations;
 	Statement_List			*mp_Statement_List;
@@ -367,7 +367,11 @@ public:
 	}
 
 private:
-	int m_num;
+	int		m_int;
+	float	m_real;
+	char	m_char;
+	bool	m_bool;
+
 	int m_factorType;
 	int m_lineno;
 
@@ -463,6 +467,7 @@ private:
 	int		m_int;
 	float	m_real;
 	char	m_char;
+	bool	m_bool;
 
 	int		m_lineno;
 	bool	m_isId;

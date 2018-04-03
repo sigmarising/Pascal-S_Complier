@@ -83,6 +83,10 @@ string Const_Declarations::func_codeGeneration() {
 			Code_return += "char ";
 			break;
 
+		case TYPE_BOOLEAN:
+			Code_return += "bool ";
+			break;
+
 		default:
 			throw "Invalid Type!!!";
 			break;
@@ -489,7 +493,29 @@ string Factor::func_codeGeneration() {
 		Code_return += mp_Uminus->func_codeGeneration();
 		break;
 
+	case FACTOR_VALUE_INT:
+		Code_return += type2str(m_int);
+		break;
+
+	case FACTOR_VALUE_REAL:
+		Code_return += type2str(m_real);
+		break;
+
+	case FACTOR_VALUE_CHAR:
+		Code_return += "\'";
+		Code_return += type2str(m_char);
+		Code_return += "\'";
+		break;
+
+	case FACTOR_vALUE_BOOL:
+		if (m_bool)
+			Code_return += "true";
+		else
+			Code_return += "false";
+		break;
+
 	default:
+		throw "Invalid FACTORTYPE!!!";
 		break;
 	}
 
@@ -627,6 +653,12 @@ string Const_Value::func_codeGeneration() {
 			Code_return += type2str(m_char);
 			Code_return += "\'";
 			break;
+
+		case TYPE_BOOLEAN:
+			if (m_bool)
+				Code_return += "true";
+			else 
+				Code_return += "false";
 
 		default:
 			throw "Invalid BASIC Type!!!";

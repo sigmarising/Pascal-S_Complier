@@ -63,6 +63,10 @@
 #define FACTOR_BRACKETS		2
 #define FACTOR_NOT			3
 #define FACTOR_UMINUS		4
+#define FACTOR_VALUE_INT	5
+#define FACTOR_VALUE_REAL	6
+#define FACTOR_VALUE_CHAR	7
+#define FACTOR_vALUE_BOOL	8
 
 // the uminus type
 #define UMINUS_POSITIVE		0
