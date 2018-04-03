@@ -3,6 +3,7 @@
 //	Version		: 0.3
 //	Author		: Yun Zhang
 
+#include <fstream>
 #include <strstream>
 #include "CodeGenerate.h"
 using namespace std;
@@ -803,4 +804,15 @@ string Expression_List::func_codeGeneration() {
 	}
 	
 	return Code_return;
+}
+
+void Code_Generate(Programstruct * input_Tree, string output_File) {
+	fstream File_output;
+	File_output.open("./" + output_File + ".c", fstream::out);
+
+	string code = input_Tree->func_codeGeneration();
+
+	File_output << code;
+
+	File_output.close();
 }
