@@ -45,7 +45,7 @@ class Id_List;
 class Period;
 class Expression_List;
 
-//�����඼���ڳ���������û�е��࣬Ϊʵ�ַ��뷽��������
+// 以下类都是在抽象语法树中没有的类，为实现翻译方案而创建
 class Program_Head;
 class Compound_Statement;
 class Const_Declaration;
@@ -727,7 +727,7 @@ public:
 };
 
 
-//	�����඼���ڳ���������û�е���
+//	以下类都是在抽象语法树中没有的类
 class Program_Head {
 public:
 	Program_Head(Id * M_Id,Id_List *M_Id_List){
