@@ -369,50 +369,88 @@ string Procedure_Call::func_codeGeneration() {
 		}
 	}
 
-	switch (m_proCall_Tpye) {
-	case PROCECALL_NORMAL:
-		Code_return += mp_Id->func_codeGeneration();
-		Code_return += "(";
-		Code_return += mp_Expression_List->func_codeGeneration();
-		Code_return += ");";
-		break;
 
-	case PROCECALL_READ:
+	string t_id_name = mp_Id->func_getName();
+	if (t_id_name == "read") {
 		Code_return += "scanf(\"";
 		Code_return += Code_FormateStr;
 		Code_return += "\", ";
 		Code_return += mp_Expression_List->func_codeGeneration();
 		Code_return += ");";
-		break;
-
-	case PROCECALL_READLN:
+	}
+	else if (t_id_name == "readln") {
 		Code_return += "scanf(\"";
 		Code_return += Code_FormateStr;
 		Code_return += "\\n\", ";
 		Code_return += mp_Expression_List->func_codeGeneration();
 		Code_return += ");";
-		break;
-
-	case PROCECALL_WRITE:
+	}
+	else if (t_id_name == "write") {
 		Code_return += "printf(\"";
 		Code_return += Code_FormateStr;
 		Code_return += "\", ";
 		Code_return += mp_Expression_List->func_codeGeneration();
 		Code_return += ");";
-		break;
-
-	case PROCECALL_WRITELN:
+	}
+	else if (t_id_name == "writeln") {
 		Code_return += "scanf(\"";
 		Code_return += Code_FormateStr;
 		Code_return += "\\n\", ";
 		Code_return += mp_Expression_List->func_codeGeneration();
 		Code_return += ");";
-		break;
-	
-	default:
-		throw "Invalid PROCECALL!!!";
-		break;
 	}
+	else {
+		Code_return += mp_Id->func_codeGeneration();
+		Code_return += "(";
+		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += ");";
+	}
+
+
+	//switch (m_proCall_Tpye) {
+	//case PROCECALL_NORMAL:
+	//	Code_return += mp_Id->func_codeGeneration();
+	//	Code_return += "(";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+
+	//case PROCECALL_READ:
+	//	Code_return += "scanf(\"";
+	//	Code_return += Code_FormateStr;
+	//	Code_return += "\", ";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+
+	//case PROCECALL_READLN:
+	//	Code_return += "scanf(\"";
+	//	Code_return += Code_FormateStr;
+	//	Code_return += "\\n\", ";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+
+	//case PROCECALL_WRITE:
+	//	Code_return += "printf(\"";
+	//	Code_return += Code_FormateStr;
+	//	Code_return += "\", ";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+
+	//case PROCECALL_WRITELN:
+	//	Code_return += "scanf(\"";
+	//	Code_return += Code_FormateStr;
+	//	Code_return += "\\n\", ";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+	//
+	//default:
+	//	throw "Invalid PROCECALL!!!";
+	//	break;
+	//}
 
 	return Code_return;
 }
