@@ -316,7 +316,7 @@ string Parameter::func_codeGeneration() {
 	for (int i = 0; i < mv_id.size(); i++) {
 		Code_return += Code_Type;
 		Code_return += mv_id[i]->func_codeGeneration();
-		if (i != mv_id.size - 1)
+		if (i != mv_id.size() - 1)
 			Code_return += ", ";
 	}
 	
