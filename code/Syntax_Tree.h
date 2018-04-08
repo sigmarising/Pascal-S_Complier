@@ -423,18 +423,16 @@ public:
 	~Type();
 
 	string	func_codeGeneration();
-	string  func_code_getperiod() {
-		return mp_Period->func_codeGeneration();
-	}
+	string  func_code_getperiod();
+	
 	int		func_checkSimpleType() {
 		return m_simpleType;
 	}
 	bool    func_check_isArray() {
 		return m_isArray;
 	}
-	vector<pair<int, int>> func_get_Period() {
-		return mp_Period->func_get_Range();
-	}
+	vector<pair<int, int>> func_get_Period();
+
 
 
 private:
@@ -531,9 +529,8 @@ public:
 	bool	func_isVal() {
 		return m_isVal;
 	}
-	vector<Id*> func_get_mv_id() {
-		return mp_Id_List->func_get_mv_Id();
-	}
+	vector<Id*> func_get_mv_id();
+
 	int			func_get_m_type() {
 		return m_Type;
 	}

@@ -886,3 +886,15 @@ void Code_Generate(Programstruct * input_Tree, string output_File) {
 
 	File_output.close();
 }
+
+string Type::func_code_getperiod() {
+	return mp_Period->func_codeGeneration();
+}
+
+vector<pair<int, int>> Type::func_get_Period() {
+	return mp_Period->func_get_Range();
+}
+
+vector<Id*> Parameter::func_get_mv_id() {
+	return mp_Id_List->func_get_mv_Id();
+}
