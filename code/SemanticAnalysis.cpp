@@ -1,7 +1,7 @@
 #include "SemanticAnalysis.h"
 #include <iostream>
 
-//×¢Òâ ProgramstructµÄ´íÎó¼ì²â£¬»¹²»ÊÇÌØ±ğÍêÉÆ
+//æ³¨æ„ Programstructçš„é”™è¯¯æ£€æµ‹ï¼Œè¿˜ä¸æ˜¯ç‰¹åˆ«å®Œå–„
 bool Programstruct::error_detect(string symbol_sheet_name)
 {
 	bool flag=true;
@@ -10,16 +10,16 @@ bool Programstruct::error_detect(string symbol_sheet_name)
 	return flag;
 }
 
-//×¢Òâ Ò»°ëÍê³É,»¹ÓĞÉùÃ÷²¿·ÖÃ»½â¾ö
+//æ³¨æ„ ä¸€åŠå®Œæˆ,è¿˜æœ‰å£°æ˜éƒ¨åˆ†æ²¡è§£å†³
 bool Program_Body::error_detect(string symbol_sheet_name)
 {
 	bool flag = true;
 	if (mp_Statement_List)
 		flag = mp_Statement_List->error_detect(symbol_sheet_name);
-	return flag;                                  //´Ë´¦ĞèÒªÎªflag&&ÁíÒ»¸öboolÖµ
+	return flag;                                  //æ­¤å¤„éœ€è¦ä¸ºflag&&å¦ä¸€ä¸ªboolå€¼
 }
 
-// Statement_ListµÄÓïÒå´íÎó¼ì²â
+// Statement_Listçš„è¯­ä¹‰é”™è¯¯æ£€æµ‹
 bool Statement_List::error_detect(string symbol_sheet_name)
 {
 	bool flag = true;
@@ -47,7 +47,7 @@ bool Statement::error_detect(string symbol_sheet_name)
 	return flag;
 }
 
-//×¢Òâ£¬ÕâÀïĞèÒª×öÏÂ±êÔ½½çµÄ´¦Àí, ÅĞ¶Ï·¶Î§»¹Ã»½øĞĞ
+//æ³¨æ„ï¼Œè¿™é‡Œéœ€è¦åšä¸‹æ ‡è¶Šç•Œçš„å¤„ç†, åˆ¤æ–­èŒƒå›´è¿˜æ²¡è¿›è¡Œ
 bool Variable::error_detect(string symbol_sheet_name)
 {
 	if (mp_Id)
@@ -58,14 +58,14 @@ bool Variable::error_detect(string symbol_sheet_name)
 			if (mp_Expression_List&&type.find("array") == string::npos)
 			{
 				m_isArray = false;
-				std::cout << "ĞĞ" << m_lineno << ": ±äÁ¿·ÇÊı×é" << endl;
+				std::cout << "è¡Œ" << m_lineno << ": å˜é‡éæ•°ç»„" << endl;
 			}
 			else if (mp_Expression_List&&
 				mp_Expression_List->func_get_mv_exp().size()
 				!= get_symbol_range(symbol_sheet_name, mp_Id->func_getName).size())
 			{
 				m_isArray = true;
-				std::cout << "ĞĞ" << m_lineno << ": Êı×éÎ¬Êı²»¶Ô" << endl;
+				std::cout << "è¡Œ" << m_lineno << ": æ•°ç»„ç»´æ•°ä¸å¯¹" << endl;
 			}
 			else if (mp_Expression_List)
 			{
@@ -76,12 +76,12 @@ bool Variable::error_detect(string symbol_sheet_name)
 		}
 		else
 		{
-			std::cout << "ĞĞ" << m_lineno << ": Î´ÉùÃ÷±äÁ¿"<<endl;
+			std::cout << "è¡Œ" << m_lineno << ": æœªå£°æ˜å˜é‡"<<endl;
 		}
 	}
 	else
 	{
-		std::cout << "ĞĞ" << mp_Id->m_lineno << "Óï·¨Ê÷³ö´í" << endl;
+		std::cout << "è¡Œ" << mp_Id->m_lineno << "è¯­æ³•æ ‘å‡ºé”™" << endl;
 	}
 	
 }
