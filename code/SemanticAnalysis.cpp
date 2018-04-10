@@ -26,6 +26,7 @@ bool Statement_List::error_detect(string symbol_sheet_name)
 	for (auto i : mv_Statement)
 	{
 		flag = flag && i->error_detect(symbol_sheet_name);
+		
 	}
 	return flag;
 }
@@ -47,6 +48,78 @@ bool Statement::error_detect(string symbol_sheet_name)
 	return flag;
 }
 
+bool Assignop::error_detect(string symbol_sheet_name)
+{
+	bool flag;
+	if (mp_Variable)
+		flag =flag&&mp_Variable->error_detect(symbol_sheet_name);
+	if (mp_Expression)
+		flag = flag&&mp_Variable->error_detect(symbol_sheet_name);
+	if (!mp_Variable || !mp_Expression)
+	{
+		flag = false;
+		std::cout << "行" << m_lineno << ": 语法树错误" << endl;
+	}
+	return flag;
+}
+bool If_Then_Else::error_detect(string symbol_sheet_name)
+{
+	bool flag = true;
+	if (mp_Expression)
+		flag = mp_Expression->error_detect(symbol_sheet_name);
+	else
+	{
+		cout << "行" << m_lineno << ": 语法树错误" << endl;
+		flag = false;
+	}
+	if (mp_Statement_1)
+		flag = flag&&mp_Statement_1;
+	if (mp_Statement_1&&mp_Statement_2)
+		flag = flag&&mp_Statement_2;
+	else if (!mp_Statement_1&&mp_Statement_2)
+	{
+		cout << "行" << m_lineno << ": 语法树错误" << endl;
+		flag = false;
+	}
+	return flag;
+}
+
+bool For::error_detect(string symbol_sheet_name)
+{
+	if (mp_Id&&mp_Expression_1&&mp_Expression_2)            //判断语法树是否出错
+	{
+		if (lookup_symbol(symbol_sheet_name, mp_Id->func_getName()))
+		{
+			bool flag = true;
+			int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName);
+			flag = flag && mp_Expression_1->error_detect(symbol_sheet_name);
+			flag = flag && mp_Expression_2->error_detect(symbol_sheet_name);
+			int type2 = mp_Expression_1->getType();
+			int type3 = mp_Expression_2->getType();
+			if ((type1 == TYPE_INTERGER || type1 == TYPE_CHAR) && type1 == type2&&type1 == type3)
+				flag = flag;
+			else
+			{
+				flag = false;
+				std::cout << "行" << m_lineno << ": 循环变量有问题" << endl;
+
+			}
+			flag = flag&&mp_Statment->error_detect(symbol_sheet_name);
+			return flag;
+		}
+		else
+		{
+			std::cout << "行" << m_lineno << ": 未声明变量" << endl;
+			return false;
+		}
+	}
+	else
+	{
+		std::cout << "行" << mp_Id->m_lineno << "语法树出错" << endl;
+		return false;
+	}
+}
+
 //注意，这里需要做下标越界的处理, 判断范围还没进行
 bool Variable::error_detect(string symbol_sheet_name)
 {
@@ -54,11 +127,13 @@ bool Variable::error_detect(string symbol_sheet_name)
 	{
 		if (lookup_symbol(symbol_sheet_name, mp_Id->func_getName()))
 		{
-			string type = get_symbol_type(symbol_sheet_name, mp_Id->func_getName);
-			if (mp_Expression_List&&type.find("array") == string::npos)
+			int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName);
+			bool flag = true;
+			if (mp_Expression_List&&type1!=5)
 			{
 				m_isArray = false;
 				std::cout << "行" << m_lineno << ": 变量非数组" << endl;
+				flag = false;
 			}
 			else if (mp_Expression_List&&
 				mp_Expression_List->func_get_mv_exp().size()
@@ -66,25 +141,354 @@ bool Variable::error_detect(string symbol_sheet_name)
 			{
 				m_isArray = true;
 				std::cout << "行" << m_lineno << ": 数组维数不对" << endl;
+				flag = false;
 			}
 			else if (mp_Expression_List)
 			{
+				this->type = get_array_type(symbol_sheet_name, mp_Id->func_getName);
 
 			}
 			else
 				m_isArray = false;
+			return flag;
 		}
 		else
 		{
 			std::cout << "行" << m_lineno << ": 未声明变量"<<endl;
+			return false;
 		}
 	}
 	else
 	{
 		std::cout << "行" << mp_Id->m_lineno << "语法树出错" << endl;
+		return false;
 	}
 	
 }
 
 
+
+
+//注意，
+bool Function_Call::error_detect(string symbol_sheet_name)
+{
+	bool flag1 = lookup_func(mp_Id->func_getName());
+	if (!flag1)
+	{
+		std::cout << "行" << m_lineno << ": 非函数" << endl;
+		return false;
+	}
+	int nrgs = get_symbol_narg(symbol_sheet_name,mp_Id->func_getName());
+	if (nrgs != mp_Expression_List->func_get_mv_type().size())
+	{
+		std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
+		return false;
+	}
+	vector<int> types = mp_Expression_List->func_get_mv_type();
+	vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
+	for (int i=0;i<types.size();i++)
+		if (types[i] != arg_types[i])
+		{
+			std::cout << "行" << m_lineno << ": 第"<<i<<"个实参形参不匹配" << endl;
+			return false;
+		}
+	return true;
+
+}
+
+
+bool Procedure_Call::error_detect(string symbol_sheet_name)
+{
+	bool flag1 = lookup_procedure(mp_Id->func_getName());
+	if (!flag1)
+	{
+		std::cout << "行" << m_lineno << ": 非过程" << endl;
+		return false;
+	}
+	int nrgs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
+	if (nrgs != mp_Expression_List->func_get_mv_type().size())
+	{
+		std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
+		return false;
+	}
+	vector<int> types = mp_Expression_List->func_get_mv_type();
+	vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
+	for (int i = 0; i<types.size(); i++)
+		if (types[i] != arg_types[i])
+		{
+			std::cout << "行" << m_lineno << ": 第" << i << "个实参形参不匹配" << endl;
+			return false;
+		}
+	return true;
+}
+bool Expression::error_detect(string symbol_sheet_name)
+{
+	if (mp_Relop)
+	{
+		bool flag = mp_Relop->error_detect(symbol_sheet_name);
+		this->setType(mp_Relop->getType());
+		return flag;
+	}
+	else if(mp_Simple_Expression)
+	{
+		bool flag = mp_Simple_Expression->error_detect(symbol_sheet_name);
+		setType(mp_Simple_Expression->getType());
+		return flag;
+	}
+	else
+	{
+		std::cout << "行" << m_lineno << "语法树出错" << endl;
+		return false;
+	}
+
+}
+
+
+bool Expression_List::error_detect(string symbol_sheet_name)
+{
+	bool flag = true;
+	for (int i = 0; i < mv_Expression.size(); i++)
+	{
+		flag = flag&&mv_Expression[i]->error_detect(symbol_sheet_name);
+		mv_Type.push_back(mv_Expression[i]->getType());
+	}
+	return flag;
+}
+
+bool Relop::error_detect(string symbol_sheet_name)
+{
+	if (mp_Simple_Expression_1&&mp_Simple_Expression_2)
+	{
+		bool flag;
+		int type1 = mp_Simple_Expression_1->getType();
+		int type2 = mp_Simple_Expression_2->getType();
+		flag = (type1 == type2 || type1 == TYPE_INTERGER&&type2 == TYPE_REAL ||
+			type2 == TYPE_INTERGER&&type1 == TYPE_REAL);
+		setType(TYPE_BOOLEAN);
+		return flag;
+	}
+	else
+	{
+		std::cout << "行" << m_lineno << "语法树出错" << endl;
+		return false;
+	}
+}
+
+bool Simple_Expression::error_detect(string symbol_sheet_name)
+{
+	if (mp_Addop)
+	{
+		bool flag = mp_Addop->error_detect(symbol_sheet_name);
+		setType(mp_Addop->func_checkAddopType());
+		return flag;
+	}
+	else if (mp_Term)
+	{
+		bool flag = mp_Term->error_detect(symbol_sheet_name);
+		setType(mp_Term->getType());
+		return flag;
+	}
+	else
+	{
+		std::cout << "行" << m_lineno << "语法树出错" << endl;
+		return false;
+	}
+}
+
+//判断Addop的正确性
+bool Addop::error_detect(string symbol_sheet_name)
+{
+	bool flag1 = mp_Simple_Expression->error_detect(symbol_sheet_name);
+	bool flag2 = mp_Term->error_detect(symbol_sheet_name);
+	bool flag3 = true;
+	int type1 = mp_Simple_Expression->getType();
+	int type2 = mp_Term->getType();
+	if (m_addopType == ADDOP_ADD || m_addopType == ADDOP_SUB)
+	{
+		flag3 = ((type1 == TYPE_INTERGER || type1 == TYPE_REAL) && (type2 == TYPE_INTERGER || type2 == TYPE_REAL));
+		//即使类型不对也会附一个正确类型，出错以后不会再继续执行代码翻译
+		if (type1 == TYPE_REAL || type2 == TYPE_REAL)
+			setType(TYPE_REAL);
+		else
+			setType(TYPE_INTERGER);
+	}
+	else
+	{
+		flag3 = (type1 == type2&&type1==TYPE_BOOLEAN);
+		setType(TYPE_BOOLEAN);
+	}
+	return flag1&&flag1&&flag3;
+}
+
+bool Term::error_detect(string symbol_sheet_name)
+{
+	if (mp_Mulop)
+	{
+		bool flag = mp_Mulop->error_detect(symbol_sheet_name);
+		setType(mp_Mulop->func_checkMulopType());
+		return flag;
+	}
+	else if (mp_Factor)
+	{
+		bool flag = mp_Factor->error_detect(symbol_sheet_name);
+		setType(mp_Factor->func_checkFactorType());
+		return flag;
+	}
+	else
+	{
+		std::cout << "行" << m_lineno << "语法树出错" << endl;
+		return false;
+	}
+}
+
+bool Mulop::error_detect(string symbol_sheet_name)
+{
+	if (mp_Term&&mp_Factor)
+	{
+		bool flag1 = mp_Term->error_detect(symbol_sheet_name);
+		bool flag2 = mp_Factor->error_detect(symbol_sheet_name);
+		int type1 = mp_Term->getType();
+		int type2 = mp_Factor->getType();
+		int opType = this->func_checkMulopType();
+		bool flag3 = true;
+		if (opType == MULOP_MULTIPLY || opType == MULOP_INT_DIV || opType == MULOP_READ_DIV)
+		{
+			flag3 = ((type1 == TYPE_INTERGER || type1 == TYPE_REAL) && (type2 == TYPE_INTERGER || type2 == TYPE_REAL));
+			if (type1 == TYPE_REAL || type2 == TYPE_REAL)
+				setType(TYPE_REAL);
+			else
+				setType(TYPE_INTERGER);
+		}
+		else if (opType == MULOP_MOD)
+		{
+			flag3 = (type1 == type2)&&(type1 = TYPE_INTERGER);
+			setType(TYPE_INTERGER);
+		}
+		else
+		{
+			flag3 = (type1 == type2&&type1 == TYPE_BOOLEAN);
+			setType(TYPE_BOOLEAN);
+		}
+		if (!(flag1&&flag2&&flag3))
+		{
+			std::cout << "行" << m_lineno << ": 类型不匹配." << endl;
+			return false;
+		}
+		return true;
+		
+	}
+	else
+	{
+		std::cout << "行" << m_lineno << "语法树出错" << endl;
+		return false;
+	}
+}
+
+//注意，Factor的错误检测,factor里的值没修改
+bool Factor::error_detect(string symbol_sheet_name)
+{
+	bool flag = true;
+	switch (m_factorType)
+	{
+		case FACTOR_vALUE_BOOL:
+		{
+			setType(TYPE_BOOLEAN);
+			break;
+		}
+		case FACTOR_VALUE_INT:
+		{
+			setType(TYPE_INTERGER);
+			break;
+		}
+		case FACTOR_VALUE_CHAR:
+		{
+			setType(TYPE_CHAR);
+			break;
+		}
+		case FACTOR_VALUE_REAL:
+		{
+			setType(TYPE_REAL);
+			break;
+		}
+		case FACTOR_VAR: 
+		{
+			flag = mp_Variable->error_detect(symbol_sheet_name);
+			setType(mp_Variable->getType());
+			break;
+		}
+		case FACTOR_FUNCCALL:
+		{
+			flag = mp_Function_Call->error_detect(symbol_sheet_name);
+			setType(get_func_return_type(mp_Function_Call->mp_Id->func_getName()));
+			break;
+		}
+		case FACTOR_BRACKETS:
+		{
+			flag = mp_Expression->error_detect(symbol_sheet_name);
+			setType(mp_Expression->getType());
+			break;
+		}
+		case FACTOR_NOT:
+		{
+			flag = mp_Not->error_detect(symbol_sheet_name);
+			setType(TYPE_BOOLEAN);
+			break;
+		}
+		case FACTOR_UMINUS:
+		{
+			flag = mp_Uminus->error_detect(symbol_sheet_name);
+			setType(mp_Uminus->getType());
+			break;
+		}
+
+		default:
+		{
+			std::cout << "行" << m_lineno << "语法树出错" << endl;
+			return false;
+		}
+	}
+	return flag;
+}
+
+bool Not::error_detect(string symbol_sheet_name)
+{
+	if (mp_Factor) 
+	{
+		bool flag = true;
+		flag = mp_Factor->error_detect(symbol_sheet_name);
+		int typeTemp = mp_Factor->getType();
+		if (typeTemp != TYPE_BOOLEAN)
+		{
+			flag = false;
+			std::cout << "行" << m_lineno << ": 非boolean类型不能not" << endl;
+		}
+		return flag;
+	}
+	else
+	{
+		std::cout << "行" << m_lineno << "语法树出错" << endl;
+		return false;
+	}
+}
+
+bool Uminus::error_detect(string symbol_sheet_name)
+{
+	if (mp_Factor)
+	{
+		bool flag = mp_Factor->error_detect(symbol_sheet_name);
+		int typeTemp = mp_Factor->getType();
+		if (typeTemp != TYPE_INTERGER&&typeTemp != TYPE_REAL)
+		{
+			flag = false;
+			std::cout << "行" << m_lineno << ": 类型不匹配" << endl;
+		}
+		setType(typeTemp);
+		return flag;
+	}
+	else
+	{
+		std::cout << "行" << m_lineno << ": 语法树出错" << endl;
+		return false;
+	}
+}
 
