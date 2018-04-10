@@ -41,7 +41,7 @@
 
 // the Mulop type
 #define MULOP_MULTIPLY	0
-#define MULOP_READ_DIV	1
+#define MULOP_REAL_DIV	1
 #define MULOP_INT_DIV	2
 #define MULOP_MOD		3
 #define MULOP_AND		4
