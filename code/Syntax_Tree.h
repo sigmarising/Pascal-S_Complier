@@ -286,12 +286,12 @@ public:
 
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
-
+	int getType() { return type; }
 	bool	m_isArray;
 	int		m_lineno;
 
 	Id				*mp_Id;
-
+	int type;
 	//	default to be null
 	//
 	//	if m_isArray == true
@@ -368,7 +368,7 @@ public:
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
 	void setType(int _type) { type = _type; };
-	int getType() { return type };
+	int getType() { return type; };
 private:
 	int m_lineno;
 	int type;
@@ -410,7 +410,8 @@ public:
 
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
-
+	int getType() { return type; }//返回数据类型，integer,char等等
+	void setType(int _type) { type = _type; }
 	int	func_checkFactorType() {
 		return m_factorType;
 	}
@@ -422,7 +423,7 @@ public:
 
 	int m_factorType;
 	int m_lineno;
-
+	int type;
 	//	the below pointers
 	//	only one can be assigned to non-NULL
 	//	the others must be null
@@ -444,7 +445,7 @@ public:
 
 private:
 	int m_lineno;
-
+	
 	Factor	*mp_Factor;
 };
 
@@ -458,11 +459,13 @@ public:
 
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
+	int getType() { return m_unimusType; };
+	int setType(int _type) { m_unimusType = _type; }
 
 private:
 	int m_lineno;
 	int m_unimusType;
-
+	int type;
 	Factor	*mp_Factor;
 };
 
@@ -613,10 +616,13 @@ public:
 	int		func_checkRelopType() {
 		return m_relopType;
 	}
-
+	void func_setRelopType(int _type) { m_relopType = _type; }
+	void setType(int _type) { type = _type; }           //设置或返回该表达式是什么类型；
+	int getType() { return type; }
 private:
 	int m_relopType;
 	int m_lineno;
+	int type;
 
 	Simple_Expression *mp_Simple_Expression_1;
 	Simple_Expression *mp_Simple_Expression_2;
@@ -629,6 +635,8 @@ public:
 
 	string	func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
+	int getType() { return type; }
+	void setType(int _type) { type = _type; } //设置type的值
 
 	int		func_checkAddopType() {
 		return m_addopType;
@@ -642,7 +650,7 @@ public:
 private:
 	int m_addopType;
 	int m_lineno;
-
+	int type;
 	Simple_Expression	*mp_Simple_Expression;
 	Term				*mp_Term;
 };
@@ -657,11 +665,12 @@ public:
 	int		func_checkMulopType() {
 		return m_mulopType;
 	}
-	void setType(int _type) { m_mulopType = _type; }
-
+	void setType(int _type) { type = _type; }
+	int getType() { return type; }
 private:
 	int m_mulopType;
 	int m_lineno;
+	int type;
 
 	Term	*mp_Term;
 	Factor	*mp_Factor;
