@@ -658,7 +658,10 @@ public:
 
 	// This note only used in function and procedure
 	// to identify whether the id
-	// is a variable element parameter declaration
+	// is a variable element
+	//
+	// no matter in parameter declaration
+	// or in the func/proc body
 	//
 	// default to be false
 	//
