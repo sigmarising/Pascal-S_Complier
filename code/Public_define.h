@@ -13,6 +13,7 @@
 #define TYPE_CHAR		3
 #define TYPE_ID			4
 #define TYPE_NULL       5
+#define TYPE_NIL        -1
 
 // the const postNeg Type
 #define CONST_POSTNEG_NULL		0

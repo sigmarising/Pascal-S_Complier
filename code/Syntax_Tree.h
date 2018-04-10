@@ -74,6 +74,7 @@ public:
 	~Programstruct();
 
 	string func_codeGeneration();
+	bool error_detect(string);
 
 	Id * mp_Id;
 	Id_List			*mp_Id_List;
@@ -93,6 +94,7 @@ public:
 	~Program_Body();
 
 	string func_codeGeneration();
+	bool error_detect(string);
 
 	Const_Declarations		*mp_Const_Declarations;
 	Var_Declarations		*mp_Var_Declarations;
@@ -155,6 +157,7 @@ public:
 	~Statement_List();
 
 	string func_codeGeneration();
+	bool error_detect(string);
 
 	vector<Statement*>mv_Statement;
 };
@@ -243,6 +246,7 @@ public:
 
 	string	func_codeGeneration();
 	void	func_checkType();
+	bool error_detect(string symbol_sheet_name);
 
 	int m_stateType;
 	int m_lineno;
@@ -281,6 +285,7 @@ public:
 	~Variable();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 	bool	m_isArray;
 	int		m_lineno;
@@ -302,7 +307,7 @@ public:
 	~Procedure_Call();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
 
 	int	m_proCall_Tpye;
 
@@ -319,6 +324,7 @@ public:
 	~Function_Call();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 	int m_expNum;
 	int m_lineno;
@@ -334,15 +340,19 @@ public:
 	~Expression();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
+	void setType(int _type) { type = _type; };
+	int getType() { return type; }
 private:
 	int m_lineno;
+	
 
 	//  the below two pointers
 	//	only one can be assign to non-NULL
 	//	the other must be NULL
 	Relop				*mp_Relop;
 	Simple_Expression	*mp_Simple_Expression;
+	int type;
 };
 
 // belong to expression
@@ -356,10 +366,12 @@ public:
 	~Simple_Expression();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
+	void setType(int _type) { type = _type; };
+	int getType() { return type };
 private:
 	int m_lineno;
-
+	int type;
 	//  the below two pointers
 	//	only one can be assign to non-NULL
 	//	the other must be NULL
@@ -377,10 +389,12 @@ public:
 	    ~Term();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
+	void setType(int _type) { type = _type; }
+	int getType() { return type; };
 private:
 	int m_lineno;
-
+	int type;
 	//  the below two pointers
 	//	only one can be assign to non-NULL
 	//	the other must be NULL
@@ -395,6 +409,8 @@ public:
 	~Factor();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
+
 	int	func_checkFactorType() {
 		return m_factorType;
 	}
@@ -424,6 +440,7 @@ public:
 	~Not();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 private:
 	int m_lineno;
@@ -440,6 +457,7 @@ public:
 	~Uminus();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 private:
 	int m_lineno;
@@ -514,7 +532,7 @@ public:
 	~Assignop();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
 private:
 	int m_lineno;
 
@@ -528,6 +546,7 @@ public:
 	~If_Then_Else();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 private:
 	int m_lineno;
@@ -543,6 +562,7 @@ public:
 	~For();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 private:
 	int m_lineno;
@@ -588,6 +608,8 @@ public:
 	~Relop();
 
 	string	func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
+
 	int		func_checkRelopType() {
 		return m_relopType;
 	}
@@ -606,8 +628,14 @@ public:
 	~Addop();
 
 	string	func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
+
 	int		func_checkAddopType() {
 		return m_addopType;
+	}
+	void func_checkAddopType(int _type)
+	{
+		m_addopType = _type;
 	}
 
 
@@ -625,10 +653,11 @@ public:
 	~Mulop();
 
 	string	func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 	int		func_checkMulopType() {
 		return m_mulopType;
 	}
-
+	void setType(int _type) { m_mulopType = _type; }
 
 private:
 	int m_mulopType;
@@ -709,6 +738,8 @@ public:
 	}
 	~Expression_List();
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
+
 	vector<Expression*> func_get_mv_exp() {
 		return mv_Expression;
 	}
