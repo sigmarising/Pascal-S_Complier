@@ -868,7 +868,10 @@ string Expression_List::func_codeGeneration() {
 	string Code_return = "";
 
 	for (int i = 0; i < mv_Expression.size(); i++) {
+		if (mv_VarDefine[i])
+			Code_return += "&";
 		Code_return += mv_Expression[i]->func_codeGeneration();
+
 		if (i != mv_Expression.size() - 1)
 			Code_return += ", ";
 	}

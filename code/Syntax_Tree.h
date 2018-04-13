@@ -311,6 +311,7 @@ public:
 
 	Id				*mp_Id;
 	Expression_List	*mp_Expression_List;
+
 };
 
 class Function_Call {
@@ -727,6 +728,18 @@ public:
 	//		TYPE_REAL
 	//		TYPE_CHAR
 	vector<int>mv_Type;
+
+	// this vector default to be false
+	// 
+	// if the expression list used in 
+	// function call or procedure call
+	// 
+	// we should know whether the parameter is 
+	// a variable element 
+	// 
+	// if this parameter is a variable element 
+	// it must be an id
+	vector<bool>mv_VarDefine;
 };
 
 
