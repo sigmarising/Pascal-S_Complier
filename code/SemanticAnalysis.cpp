@@ -3,7 +3,7 @@
 bool Program_Body::create_symbolsheet() {
 	symbolSheet global_sheet;
 	global_sheet.sheet_name = "0";
-	// TODO: havent done dup check yet, wait till implented lookup_symbolsheet
+	// TODO: havent done dup check yet
     if (global_sheet.add_const_symbols(mp_Const_Declarations) &&
 		global_sheet.add_var_symbols(mp_Var_Declarations) &&
 		global_sheet.add_subprgrm_symbols(mp_SubProgram_Declarations))

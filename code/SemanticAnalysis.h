@@ -62,7 +62,11 @@ public:
                         dec_line,
                         ref_line
                 };
-                symbols.insert(symbol_item(name, p));
+                if (exists(name)) {
+                    symbols[name] = p;
+                } else {
+                    symbols.insert(symbol_item(name, p));
+                }
             }
         }
     }
@@ -102,7 +106,11 @@ public:
                     dec_line,
                     ref_line
             };
-            symbols.insert(symbol_item(name, p));
+            if (exists(name)) {
+                symbols[name] = p;
+            } else {
+                symbols.insert(symbol_item(name, p));
+            }
         }
     }
 
@@ -136,7 +144,11 @@ public:
                         dec_line,
                         ref_fline
                 };
-                symbols.insert(symbol_item(name, p));
+                if (exists(name)) {
+                    symbols[name] = p;
+                } else {
+                    symbols.insert(symbol_item(name, p));
+                }
             }
         }
     }
