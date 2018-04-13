@@ -1,5 +1,37 @@
 #include "SemanticAnalysis.h"
-#include <iostream>
+
+bool Program_Body::create_symbolsheet() {
+	symbolSheet global_sheet;
+	global_sheet.sheet_name = "0";
+	// TODO: havent done dup check yet, wait till implented lookup_symbolsheet
+    if (global_sheet.add_const_symbols(mp_Const_Declarations) &&
+		global_sheet.add_var_symbols(mp_Var_Declarations) &&
+		global_sheet.add_subprgrm_symbols(mp_SubProgram_Declarations))
+    	symbolSheet_list.insert(symbolsheet_list_item("0", global_sheet));
+    return !symbolSheet_list.empty();
+}
+
+bool Procedure::create_symbolsheet() {
+	auto s = (int)symbolSheet_list.size();
+	symbolSheet proc_sheet;
+	proc_sheet.sheet_name = mp_Id->m_name;  // uses proc name
+	if (proc_sheet.add_parameter_symbols(mp_Parameter_List) &&
+		proc_sheet.add_const_symbols(mp_Const_Declarations) &&
+		proc_sheet.add_var_symbols(mp_Var_Declarations))
+		symbolSheet_list.insert(symbolsheet_list_item(proc_sheet.sheet_name, proc_sheet));
+	return (bool)((int)symbolSheet_list.size() - s);
+}
+
+bool Function::create_symbolsheet() {
+    auto s = (int)symbolSheet_list.size();
+    symbolSheet func_sheet;
+    func_sheet.sheet_name = mp_Id->m_name;  // uses proc name
+    if (func_sheet.add_parameter_symbols(mp_Parameter_List) &&
+        func_sheet.add_const_symbols(mp_Const_Declarations) &&
+        func_sheet.add_var_symbols(mp_Var_Declarations))
+        symbolSheet_list.insert(symbolsheet_list_item(func_sheet.sheet_name, func_sheet));
+    return (bool)((int)symbolSheet_list.size() - s);
+}
 
 //注意 Programstruct的错误检测，还不是特别完善
 bool Programstruct::error_detect(string symbol_sheet_name)
@@ -91,7 +123,7 @@ bool For::error_detect(string symbol_sheet_name)
 		if (lookup_symbol(symbol_sheet_name, mp_Id->func_getName()))
 		{
 			bool flag = true;
-			int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName);
+			int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName());
 			flag = flag && mp_Expression_1->error_detect(symbol_sheet_name);
 			flag = flag && mp_Expression_2->error_detect(symbol_sheet_name);
 			int type2 = mp_Expression_1->getType();
@@ -127,7 +159,7 @@ bool Variable::error_detect(string symbol_sheet_name)
 	{
 		if (lookup_symbol(symbol_sheet_name, mp_Id->func_getName()))
 		{
-			int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName);
+			int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName());
 			bool flag = true;
 			if (mp_Expression_List&&type1!=5)
 			{
@@ -137,7 +169,7 @@ bool Variable::error_detect(string symbol_sheet_name)
 			}
 			else if (mp_Expression_List&&
 				mp_Expression_List->func_get_mv_exp().size()
-				!= get_symbol_range(symbol_sheet_name, mp_Id->func_getName).size())
+				!= get_symbol_range(symbol_sheet_name, mp_Id->func_getName()).size())
 			{
 				m_isArray = true;
 				std::cout << "行" << m_lineno << ": 数组维数不对" << endl;
@@ -145,7 +177,7 @@ bool Variable::error_detect(string symbol_sheet_name)
 			}
 			else if (mp_Expression_List)
 			{
-				this->type = get_array_type(symbol_sheet_name, mp_Id->func_getName);
+				this->type = get_array_type(symbol_sheet_name, mp_Id->func_getName());
 
 			}
 			else
@@ -492,3 +524,144 @@ bool Uminus::error_detect(string symbol_sheet_name)
 	}
 }
 
+bool lookup_symbol(string symbolSheet_name, string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    symbolSheet sheet;
+    if (symbolSheet_name == "0") {
+        // global symbol sheet
+        sheet = global_sheet;
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return true;
+        }
+    } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
+        // subprgrm symbol sheet, first lookup in the global sheet
+        sheet = symbolSheet_list[symbolSheet_name];
+        if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end() ||
+            sheet.symbols.find(symbol_name) != sheet.symbols.find(symbol_name)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int get_symbol_type(string symbolSheet_name, string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    symbolSheet sheet;
+    if (symbolSheet_name == "0") {
+        // global symbol sheet
+        sheet = global_sheet;
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].type;
+        }
+    } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
+        // subprgrm symbol sheet, first lookup in the local sheet, if dont exist then lookup in the global sheet
+        sheet = symbolSheet_list[symbolSheet_name];
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].type;
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+            return global_sheet.symbols[symbol_name].type;
+        }
+    }
+    return VOID;
+}
+
+ranges get_symbol_range(string symbolSheet_name, string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    symbolSheet sheet;
+    if (symbolSheet_name == "0") {
+        // global symbol sheet
+        sheet = global_sheet;
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].array_ranges;
+        }
+    } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
+        // subprgrm symbol sheet, first lookup in the local sheet, if dont exist then lookup in the global sheet
+        sheet = symbolSheet_list[symbolSheet_name];
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].array_ranges;
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+            return global_sheet.symbols[symbol_name].array_ranges;
+        }
+    }
+}
+
+int get_array_type(string symbolSheet_name, string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    symbolSheet sheet;
+    if (symbolSheet_name == "0") {
+        // global symbol sheet
+        sheet = global_sheet;
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].type;
+        }
+    } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
+        // subprgrm symbol sheet, first lookup in the local sheet, if dont exist then lookup in the global sheet
+        sheet = symbolSheet_list[symbolSheet_name];
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].type;
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+            return global_sheet.symbols[symbol_name].type;
+        }
+    }
+}
+
+int get_func_return_type(string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end() &&
+        global_sheet.symbols[symbol_name].subprgrm_type == FUNC) {
+        return global_sheet.symbols[symbol_name].type;
+    }
+    return NONE;
+}
+
+bool lookup_func(string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    return global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end() &&
+           global_sheet.symbols[symbol_name].subprgrm_type == FUNC;
+}
+
+bool lookup_procedure(string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    return global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end() &&
+           global_sheet.symbols[symbol_name].subprgrm_type == PROC;
+}
+
+int get_symbol_narg(string symbolSheet_name, string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    symbolSheet sheet;
+    if (symbolSheet_name == "0") {
+        // global symbol sheet
+        sheet = global_sheet;
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].subprgrm_nargs;
+        }
+    } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
+        // subprgrm symbol sheet, first lookup in the local sheet, if dont exist then lookup in the global sheet
+        sheet = symbolSheet_list[symbolSheet_name];
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].subprgrm_nargs;
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+            return global_sheet.symbols[symbol_name].subprgrm_nargs;
+        }
+    }
+}
+
+vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    symbolSheet sheet;
+    if (symbolSheet_name == "0") {
+        // global symbol sheet
+        sheet = global_sheet;
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].nargs_types;
+        }
+    } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
+        // subprgrm symbol sheet, first lookup in the local sheet, if dont exist then lookup in the global sheet
+        sheet = symbolSheet_list[symbolSheet_name];
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].nargs_types;
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+            return global_sheet.symbols[symbol_name].nargs_types;
+        }
+    }
+}

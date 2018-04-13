@@ -94,6 +94,7 @@ public:
 	~Program_Body();
 
 	string func_codeGeneration();
+	bool create_symbolsheet();
 	bool error_detect(string);
 
 	Const_Declarations		*mp_Const_Declarations;
@@ -113,7 +114,7 @@ public:
 
 	string func_codeGeneration();
 
-	vector<pair<Id*, Const_Value*> >mv_Const;
+	vector<pair<Id*, Const_Value*>> mv_Const;
 };
 
 //	Var Block
@@ -168,9 +169,16 @@ public:
 	virtual ~Common() = 0;
 
 	virtual string func_codeGeneration() = 0;
+	virtual int func_checkReturnType() = 0;
 	virtual int func_get_Common_Type() {
 		return -1;
 	}
+	virtual bool create_symbolsheet() = 0;
+	virtual Id * get_func_id() = 0;
+    virtual Parameter_List * get_param_list() = 0;
+    virtual Const_Declarations * get_const_dec() = 0;
+    virtual Var_Declarations * get_var_dec() = 0;
+    virtual int get_lineno() = 0;
 
 private:
 
@@ -187,11 +195,30 @@ public:
         mp_Var_Declarations=Mp_Var_Declarations;
         mp_Statement_List=Mp_Statement_List;
 	}
-	~Procedure();
+	~Procedure() override;
 
-	string	func_codeGeneration();
-	int		func_get_Common_Type() {
+	string	func_codeGeneration() override;
+	int func_checkReturnType() override {
+	    return -1; // return VOID
+	}
+	int		func_get_Common_Type() override {
 		return COMMON_PROCEDURE;
+	}
+	bool create_symbolsheet() override;
+    Id * get_func_id() override {
+        return mp_Id;
+    }
+    Parameter_List * get_param_list() override {
+        return mp_Parameter_List;
+    }
+    Const_Declarations * get_const_dec() override {
+        return mp_Const_Declarations;
+    }
+    Var_Declarations * get_var_dec() override {
+        return mp_Var_Declarations;
+    }
+    int get_lineno() override {
+	    return m_lineno;
 	}
 
 private:
@@ -216,14 +243,30 @@ public:
         mp_Var_Declarations=Mp_Var_Declarations;
         mp_Statement_List=Mp_Statement_List;
 	}
-	~Function();
+	~Function() override;
 
-	string	func_codeGeneration();
-	int 	func_checkReturnType() {
+	string	func_codeGeneration() override;
+	int func_checkReturnType() override {
 		return m_returnType;
 	}
-	int		func_get_Common_Type() {
+	int	func_get_Common_Type() override{
 		return COMMON_FUNCTION;
+	}
+	bool create_symbolsheet() override;
+	Id * get_func_id() override {
+	    return mp_Id;
+	}
+	Parameter_List * get_param_list() override {
+	    return mp_Parameter_List;
+	}
+	Const_Declarations * get_const_dec() override {
+	    return mp_Const_Declarations;
+	}
+	Var_Declarations * get_var_dec() override {
+	    return mp_Var_Declarations;
+	}
+	int get_lineno() override {
+	    return m_lineno;
 	}
 
 
@@ -485,8 +528,10 @@ public:
 		return m_isArray;
 	}
 
-	vector<pair<int, int>> func_get_Period();
-
+    int get_lineno() {
+        return m_lineno;
+    }
+    vector<pair<int, int>> func_get_Period();
 
 
 private:
@@ -578,7 +623,7 @@ private:
 
 class Parameter {
 public:
-	Parameter(bool	M_isVal,int	M_lineno,Id_List	*Mp_Id_List){
+	Parameter(bool	M_isVal,int	M_lineno,Id_List *Mp_Id_List){
         m_isVal=M_isVal;
         m_lineno=M_lineno;
         mp_Id_List=Mp_Id_List;
@@ -590,9 +635,17 @@ public:
 		return m_isVal;
 	}
 	vector<Id*> func_get_mv_id();
-
-	int			func_get_m_type() {
+	int get_lineno() {
+	    return m_lineno;
+	}
+	int		func_get_m_type() {
 		return m_Type;
+	}
+	int get_id_list_num () {
+	    return mp_Id_List->get_id_num();
+	}
+	Id_List* get_idlist() {
+	    return mp_Id_List;
 	}
 
 private:
@@ -682,7 +735,9 @@ public:
 	~Id();
 
 	string	func_codeGeneration();
-	void	func_checkType();
+	int	func_checkType() {
+	    return m_idType;
+	};
 	string	func_getName() {
 		return m_name;
 	}
@@ -694,12 +749,15 @@ public:
 	int		m_idType;
 	int		m_lineno;
 
-	// This note only used in function and procedure
-	// to identify whether the id
-	// is a variable element parameter declaration
-	//
-	// default to be false
-	//
+    // This note only used in function and procedure
+    // to identify whether the id
+    // is a variable element
+    //
+    // no matter in parameter declaration
+    // or in the func/proc body
+    //
+    // default to be false
+    //
 	bool	m_isVal;
 };
 
@@ -711,6 +769,19 @@ public:
 	string			func_codeGeneration();
 	vector<Id*>		func_get_mv_Id() {
 		return mv_Id;
+	}
+	int get_id_num() {
+	    return (int)mv_Id.size();
+	}
+//	vector<int> get_id_types() {
+//	    vector<int> id_types;
+//	    for (auto id: mv_Id) {
+//	        id_types.push_back(id->m_idType);
+//	    }
+//	    return id_types;
+//	}
+	bool isVal() {
+	    return mv_Id.front()->m_isVal;  // the vector should be the same kind
 	}
 
 	int m_lineno;
