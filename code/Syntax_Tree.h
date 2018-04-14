@@ -59,6 +59,148 @@ class Var_Parameter;
 class Value_Parameter;
 class Id_Varpart;
 
+//	以下类都是在抽象语法树中没有的类
+class Program_Head {
+public:
+    Program_Head(Id * M_Id,Id_List *M_Id_List){
+        m_Id=M_Id;
+        m_Id_List=M_Id_List;
+    }
+    ~Program_Head();
+
+    Id * m_Id;
+    Id_List *m_Id_List;
+
+};
+class Compound_Statement{
+public:
+    Compound_Statement(Statement_List * M_Statement_List){
+        m_Statement_List=M_Statement_List;
+    }
+    ~Compound_Statement();
+
+    Statement_List * m_Statement_List;
+
+};
+class Const_Declaration {
+public:
+    Const_Declaration();
+    Const_Declaration(vector<pair<Id*, Const_Value*> > Mv_Const){
+        mv_Const=Mv_Const;
+    }
+    ~Const_Declaration();
+
+    vector<pair<Id*, Const_Value*> > mv_Const;
+};
+
+class Var_Declaration {
+public:
+    Var_Declaration();
+    Var_Declaration(vector<pair<Id_List*, Type*> > Mv_Var){
+        mv_Var=Mv_Var;
+    }
+    ~Var_Declaration();
+
+    vector<pair<Id_List*, Type*> > mv_Var;
+
+};
+
+class SubProgram_Declaration {
+public:
+    SubProgram_Declaration();
+    ~SubProgram_Declaration();
+
+private:
+    vector<Subprogram*> mv_Subprogram;
+
+};
+
+class Subprogram {
+public:
+    Subprogram();
+    ~Subprogram();
+
+private:
+    Subprogram_Head * m_Subprogram_Head;
+    Subprogram_Body *m_Subprogram_Body;
+
+};
+class Subprogram_Head {
+public:
+    Subprogram_Head(Id * M_ID,Formal_Parameter *M_Formal_Parameter,int SType){
+        m_ID=M_ID;
+        m_Formal_Parameter=M_Formal_Parameter;
+        Simple_Type=SType;
+    }
+    ~Subprogram_Head();
+
+    Id * m_ID;
+    Formal_Parameter *m_Formal_Parameter;
+    int Simple_Type;
+
+};
+
+class Subprogram_Body {
+public:
+    Subprogram_Body(Const_Declarations * M_Const_Declarations,Var_Declarations *M_Var_Declarations,Compound_Statement *M_Compound_Statement){
+        m_Const_Declarations=M_Const_Declarations;
+        m_Var_Declarations=M_Var_Declarations;
+        m_Compound_Statement=M_Compound_Statement;
+    }
+    ~Subprogram_Body();
+
+private:
+    Const_Declarations * m_Const_Declarations;
+    Var_Declarations *m_Var_Declarations;
+    Compound_Statement *m_Compound_Statement;
+};
+
+class Formal_Parameter {
+public:
+    Formal_Parameter(Parameter_List * M_Parameter_List){
+        m_Parameter_List=M_Parameter_List;
+    }
+    ~Formal_Parameter();
+
+private:
+    Parameter_List * m_Parameter_List;
+
+};
+class Var_Parameter {
+public:
+    Var_Parameter(Value_Parameter * M_Value_Parameter){
+        m_Value_Parameter=M_Value_Parameter;
+    }
+    ~Var_Parameter();
+
+private:
+    Value_Parameter * m_Value_Parameter;
+
+
+
+};
+class Value_Parameter {
+public:
+    Value_Parameter(Id_List *M_Id_List,int SType){
+        M_Id_List=M_Id_List;
+        Simple_Type=SType;
+    }
+    ~Value_Parameter();
+
+    int Simple_Type;
+    Id_List * m_Id_List;
+};
+class Id_Varpart{
+public:
+    Id_Varpart();
+    Id_Varpart(Expression_List *M_Expression_List){
+        m_Expression_List=M_Expression_List;
+    }
+    ~Id_Varpart();
+private:
+    Expression_List *m_Expression_List;	//这个指针可以为NULL
+};
+
 
 // class define
 
@@ -85,7 +227,17 @@ public:
 //	include four parts
 class Program_Body {
 public:
-	Program_Body(Const_Declarations *Mp_Const_Declarations,Var_Declarations	*Mp_Var_Declarations,SubProgram_Declarations *Mp_SubProgram_Declarations,Compound_Statement *Mp_Compound_Statements);
+	Program_Body(Const_Declarations *Mp_Const_Declarations,
+				 Var_Declarations	*Mp_Var_Declarations,
+                 SubProgram_Declarations *Mp_SubProgram_Declarations,
+                 Compound_Statement *Mp_Compound_Statements) {
+        {
+            mp_Const_Declarations=Mp_Const_Declarations;
+            mp_Var_Declarations=Mp_Var_Declarations;
+            mp_SubProgram_Declarations=Mp_SubProgram_Declarations;
+            mp_Statement_List=Mp_Compound_Statements->m_Statement_List;
+        }
+	}
 	~Program_Body();
 
 	string func_codeGeneration();
@@ -863,156 +1015,3 @@ public:
 	// it must be an id
 	vector<bool>mv_VarDefine;
 };
-
-
-//	以下类都是在抽象语法树中没有的类
-class Program_Head {
-public:
-	Program_Head(Id * M_Id,Id_List *M_Id_List){
-        m_Id=M_Id;
-        m_Id_List=M_Id_List;
-	}
-	~Program_Head();
-
-	Id * m_Id;
-	Id_List *m_Id_List;
-
-};
-class Compound_Statement{
-public:
-	Compound_Statement(Statement_List * M_Statement_List){
-        m_Statement_List=M_Statement_List;
-	}
-	~Compound_Statement();
-
-	Statement_List * m_Statement_List;
-
-};
-class Const_Declaration {
-public:
-	Const_Declaration();
-	Const_Declaration(vector<pair<Id*, Const_Value*> > Mv_Const){
-        mv_Const=Mv_Const;
-	}
-	~Const_Declaration();
-
-	vector<pair<Id*, Const_Value*> > mv_Const;
-};
-
-class Var_Declaration {
-public:
-	Var_Declaration();
-	Var_Declaration(vector<pair<Id_List*, Type*> > Mv_Var){
-        mv_Var=Mv_Var;
-	}
-	~Var_Declaration();
-
-	vector<pair<Id_List*, Type*> > mv_Var;
-
-};
-
-class SubProgram_Declaration {
-public:
-	SubProgram_Declaration();
-	~SubProgram_Declaration();
-
-private:
-	vector<Subprogram*> mv_Subprogram;
-
-};
-
-class Subprogram {
-public:
-	Subprogram();
-	~Subprogram();
-
-private:
-	Subprogram_Head * m_Subprogram_Head;
-	Subprogram_Body *m_Subprogram_Body;
-
-};
-class Subprogram_Head {
-public:
-	Subprogram_Head(Id * M_ID,Formal_Parameter *M_Formal_Parameter,int SType){
-        m_ID=M_ID;
-        m_Formal_Parameter=M_Formal_Parameter;
-        Simple_Type=SType;
-	}
-	~Subprogram_Head();
-
-	Id * m_ID;
-	Formal_Parameter *m_Formal_Parameter;
-	int Simple_Type;
-
-};
-
-class Subprogram_Body {
-public:
-	Subprogram_Body(Const_Declarations * M_Const_Declarations,Var_Declarations *M_Var_Declarations,Compound_Statement *M_Compound_Statement){
-        m_Const_Declarations=M_Const_Declarations;
-        m_Var_Declarations=M_Var_Declarations;
-        m_Compound_Statement=M_Compound_Statement;
-	}
-	~Subprogram_Body();
-
-private:
-	Const_Declarations * m_Const_Declarations;
-	Var_Declarations *m_Var_Declarations;
-	Compound_Statement *m_Compound_Statement;
-};
-
-class Formal_Parameter {
-public:
-	Formal_Parameter(Parameter_List * M_Parameter_List){
-        m_Parameter_List=M_Parameter_List;
-	}
-	~Formal_Parameter();
-
-private:
-	Parameter_List * m_Parameter_List;
-
-};
-class Var_Parameter {
-public:
-	Var_Parameter(Value_Parameter * M_Value_Parameter){
-	    m_Value_Parameter=M_Value_Parameter;
-	}
-	~Var_Parameter();
-
-private:
-	Value_Parameter * m_Value_Parameter;
-
-
-
-};
-class Value_Parameter {
-public:
-	Value_Parameter(Id_List *M_Id_List,int SType){
-	    M_Id_List=M_Id_List;
-	    Simple_Type=SType;
-	}
-	~Value_Parameter();
-
-	int Simple_Type;
-	Id_List * m_Id_List;
-};
-class Id_Varpart{
-public:
-	Id_Varpart();
-	Id_Varpart(Expression_List *M_Expression_List){
-       m_Expression_List=M_Expression_List;
-	}
-	~Id_Varpart();
-private:
-	Expression_List *m_Expression_List;	//这个指针可以为NULL
-};
-
-// 只把构造函数的实现挪到了这里，应该不会报错了
-Program_Body::Program_Body(Const_Declarations *Mp_Const_Declarations, Var_Declarations *Mp_Var_Declarations,
-                           SubProgram_Declarations *Mp_SubProgram_Declarations,
-                           Compound_Statement *Mp_Compound_Statements) {
-    mp_Const_Declarations=Mp_Const_Declarations;
-    mp_Var_Declarations=Mp_Var_Declarations;
-    mp_SubProgram_Declarations=Mp_SubProgram_Declarations;
-    mp_Statement_List=Mp_Compound_Statements->m_Statement_List;
-}

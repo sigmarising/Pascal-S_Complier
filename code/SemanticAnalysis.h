@@ -23,15 +23,15 @@ typedef string symbol_name;
 typedef vector<int> subprgrm_nargs_types;
 
 struct Property {
-    TYPE type = INT;  // also indicate the array element's type
-    SUBPRGRM_TYPE subprgrm_type = NONE;
-    bool is_const = false;
-    float const_val = 0;
+    TYPE type;  // = INT;  // also indicate the array element's type
+    SUBPRGRM_TYPE subprgrm_type;  // = NONE;
+    bool is_const;  // = false;
+    float const_val;  // = 0;
     ranges array_ranges;  // not none -> array
-    int subprgrm_nargs = 0;
+    int subprgrm_nargs;  // = 0;
     subprgrm_nargs_types nargs_types;
-    int dec_line = 0;
-    int ref_line = -1;
+    int dec_line;  // = 0;
+    int ref_line;  // = -1;
 };
 typedef pair<symbol_name, Property> symbol_item;
 typedef map<symbol_name, Property> symbol_items;
