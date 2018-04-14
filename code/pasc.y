@@ -1,7 +1,7 @@
 /*警告：书上的文法具有移进规约冲突,135-137行部分，已解决*/
 %code requires {
-	#include <Public_define.h>
-	#include <Syntax_Tree.h>
+	#include "Public_define.h"
+	#include "Syntax_Tree.h"
 }
 
 %code top {
@@ -15,7 +15,6 @@
 	int yyparse(void);
 	void yyerror(char *s);
 	extern int yylineno;
-
 }
 
 %token AND ARRAY BEGIN_L BOOLEAN CASE CHAR CONST DIV DO DOWNTO ELSE END FOR FUNCTION IF INTEGER MOD 
