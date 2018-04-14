@@ -838,7 +838,7 @@ string Mulop::func_codeGeneration() {
 		Code_return += " * ";
 		break;
 
-	case MULOP_READ_DIV:
+	case MULOP_REAL_DIV:
 		Code_return += " / ";
 		break;
 

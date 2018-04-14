@@ -326,7 +326,7 @@ bool Mulop::error_detect(string symbol_sheet_name) {
         int type2 = mp_Factor->getType();
         int opType = this->func_checkMulopType();
         bool flag3 = true;
-        if (opType == MULOP_MULTIPLY || opType == MULOP_INT_DIV || opType == MULOP_READ_DIV) {
+        if (opType == MULOP_MULTIPLY || opType == MULOP_INT_DIV || opType == MULOP_REAL_DIV) {
             flag3 = ((type1 == TYPE_INTERGER || type1 == TYPE_REAL) && (type2 == TYPE_INTERGER || type2 == TYPE_REAL));
             if (type1 == TYPE_REAL || type2 == TYPE_REAL)
                 setType(TYPE_REAL);
