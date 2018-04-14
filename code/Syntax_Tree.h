@@ -89,7 +89,7 @@ public:
         mp_Const_Declarations=Mp_Const_Declarations;
         mp_Var_Declarations=Mp_Var_Declarations;
         mp_SubProgram_Declarations=Mp_SubProgram_Declarations;
-        mp_Statement_List=Mp_Compound_Statements->m_Statement_List;
+        mp_Statement_List=Mp_Compound_Statements -> mp_Statement_List;
 	}
 	~Program_Body();
 
