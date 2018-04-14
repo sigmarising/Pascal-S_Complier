@@ -85,12 +85,7 @@ public:
 //	include four parts
 class Program_Body {
 public:
-	Program_Body(Const_Declarations *Mp_Const_Declarations,Var_Declarations	*Mp_Var_Declarations,SubProgram_Declarations *Mp_SubProgram_Declarations,Compound_Statement *Mp_Compound_Statements){
-        mp_Const_Declarations=Mp_Const_Declarations;
-        mp_Var_Declarations=Mp_Var_Declarations;
-        mp_SubProgram_Declarations=Mp_SubProgram_Declarations;
-        mp_Statement_List=Mp_Compound_Statements -> mp_Statement_List;
-	}
+	Program_Body(Const_Declarations *Mp_Const_Declarations,Var_Declarations	*Mp_Var_Declarations,SubProgram_Declarations *Mp_SubProgram_Declarations,Compound_Statement *Mp_Compound_Statements);
 	~Program_Body();
 
 	string func_codeGeneration();
@@ -886,11 +881,11 @@ public:
 class Compound_Statement{
 public:
 	Compound_Statement(Statement_List * M_Statement_List){
-        mp_Statement_List=M_Statement_List;
+        m_Statement_List=M_Statement_List;
 	}
 	~Compound_Statement();
 
-	Statement_List * mp_Statement_List;
+	Statement_List * m_Statement_List;
 
 };
 class Const_Declaration {
@@ -1011,3 +1006,13 @@ public:
 private:
 	Expression_List *m_Expression_List;	//这个指针可以为NULL
 };
+
+// 只把构造函数的实现挪到了这里，应该不会报错了
+Program_Body::Program_Body(Const_Declarations *Mp_Const_Declarations, Var_Declarations *Mp_Var_Declarations,
+                           SubProgram_Declarations *Mp_SubProgram_Declarations,
+                           Compound_Statement *Mp_Compound_Statements) {
+    mp_Const_Declarations=Mp_Const_Declarations;
+    mp_Var_Declarations=Mp_Var_Declarations;
+    mp_SubProgram_Declarations=Mp_SubProgram_Declarations;
+    mp_Statement_List=Mp_Compound_Statements->m_Statement_List;
+}
