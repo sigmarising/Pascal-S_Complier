@@ -386,9 +386,12 @@ public:
 	bool error_detect(string symbol_sheet_name);
 	void setType(int _type) { type = _type; };
 	int getType() { return type; }
+	int getRangeVal() { return rangeVal; };
+	bool getRangeValid() { return rangeValid; }
 private:
 	int m_lineno;
-	
+	int rangeVal;
+	bool rangeValid;
 
 	//  the below two pointers
 	//	only one can be assign to non-NULL
@@ -412,9 +415,13 @@ public:
 	bool error_detect(string symbol_sheet_name);
 	void setType(int _type) { type = _type; };
 	int getType() { return type; };
+	int getRangeVal() { return rangeVal; }
+	bool getRangeValid() { return rangeValid; }
 private:
 	int m_lineno;
 	int type;
+	int rangeVal;
+	bool rangeValid;
 	//  the below two pointers
 	//	only one can be assign to non-NULL
 	//	the other must be NULL
@@ -435,9 +442,13 @@ public:
 	bool error_detect(string symbol_sheet_name);
 	void setType(int _type) { type = _type; }
 	int getType() { return type; };
+	int getRangeVal() { return rangeVal; }
+	bool getRangeValid() { return rangeValid; }
 private:
 	int m_lineno;
 	int type;
+	int rangeVal;
+	bool rangeValid;
 	//  the below two pointers
 	//	only one can be assign to non-NULL
 	//	the other must be NULL
@@ -458,6 +469,11 @@ public:
 	int	func_checkFactorType() {
 		return m_factorType;
 	}
+	int getRangeVal() { return rangeVal; }
+	bool getRangeValid() { return rangeValid; }
+
+	int rangeVal;
+	bool rangeValid;
 
 	int		m_int;
 	float	m_real;
@@ -488,7 +504,7 @@ public:
 
 private:
 	int m_lineno;
-	
+
 	Factor	*mp_Factor;
 };
 
@@ -502,10 +518,13 @@ public:
 
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
-	int getType() { return m_unimusType; };
-	int setType(int _type) { m_unimusType = _type; }
-
+	int getType() { return type; };
+	int setType(int _type) {type = _type; }
+	int getRangeVal() { return rangeVal; }
+	bool getRangeValid() { return rangeValid; }
 private:
+	int rangeVal;
+	bool rangeValid;
 	int m_lineno;
 	int m_unimusType;
 	int type;
@@ -640,9 +659,6 @@ public:
 	}
 	int		func_get_m_type() {
 		return m_Type;
-	}
-	int get_id_list_num () {
-	    return mp_Id_List->get_id_num();
 	}
 	Id_List* get_idlist() {
 	    return mp_Id_List;
@@ -827,6 +843,8 @@ public:
 		return mv_Type;
 	}
 
+	vector<int> rangeVal;
+	vector<bool> rangeValid;
 	vector<Expression*>mv_Expression;
 
 	// store the Type of each expression

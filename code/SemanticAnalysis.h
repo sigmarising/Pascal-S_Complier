@@ -169,7 +169,7 @@ public:
             int subprgrm_nargs = 0;
             subprgrm_nargs_types nargs_types;
             for (auto ids: parameters) {
-                subprgrm_nargs += ids->get_id_list_num();
+                subprgrm_nargs += ids->get_idlist()->get_id_num();
                 Id_List *id_list = ids->get_idlist();
                 for (auto id: id_list->mv_Id) {
                     nargs_types.push_back(id->m_idType);
