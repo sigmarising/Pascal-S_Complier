@@ -45,7 +45,7 @@ class Id_List;
 class Period;
 class Expression_List;
 
-//�����඼���ڳ���������û�е��࣬Ϊʵ�ַ��뷽��������
+// 以下类都是在抽象语法树中没有的类，为实现翻译方案而创建
 class Program_Head;
 class Compound_Statement;
 class Const_Declaration;
@@ -74,6 +74,7 @@ public:
 	~Programstruct();
 
 	string func_codeGeneration();
+	bool error_detect(string);
 
 	Id * mp_Id;
 	Id_List			*mp_Id_List;
@@ -93,6 +94,8 @@ public:
 	~Program_Body();
 
 	string func_codeGeneration();
+	bool create_symbolsheet();
+	bool error_detect(string);
 
 	Const_Declarations		*mp_Const_Declarations;
 	Var_Declarations		*mp_Var_Declarations;
@@ -111,7 +114,7 @@ public:
 
 	string func_codeGeneration();
 
-	vector<pair<Id*, Const_Value*> >mv_Const;
+	vector<pair<Id*, Const_Value*>> mv_Const;
 };
 
 //	Var Block
@@ -155,6 +158,7 @@ public:
 	~Statement_List();
 
 	string func_codeGeneration();
+	bool error_detect(string);
 
 	vector<Statement*>mv_Statement;
 };
@@ -165,9 +169,16 @@ public:
 	virtual ~Common() = 0;
 
 	virtual string func_codeGeneration() = 0;
+	virtual int func_checkReturnType() = 0;
 	virtual int func_get_Common_Type() {
 		return -1;
 	}
+	virtual bool create_symbolsheet() = 0;
+	virtual Id * get_func_id() = 0;
+    virtual Parameter_List * get_param_list() = 0;
+    virtual Const_Declarations * get_const_dec() = 0;
+    virtual Var_Declarations * get_var_dec() = 0;
+    virtual int get_lineno() = 0;
 
 private:
 
@@ -184,11 +195,30 @@ public:
         mp_Var_Declarations=Mp_Var_Declarations;
         mp_Statement_List=Mp_Statement_List;
 	}
-	~Procedure();
+	~Procedure() override;
 
-	string	func_codeGeneration();
-	int		func_get_Common_Type() {
+	string	func_codeGeneration() override;
+	int func_checkReturnType() override {
+	    return -1; // return VOID
+	}
+	int		func_get_Common_Type() override {
 		return COMMON_PROCEDURE;
+	}
+	bool create_symbolsheet() override;
+    Id * get_func_id() override {
+        return mp_Id;
+    }
+    Parameter_List * get_param_list() override {
+        return mp_Parameter_List;
+    }
+    Const_Declarations * get_const_dec() override {
+        return mp_Const_Declarations;
+    }
+    Var_Declarations * get_var_dec() override {
+        return mp_Var_Declarations;
+    }
+    int get_lineno() override {
+	    return m_lineno;
 	}
 
 private:
@@ -213,14 +243,30 @@ public:
         mp_Var_Declarations=Mp_Var_Declarations;
         mp_Statement_List=Mp_Statement_List;
 	}
-	~Function();
+	~Function() override;
 
-	string	func_codeGeneration();
-	int 	func_checkReturnType() {
+	string	func_codeGeneration() override;
+	int func_checkReturnType() override {
 		return m_returnType;
 	}
-	int		func_get_Common_Type() {
+	int	func_get_Common_Type() override{
 		return COMMON_FUNCTION;
+	}
+	bool create_symbolsheet() override;
+	Id * get_func_id() override {
+	    return mp_Id;
+	}
+	Parameter_List * get_param_list() override {
+	    return mp_Parameter_List;
+	}
+	Const_Declarations * get_const_dec() override {
+	    return mp_Const_Declarations;
+	}
+	Var_Declarations * get_var_dec() override {
+	    return mp_Var_Declarations;
+	}
+	int get_lineno() override {
+	    return m_lineno;
 	}
 
 
@@ -243,6 +289,7 @@ public:
 
 	string	func_codeGeneration();
 	void	func_checkType();
+	bool error_detect(string symbol_sheet_name);
 
 	int m_stateType;
 	int m_lineno;
@@ -281,12 +328,13 @@ public:
 	~Variable();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
+	int getType() { return type; }
 	bool	m_isArray;
 	int		m_lineno;
 
 	Id				*mp_Id;
-
+	int type;
 	//	default to be null
 	//
 	//	if m_isArray == true
@@ -302,7 +350,7 @@ public:
 	~Procedure_Call();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
 
 	int	m_proCall_Tpye;
 
@@ -311,6 +359,7 @@ public:
 
 	Id				*mp_Id;
 	Expression_List	*mp_Expression_List;
+
 };
 
 class Function_Call {
@@ -319,6 +368,7 @@ public:
 	~Function_Call();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 	int m_expNum;
 	int m_lineno;
@@ -334,15 +384,22 @@ public:
 	~Expression();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
+	void setType(int _type) { type = _type; };
+	int getType() { return type; }
+	int getRangeVal() { return rangeVal; };
+	bool getRangeValid() { return rangeValid; }
 private:
 	int m_lineno;
+	int rangeVal;
+	bool rangeValid;
 
 	//  the below two pointers
 	//	only one can be assign to non-NULL
 	//	the other must be NULL
 	Relop				*mp_Relop;
 	Simple_Expression	*mp_Simple_Expression;
+	int type;
 };
 
 // belong to expression
@@ -356,10 +413,16 @@ public:
 	~Simple_Expression();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
+	void setType(int _type) { type = _type; };
+	int getType() { return type; };
+	int getRangeVal() { return rangeVal; }
+	bool getRangeValid() { return rangeValid; }
 private:
 	int m_lineno;
-
+	int type;
+	int rangeVal;
+	bool rangeValid;
 	//  the below two pointers
 	//	only one can be assign to non-NULL
 	//	the other must be NULL
@@ -377,10 +440,16 @@ public:
 	    ~Term();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
+	void setType(int _type) { type = _type; }
+	int getType() { return type; };
+	int getRangeVal() { return rangeVal; }
+	bool getRangeValid() { return rangeValid; }
 private:
 	int m_lineno;
-
+	int type;
+	int rangeVal;
+	bool rangeValid;
 	//  the below two pointers
 	//	only one can be assign to non-NULL
 	//	the other must be NULL
@@ -395,9 +464,17 @@ public:
 	~Factor();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
+	int getType() { return type; }//返回数据类型，integer,char等等
+	void setType(int _type) { type = _type; }
 	int	func_checkFactorType() {
 		return m_factorType;
 	}
+	int getRangeVal() { return rangeVal; }
+	bool getRangeValid() { return rangeValid; }
+
+	int rangeVal;
+	bool rangeValid;
 
 	int		m_int;
 	float	m_real;
@@ -406,7 +483,7 @@ public:
 
 	int m_factorType;
 	int m_lineno;
-
+	int type;
 	//	the below pointers
 	//	only one can be assigned to non-NULL
 	//	the others must be null
@@ -424,6 +501,7 @@ public:
 	~Not();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 private:
 	int m_lineno;
@@ -440,11 +518,17 @@ public:
 	~Uminus();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
+	int getType() { return type; };
+	int setType(int _type) {type = _type; }
+	int getRangeVal() { return rangeVal; }
+	bool getRangeValid() { return rangeValid; }
 private:
+	int rangeVal;
+	bool rangeValid;
 	int m_lineno;
 	int m_unimusType;
-
+	int type;
 	Factor	*mp_Factor;
 };
 
@@ -464,8 +548,10 @@ public:
 		return m_isArray;
 	}
 
-	vector<pair<int, int>> func_get_Period();
-
+    int get_lineno() {
+        return m_lineno;
+    }
+    vector<pair<int, int>> func_get_Period();
 
 
 private:
@@ -514,7 +600,7 @@ public:
 	~Assignop();
 
 	string func_codeGeneration();
-
+	bool error_detect(string symbol_sheet_name);
 private:
 	int m_lineno;
 
@@ -528,6 +614,7 @@ public:
 	~If_Then_Else();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 private:
 	int m_lineno;
@@ -543,6 +630,7 @@ public:
 	~For();
 
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 
 private:
 	int m_lineno;
@@ -555,26 +643,31 @@ private:
 
 class Parameter {
 public:
-	Parameter(bool	M_isVar,int	M_lineno,Id_List	*Mp_Id_List){
-        m_isVar=M_isVar;
+	Parameter(bool	M_isVal,int	M_lineno,Id_List *Mp_Id_List){
+        m_isVal=M_isVal;
         m_lineno=M_lineno;
         mp_Id_List=Mp_Id_List;
 	}
 	~Parameter();
 
 	string	func_codeGeneration();
-	bool	func_isVar() {
-		return m_isVar;
+	bool	func_isVal() {
+		return m_isVal;
 	}
 	vector<Id*> func_get_mv_id();
-
-	int			func_get_m_type() {
+	int get_lineno() {
+	    return m_lineno;
+	}
+	int		func_get_m_type() {
 		return m_Type;
+	}
+	Id_List* get_idlist() {
+	    return mp_Id_List;
 	}
 
 private:
 	// define whether the parameter is variable element
-	bool	m_isVar;
+	bool	m_isVal;
 	int		m_lineno;
 	int		m_Type;
 
@@ -588,13 +681,18 @@ public:
 	~Relop();
 
 	string	func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
+
 	int		func_checkRelopType() {
 		return m_relopType;
 	}
-
+	void func_setRelopType(int _type) { m_relopType = _type; }
+	void setType(int _type) { type = _type; }           //设置或返回该表达式是什么类型；
+	int getType() { return type; }
 private:
 	int m_relopType;
 	int m_lineno;
+	int type;
 
 	Simple_Expression *mp_Simple_Expression_1;
 	Simple_Expression *mp_Simple_Expression_2;
@@ -606,15 +704,23 @@ public:
 	~Addop();
 
 	string	func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
+	int getType() { return type; }
+	void setType(int _type) { type = _type; } //设置type的值
+
 	int		func_checkAddopType() {
 		return m_addopType;
+	}
+	void func_checkAddopType(int _type)
+	{
+		m_addopType = _type;
 	}
 
 
 private:
 	int m_addopType;
 	int m_lineno;
-
+	int type;
 	Simple_Expression	*mp_Simple_Expression;
 	Term				*mp_Term;
 };
@@ -625,14 +731,16 @@ public:
 	~Mulop();
 
 	string	func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
 	int		func_checkMulopType() {
 		return m_mulopType;
 	}
-
-
+	void setType(int _type) { type = _type; }
+	int getType() { return type; }
 private:
 	int m_mulopType;
 	int m_lineno;
+	int type;
 
 	Term	*mp_Term;
 	Factor	*mp_Factor;
@@ -644,25 +752,31 @@ public:
 	~Id();
 
 	string	func_codeGeneration();
-	void	func_checkType();
+	int	func_checkType() {
+	    return m_idType;
+	};
 	string	func_getName() {
 		return m_name;
 	}
-	bool	func_isVar() {
-		return m_isVar;
+	bool	func_isVal() {
+		return m_isVal;
 	}
 
 	string	m_name;
 	int		m_idType;
 	int		m_lineno;
 
+
 	// This note only used in function and procedure
 	// to identify whether the id
-	// is a variable element parameter declaration
+	// is a variable element
+	//
+	// no matter in parameter declaration
+	// or in the func/proc body
 	//
 	// default to be false
 	//
-	bool	m_isVar;
+	bool	m_isVal;
 };
 
 class Id_List {
@@ -673,6 +787,19 @@ public:
 	string			func_codeGeneration();
 	vector<Id*>		func_get_mv_Id() {
 		return mv_Id;
+	}
+	int get_id_num() {
+	    return (int)mv_Id.size();
+	}
+//	vector<int> get_id_types() {
+//	    vector<int> id_types;
+//	    for (auto id: mv_Id) {
+//	        id_types.push_back(id->m_idType);
+//	    }
+//	    return id_types;
+//	}
+	bool isVal() {
+	    return mv_Id.front()->m_isVal;  // the vector should be the same kind
 	}
 
 	int m_lineno;
@@ -709,6 +836,8 @@ public:
 	}
 	~Expression_List();
 	string func_codeGeneration();
+	bool error_detect(string symbol_sheet_name);
+
 	vector<Expression*> func_get_mv_exp() {
 		return mv_Expression;
 	}
@@ -716,6 +845,8 @@ public:
 		return mv_Type;
 	}
 
+	vector<int> rangeVal;
+	vector<bool> rangeValid;
 	vector<Expression*>mv_Expression;
 
 	// store the Type of each expression
@@ -724,10 +855,22 @@ public:
 	//		TYPE_REAL
 	//		TYPE_CHAR
 	vector<int>mv_Type;
+
+	// this vector default to be false
+	// 
+	// if the expression list used in 
+	// function call or procedure call
+	// 
+	// we should know whether the parameter is 
+	// a variable element 
+	// 
+	// if this parameter is a variable element 
+	// it must be an id
+	vector<bool>mv_VarDefine;
 };
 
 
-//	�����඼���ڳ���������û�е���
+//	以下类都是在抽象语法树中没有的类
 class Program_Head {
 public:
 	Program_Head(Id * M_Id,Id_List *M_Id_List){

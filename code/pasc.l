@@ -11,7 +11,7 @@
 /*yylineno存储了行数，(yyrowno-yyleng) - (yyrowno-1)为列数范围*/
 %{
 #include<stdio.h>
-#include "y.tab.h"
+#include "pasc.tab.h"
 #include<string.h>
 extern YYSTYPE yylval;
 extern char* yytext;
@@ -20,7 +20,7 @@ int yyrowno = 1;
 
 %option yylineno
 space [' ']
-digit [0-9] 
+digit [0-9]
 digits {digit}+
 letter [a-zA-Z]
 E [E][+-]?{digit}+
@@ -35,68 +35,68 @@ character [\']({letter}|[' '])[\']
 %%
 
 
-"and"			{ printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return AND; }
-"array"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return ARRAY; }
-"begin"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return BEGIN_L; }
-"boolean"		{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return BOOLEAN; }
-"case"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CASE; }
-"char"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CHAR; }
-"const"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CONST; }
-"div"			{ printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return DIV; }
-"do"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return DO; }
-"downto"		{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return DOWNTO; }
-"else"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return ELSE; }
-"end"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return END; }
-"for"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return FOR; }
-"function"		{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return FUNCTION; }
-"if"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return IF; }
-"integer"		{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return INTEGER; }
-"mod"			{ printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return MOD; }
-"not"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return NOT; }
-"of"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return OF; }
-"or"			{ printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return OR; }
-"procedure"		{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return PROCEDURE; }
-"program"		{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return PROGRAM; }
-"real"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return REAL; }
-"record"		{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return RECORD; }
-"repeat"		{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return REPEAT; }
-"then"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return THEN; }
-"type"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return TYPE; }
-"until"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return UNTIL; }
-"var"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return VAR; }
-"while"			{ printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return WHILE; }
+"and"			{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return AND; }
+"array"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return ARRAY; }
+"begin"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return BEGIN_L; }
+"boolean"		{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return BOOLEAN; }
+"case"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CASE; }
+"char"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CHAR; }
+"const"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CONST; }
+"div"			{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return DIV; }
+"do"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return DO; }
+"downto"		{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return DOWNTO; }
+"else"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return ELSE; }
+"end"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return END; }
+"for"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return FOR; }
+"function"		{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return FUNCTION; }
+"if"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return IF; }
+"integer"		{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return INTEGER; }
+"mod"			{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return MOD; }
+"not"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return NOT; }
+"of"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return OF; }
+"or"			{ yylval.m_str=yytext; printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return OR; }
+"procedure"		{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return PROCEDURE; }
+"program"		{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return PROGRAM; }
+"real"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return REAL; }
+"record"		{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return RECORD; }
+"repeat"		{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return REPEAT; }
+"then"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return THEN; }
+"type"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return TYPE; }
+"until"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return UNTIL; }
+"var"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return VAR; }
+"while"			{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return WHILE; }
 
 {space}         { yyrowno += 1; }
-{character}     { printf("%s\tletter\n",yytext); yyrowno+=yyleng;  return LETTER; }
-{id}            { printf("%s\tidentifier\n",yytext); yyrowno+=yyleng;  return IDENTIFIER; }
-{digits} 		{printf("%s\tdigits\n",yytext); yyrowno+=yyleng;  return DIGITS;}
-{num}           { printf("%s\tnumber\n",yytext); yyrowno+=yyleng;  return NUMBER; }
-".."			{ printf("%s\tsubboundary\n",yytext); yyrowno+=yyleng;  return SUBBOUNDARY; }
-":="            { printf("%s\tassignop\n",yytext); yyrowno+=yyleng;  return ASSIGNOP; }
+{character}     { yylval.m_char=yytext; printf("%s\tletter\n",yytext); yyrowno+=yyleng;  return LETTER; }
+{id}            { yylval.m_id=yytext; printf("%s\tidentifier\n",yytext); yyrowno+=yyleng;  return IDENTIFIER; }
+{digits}        { yylval.m_int=atoi(yytext); printf("%s\tdigits\n",yytext); yyrowno+=yyleng;  return DIGITS; }
+{num}           { yylval.m_float=atof(yytext); yyrowno+=yyleng;  return NUMBER; }
+".."			{ yylval.m_str=yytext; printf("%s\tsubboundary\n",yytext); yyrowno+=yyleng;  return SUBBOUNDARY; }
+":="            { yylval.m_str=yytext; printf("%s\tassignop\n",yytext); yyrowno+=yyleng;  return ASSIGNOP; }
 
 
-"<="			{ printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return LE_OP; }
-">="			{ printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return GE_OP; }
-"<>"			{ printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return NE_OP; }
-"="				{ printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '='; }
-"<"				{ printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '<'; }
-">"				{ printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '>'; }
+"<="			{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return LE_OP; }
+">="			{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return GE_OP; }
+"<>"			{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return NE_OP; }
+"="				{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '='; }
+"<"				{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '<'; }
+">"				{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '>'; }
 
-","				{ printf(",\n"); yyrowno+=yyleng;  return ','; }
-":"				{ printf(":\n"); yyrowno+=yyleng;  return ':'; }
-";"				{ printf(";\n"); yyrowno+=yyleng;  return ';'; }
-"."				{ printf(".\n"); yyrowno+=yyleng;  return '.'; }
-"("				{ printf("(\n"); yyrowno+=yyleng;  return '('; }
-")"				{ printf(")\n"); yyrowno+=yyleng;  return ')'; }
-"["				{ printf("[\n"); yyrowno+=yyleng;  return '['; }
-"]"				{ printf("]\n"); yyrowno+=yyleng;  return ']'; }
-"{"				{ printf("{\n"); yyrowno+=yyleng;  return '{'; }
-"}"				{ printf("}\n"); yyrowno+=yyleng;  return '}'; }
+","				{ yylval.m_str=yytext; printf(",\n"); yyrowno+=yyleng;  return ','; }
+":"				{ yylval.m_str=yytext; printf(":\n"); yyrowno+=yyleng;  return ':'; }
+";"				{ yylval.m_str=yytext; printf(";\n"); yyrowno+=yyleng;  return ';'; }
+"."				{ yylval.m_str=yytext; printf(".\n"); yyrowno+=yyleng;  return '.'; }
+"("				{ yylval.m_str=yytext; printf("(\n"); yyrowno+=yyleng;  return '('; }
+")"				{ yylval.m_str=yytext; printf(")\n"); yyrowno+=yyleng;  return ')'; }
+"["				{ yylval.m_str=yytext; printf("[\n"); yyrowno+=yyleng;  return '['; }
+"]"				{ yylval.m_str=yytext; printf("]\n"); yyrowno+=yyleng;  return ']'; }
+"{"				{ yylval.m_str=yytext; printf("{\n"); yyrowno+=yyleng;  return '{'; }
+"}"				{ yylval.m_str=yytext; printf("}\n"); yyrowno+=yyleng;  return '}'; }
 
-"*"				{ printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return '*'; }
-"/"				{ printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return '/'; }
-"-"				{ printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return '-'; }
-"+"				{ printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return '+'; }
+"*"				{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return '*'; }
+"/"				{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return '/'; }
+"-"				{ yylval.m_str=yytext; printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return '-'; }
+"+"				{ yylval.m_str=yytext; printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return '+'; }
 
 
 

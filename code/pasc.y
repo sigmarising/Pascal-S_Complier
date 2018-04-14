@@ -6,7 +6,6 @@
 
 %code top {
 	#include <stdio.h>
-	#include <S>
 	#include "lex.yy.c"
 	#define YYSTYPE int
 	typedef pair<Id*, Const_Value*> p_Const
@@ -21,9 +20,8 @@
 
 %token AND ARRAY BEGIN_L BOOLEAN CASE CHAR CONST DIV DO DOWNTO ELSE END FOR FUNCTION IF INTEGER MOD 
 %token NOT OF OR PROCEDURE PROGRAM REAL RECORD REPEAT THEN TO TYPE UNTIL VAR WHILE
-%token LETTER IDENTIFIER NUMBER SUBBOUNDARY ASSIGNOP LE_OP GE_OP EQ_OP NE_OP
+%token SUBBOUNDARY ASSIGNOP LE_OP GE_OP EQ_OP NE_OP
 %token '=' '<' '>' ',' ':' ';' '.' '(' ')' '[' ']' '{' '}' '*' '/' '-' '+'
-%token DIGITS
 
 %left else_conflict
 %left ELSE
@@ -130,8 +128,8 @@ program
 	} 
 
 program_head 
-	: PROGRAM IDENTIFIER '(' identifier_list ') ';' {
-		Id *tmp = new Id();
+	: PROGRAM IDENTIFIER '(' identifier_list ')' ';' {
+		Id* tmp = new Id();
 		tmp -> m_name = $2;
 		tmp -> m_lineno = yylineno;
 		tmp -> m_idType = TYPE_ID;
@@ -139,7 +137,7 @@ program_head
 	}
 
 program_body 
-	: const_declarations var_declarations subprogram_declarations compound_statement{
+	: const_declarations var_declarations subprogram_declarations compound_statement {
 		$$ = new Program_Body($1, $2, $3, $4);
 	}
 
@@ -147,13 +145,13 @@ identifier_list
 	: identifier_list ',' IDENTIFIER {
 		$$ = new ID_List();
 		$$ = $1;
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $3;
 		tmp -> m_lineno = yylineno;
 		$$ -> mv_Id.push_back(tmp);
 	}
 	| IDENTIFIER {
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $1;
 		tmp -> m_lineno = yylineno;
 		$$ = new ID_List();
@@ -174,7 +172,7 @@ const_declarations
 const_declaration 
 	: const_declaration ';' IDENTIFIER '=' const_variable {
 
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $3;
 		tmp -> m_lineno = yylineno;
 
@@ -182,7 +180,7 @@ const_declaration
 		$$ = new Const_Declarations($1 -> mv_Const);
 	}
 	| IDENTIFIER '=' const_variable {
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $1;
 		tmp -> m_lineno = yylineno;
 		$$ = new Const_Declarations();
@@ -197,7 +195,7 @@ const_variable
 		$$ -> m_postNeg = CONST_POSTNEG_POSITIVE;
 		$$ -> m_valueType = TYPE_ID;
 		$$ -> m_isID = true;
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $2;
 		tmp -> m_lineno = yylineno;
 		$$ -> mp_ID = tmp;
@@ -208,7 +206,7 @@ const_variable
 		$$ -> m_postNeg = CONST_POSTNEG_NEGATIVE;
 		$$ -> m_valueType = TYPE_ID;
 		$$ -> m_isID = true;
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $2;
 		tmp -> m_lineno = yylineno;
 		$$ -> mp_ID = tmp;	
@@ -219,7 +217,7 @@ const_variable
 		$$ -> m_postNeg = CONST_POSTNEG_POSITIVE;
 		$$ -> m_valueType = TYPE_ID;
 		$$ -> m_isID = true;
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $1;
 		tmp -> m_lineno = yylineno;
 		$$ -> mp_ID = tmp;
@@ -315,7 +313,7 @@ type
 		$$ -> m_isArray = false;
 		$$ -> m_lineno = yylineno; 
 	}
-	| ARRAY '[' periods ']' OF standard_type {
+	| ARRAY '[' period ']' OF standard_type {
 		$$ = new Type();
 		$$ -> m_lineno = yylineno;
 		$$ -> m_isArray = true;
@@ -373,13 +371,13 @@ subprogram
 
 subprogram_head 
 	: FUNCTION IDENTIFIER formal_parameter ':' standard_type ';' {
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $2;
 		tmp -> m_lineno = yylineno;
 		$$ = new Subprogram_Head(tmp, $3, $5);
 	}
 	| PROCEDURE IDENTIFIER formal_parameter ';' {
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $2;
 		tmp -> m_lineno = yylineno;
 		$$ = new Subprogram_Head(tmp, $3, TYPE_NULL);
@@ -387,7 +385,7 @@ subprogram_head
 	;
 
 formal_parameter 
-	: '(' parameter_lists ')' {
+	: '(' parameter_list ')' {
 		$$ = new Formal_Parameter($2);
 	}
 	| {
@@ -504,8 +502,8 @@ statement
 		$$ -> Statement_List = NULL;
 		$$ -> mp_For = NULL;
 	}
-	| FOR IDENTIFIER ASSIGNOP expression updown expression DO statement {
-		Id *tmp = new Id();
+	| FOR IDENTIFIER ASSIGNOP expression TO expression DO statement {
+		Id* tmp = new Id();
 		tmp -> m_name = $2;
 		tmp -> m_lineno = yylineno;
 		$$ = new Statement();
@@ -525,7 +523,7 @@ statement
 
 variable 
 	: IDENTIFIER id_varpart {
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $1;
 		tmp -> m_lineno = yylineno;
 		$$ = new Variable();
@@ -549,7 +547,7 @@ id_varparts
 
 id_varpart 
 	: '[' expression_list ']' {
-		$$ = new Id_Varpart($1);
+		$$ = new Id_Varpart($2);
 	}
 	| {
 		$$ = new Id_Varpart(NULL);
@@ -558,7 +556,7 @@ id_varpart
 
 call_procedure_statement 
 	: IDENTIFIER {
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $1;
 		tmp -> m_lineno = yylineno;
 		$$ = new Procedure_Call();
@@ -572,7 +570,7 @@ call_procedure_statement
 		$$ = new Procedure_Call();
 		$$ -> m_lineno = yylineno;
 		$$ -> m_expNum = $3 -> mv_Expression.size();
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $1;
 		tmp -> m_lineno = yylineno;
 		$$ -> mp_Id = tmp;
@@ -722,7 +720,7 @@ factor
 		$$ = new Factor();
 		$$ -> m_lineno = yylineno;
 		$$ -> mp_Variable = NULL;
-		Id *tmp = new Id();
+		Id* tmp = new Id();
 		tmp -> m_name = $1;
 		tmp -> m_lineno = yylineno;
 		$$ -> mp_Function_Call = new Function_Call($3 -> mv_Expression.size(), yylineno, tmp, $3);

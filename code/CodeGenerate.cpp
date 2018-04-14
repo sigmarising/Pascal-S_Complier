@@ -316,7 +316,7 @@ string Parameter::func_codeGeneration() {
 	for (int i = 0; i < mv_id.size(); i++) {
 		Code_return += Code_Type;
 		Code_return += mv_id[i]->func_codeGeneration();
-		if (i != mv_id.size - 1)
+		if (i != mv_id.size() - 1)
 			Code_return += ", ";
 	}
 	
@@ -369,50 +369,88 @@ string Procedure_Call::func_codeGeneration() {
 		}
 	}
 
-	switch (m_proCall_Tpye) {
-	case PROCECALL_NORMAL:
-		Code_return += mp_Id->func_codeGeneration();
-		Code_return += "(";
-		Code_return += mp_Expression_List->func_codeGeneration();
-		Code_return += ");";
-		break;
 
-	case PROCECALL_READ:
+	string t_id_name = mp_Id->func_getName();
+	if (t_id_name == "read") {
 		Code_return += "scanf(\"";
 		Code_return += Code_FormateStr;
 		Code_return += "\", ";
 		Code_return += mp_Expression_List->func_codeGeneration();
 		Code_return += ");";
-		break;
-
-	case PROCECALL_READLN:
+	}
+	else if (t_id_name == "readln") {
 		Code_return += "scanf(\"";
 		Code_return += Code_FormateStr;
 		Code_return += "\\n\", ";
 		Code_return += mp_Expression_List->func_codeGeneration();
 		Code_return += ");";
-		break;
-
-	case PROCECALL_WRITE:
+	}
+	else if (t_id_name == "write") {
 		Code_return += "printf(\"";
 		Code_return += Code_FormateStr;
 		Code_return += "\", ";
 		Code_return += mp_Expression_List->func_codeGeneration();
 		Code_return += ");";
-		break;
-
-	case PROCECALL_WRITELN:
+	}
+	else if (t_id_name == "writeln") {
 		Code_return += "scanf(\"";
 		Code_return += Code_FormateStr;
 		Code_return += "\\n\", ";
 		Code_return += mp_Expression_List->func_codeGeneration();
 		Code_return += ");";
-		break;
-	
-	default:
-		throw "Invalid PROCECALL!!!";
-		break;
 	}
+	else {
+		Code_return += mp_Id->func_codeGeneration();
+		Code_return += "(";
+		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += ");";
+	}
+
+
+	//switch (m_proCall_Tpye) {
+	//case PROCECALL_NORMAL:
+	//	Code_return += mp_Id->func_codeGeneration();
+	//	Code_return += "(";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+
+	//case PROCECALL_READ:
+	//	Code_return += "scanf(\"";
+	//	Code_return += Code_FormateStr;
+	//	Code_return += "\", ";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+
+	//case PROCECALL_READLN:
+	//	Code_return += "scanf(\"";
+	//	Code_return += Code_FormateStr;
+	//	Code_return += "\\n\", ";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+
+	//case PROCECALL_WRITE:
+	//	Code_return += "printf(\"";
+	//	Code_return += Code_FormateStr;
+	//	Code_return += "\", ";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+
+	//case PROCECALL_WRITELN:
+	//	Code_return += "scanf(\"";
+	//	Code_return += Code_FormateStr;
+	//	Code_return += "\\n\", ";
+	//	Code_return += mp_Expression_List->func_codeGeneration();
+	//	Code_return += ");";
+	//	break;
+	//
+	//default:
+	//	throw "Invalid PROCECALL!!!";
+	//	break;
+	//}
 
 	return Code_return;
 }
@@ -847,4 +885,16 @@ void Code_Generate(Programstruct * input_Tree, string output_File) {
 	File_output << code;
 
 	File_output.close();
+}
+
+string Type::func_code_getperiod() {
+	return mp_Period->func_codeGeneration();
+}
+
+vector<pair<int, int>> Type::func_get_Period() {
+	return mp_Period->func_get_Range();
+}
+
+vector<Id*> Parameter::func_get_mv_id() {
+	return mp_Id_List->func_get_mv_Id();
 }
