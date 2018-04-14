@@ -102,14 +102,14 @@ public:
 class Const_Declarations {
 public:
 	Const_Declarations(){};
-	Const_Declarations(vector<pair<Id*, Const_Value*>> Mv_Const){
+	Const_Declarations(vector<pair<Id*, Const_Value*> > Mv_Const){
         mv_Const=Mv_Const;
 	}
 	~Const_Declarations();
 
 	string func_codeGeneration();
 
-	vector<pair<Id*, Const_Value*>> mv_Const;
+	vector<pair<Id*, Const_Value*> > mv_Const;
 };
 
 //	Var Block
@@ -546,7 +546,7 @@ public:
     int get_lineno() {
         return m_lineno;
     }
-    vector<pair<int, int>> func_get_Period();
+    vector<pair<int, int> > func_get_Period();
 
 
 private:
@@ -805,20 +805,20 @@ public:
 class Period {
 public:
     Period();
-	Period(vector<pair<int, int>> Mv_dims){
+	Period(vector<pair<int, int> > Mv_dims){
 	    mv_dims=Mv_dims;
 	}
 	~Period();
 
 	string					func_codeGeneration();
-	vector<pair<int, int>>	func_get_Range() {
+	vector<pair<int, int> >	func_get_Range() {
 		return mv_dims;
 	}
 
 
 private:
 	// record the multi-dimension ranges
-	vector<pair<int, int>>mv_dims;
+	vector<pair<int, int> >mv_dims;
 
 };
 
@@ -891,23 +891,23 @@ public:
 class Const_Declaration {
 public:
 	Const_Declaration();
-	Const_Declaration(vector<pair<Id*, Const_Value*>> Mv_Const){
+	Const_Declaration(vector<pair<Id*, Const_Value*> > Mv_Const){
         mv_Const=Mv_Const;
 	}
 	~Const_Declaration();
 
-	vector<pair<Id*, Const_Value*>> mv_Const;
+	vector<pair<Id*, Const_Value*> > mv_Const;
 };
 
 class Var_Declaration {
 public:
 	Var_Declaration();
-	Var_Declaration(vector<pair<Id_List*, Type*>> Mv_Var){
+	Var_Declaration(vector<pair<Id_List*, Type*> > Mv_Var){
         mv_Var=Mv_Var;
 	}
 	~Var_Declaration();
 
-	vector<pair<Id_List*, Type*>> mv_Var;
+	vector<pair<Id_List*, Type*> > mv_Var;
 
 };
 
