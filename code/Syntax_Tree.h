@@ -886,11 +886,11 @@ public:
 class Compound_Statement{
 public:
 	Compound_Statement(Statement_List * M_Statement_List){
-        m_Statement_List=M_Statement_List;
+        mp_Statement_List=M_Statement_List;
 	}
 	~Compound_Statement();
 
-	Statement_List * m_Statement_List;
+	Statement_List * mp_Statement_List;
 
 };
 class Const_Declaration {
