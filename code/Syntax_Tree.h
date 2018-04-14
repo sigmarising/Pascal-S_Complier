@@ -1007,6 +1007,7 @@ private:
 	Expression_List *m_Expression_List;	//这个指针可以为NULL
 };
 
+// 只把构造函数的实现挪到了这里，应该不会报错了
 Program_Body::Program_Body(Const_Declarations *Mp_Const_Declarations, Var_Declarations *Mp_Var_Declarations,
                            SubProgram_Declarations *Mp_SubProgram_Declarations,
                            Compound_Statement *Mp_Compound_Statements) {
