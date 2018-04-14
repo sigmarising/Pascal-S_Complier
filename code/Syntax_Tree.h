@@ -359,6 +359,7 @@ public:
 
 	Id				*mp_Id;
 	Expression_List	*mp_Expression_List;
+
 };
 
 class Function_Call {
@@ -765,15 +766,16 @@ public:
 	int		m_idType;
 	int		m_lineno;
 
-    // This note only used in function and procedure
-    // to identify whether the id
-    // is a variable element
-    //
-    // no matter in parameter declaration
-    // or in the func/proc body
-    //
-    // default to be false
-    //
+
+	// This note only used in function and procedure
+	// to identify whether the id
+	// is a variable element
+	//
+	// no matter in parameter declaration
+	// or in the func/proc body
+	//
+	// default to be false
+	//
 	bool	m_isVal;
 };
 
@@ -853,6 +855,18 @@ public:
 	//		TYPE_REAL
 	//		TYPE_CHAR
 	vector<int>mv_Type;
+
+	// this vector default to be false
+	// 
+	// if the expression list used in 
+	// function call or procedure call
+	// 
+	// we should know whether the parameter is 
+	// a variable element 
+	// 
+	// if this parameter is a variable element 
+	// it must be an id
+	vector<bool>mv_VarDefine;
 };
 
 
