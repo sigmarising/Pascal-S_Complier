@@ -1,6 +1,38 @@
 #include "SemanticAnalysis.h"
 #include <iostream>
 
+bool Program_Body::create_symbolsheet() {
+    symbolSheet global_sheet;
+    global_sheet.sheet_name = "0";
+    if (global_sheet.add_const_symbols(mp_Const_Declarations) &&
+        global_sheet.add_var_symbols(mp_Var_Declarations) &&
+        global_sheet.add_subprgrm_symbols(mp_SubProgram_Declarations))
+        symbolSheet_list.insert(symbolsheet_list_item("0", global_sheet));
+    return !symbolSheet_list.empty();
+}
+
+bool Procedure::create_symbolsheet() {
+    auto s = (int) symbolSheet_list.size();
+    symbolSheet proc_sheet;
+    proc_sheet.sheet_name = mp_Id->m_name;  // uses proc name
+    if (proc_sheet.add_parameter_symbols(mp_Parameter_List) &&
+        proc_sheet.add_const_symbols(mp_Const_Declarations) &&
+        proc_sheet.add_var_symbols(mp_Var_Declarations))
+        symbolSheet_list.insert(symbolsheet_list_item(proc_sheet.sheet_name, proc_sheet));
+    return (bool) ((int) symbolSheet_list.size() - s);
+}
+
+bool Function::create_symbolsheet() {
+    auto s = (int) symbolSheet_list.size();
+    symbolSheet func_sheet;
+    func_sheet.sheet_name = mp_Id->m_name;  // uses proc name
+    if (func_sheet.add_parameter_symbols(mp_Parameter_List) &&
+        func_sheet.add_const_symbols(mp_Const_Declarations) &&
+        func_sheet.add_var_symbols(mp_Var_Declarations))
+        symbolSheet_list.insert(symbolsheet_list_item(func_sheet.sheet_name, func_sheet));
+    return (bool) ((int) symbolSheet_list.size() - s);
+}
+
 //注意 Programstruct的错误检测，还不是特别完善
 bool Programstruct::error_detect(string symbol_sheet_name) {
     bool flag = true;
