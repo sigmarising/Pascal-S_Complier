@@ -1,3 +1,4 @@
+
 //	File Name	: Syntax_Tree.h
 //	Notes		: Define the Syntax Tree DataStructure
 //	Version		: 0.6
@@ -62,6 +63,150 @@ class Id_Varpart;
 
 // class define
 
+//	以下类都是在抽象语法树中没有的类
+class Program_Head {
+public:
+	Program_Head(Id * M_Id,Id_List *M_Id_List){
+        m_Id=M_Id;
+        m_Id_List=M_Id_List;
+	}
+	~Program_Head();
+
+	Id * m_Id;
+	Id_List *m_Id_List;
+
+};
+class Compound_Statement{
+public:
+	Compound_Statement(Statement_List * M_Statement_List){
+        m_Statement_List=M_Statement_List;
+	}
+	~Compound_Statement();
+
+	Statement_List * m_Statement_List;
+
+};
+class Const_Declaration {
+public:
+	Const_Declaration(){};
+	Const_Declaration(vector<pair<Id*, Const_Value*> > Mv_Const){
+        mv_Const=Mv_Const;
+	}
+	~Const_Declaration();
+
+	vector<pair<Id*, Const_Value*> > mv_Const;
+};
+
+class Var_Declaration {
+public:
+	Var_Declaration(){};
+	Var_Declaration(vector<pair<Id_List*, Type*> > Mv_Var){
+        mv_Var=Mv_Var;
+	}
+	~Var_Declaration();
+
+	vector<pair<Id_List*, Type*> > mv_Var;
+
+};
+
+class SubProgram_Declaration {
+public:
+	SubProgram_Declaration();
+	~SubProgram_Declaration();
+	vector<Subprogram*> mv_Subprogram;
+
+
+
+};
+
+class Subprogram {
+public:
+	Subprogram();
+	~Subprogram();
+
+
+	Subprogram_Head * m_Subprogram_Head;
+	Subprogram_Body *m_Subprogram_Body;
+
+};
+class Subprogram_Head {
+public:
+	Subprogram_Head(Id * M_ID,Formal_Parameter *M_Formal_Parameter,int SType){
+        m_ID=M_ID;
+        m_Formal_Parameter=M_Formal_Parameter;
+        Simple_Type=SType;
+	}
+	~Subprogram_Head();
+
+	Id * m_ID;
+	Formal_Parameter *m_Formal_Parameter;
+	int Simple_Type;
+
+};
+
+class Subprogram_Body {
+public:
+	Subprogram_Body(Const_Declarations * M_Const_Declarations,Var_Declarations *M_Var_Declarations,Compound_Statement *M_Compound_Statement){
+        m_Const_Declarations=M_Const_Declarations;
+        m_Var_Declarations=M_Var_Declarations;
+        m_Compound_Statement=M_Compound_Statement;
+	}
+	~Subprogram_Body();
+
+
+	Const_Declarations * m_Const_Declarations;
+	Var_Declarations *m_Var_Declarations;
+	Compound_Statement *m_Compound_Statement;
+};
+
+class Formal_Parameter {
+public:
+	Formal_Parameter(Parameter_List * M_Parameter_List){
+        m_Parameter_List=M_Parameter_List;
+	}
+	~Formal_Parameter();
+
+
+	Parameter_List * m_Parameter_List;
+
+};
+class Var_Parameter {
+public:
+	Var_Parameter(Value_Parameter * M_Value_Parameter){
+	    m_Value_Parameter=M_Value_Parameter;
+	}
+	~Var_Parameter();
+
+
+	Value_Parameter * m_Value_Parameter;
+
+
+
+};
+class Value_Parameter {
+public:
+	Value_Parameter(Id_List *M_Id_List,int SType){
+	    M_Id_List=M_Id_List;
+	    Simple_Type=SType;
+	}
+	~Value_Parameter();
+
+	int Simple_Type;
+	Id_List * m_Id_List;
+};
+
+class Id_Varpart{
+public:
+	Id_Varpart();
+	Id_Varpart(Expression_List *M_Expression_List){
+       m_Expression_List=M_Expression_List;
+	}
+	~Id_Varpart();
+
+	Expression_List *m_Expression_List;	//这个指针可以为NULL
+};
+
+
 //	Program Total node
 //	The Root of Syntax Tree
 class Programstruct {
@@ -89,7 +234,7 @@ public:
         mp_Const_Declarations=Mp_Const_Declarations;
         mp_Var_Declarations=Mp_Var_Declarations;
         mp_SubProgram_Declarations=Mp_SubProgram_Declarations;
-        mp_Statement_List=Mp_Compound_Statements -> mp_Statement_List;
+        mp_Statement_List=Mp_Compound_Statements -> m_Statement_List;
 	}
 	~Program_Body();
 
@@ -135,7 +280,7 @@ public:
 //	Define the functions and procedures
 class SubProgram_Declarations {
 public:
-	SubProgram_Declarations();
+	SubProgram_Declarations(){};
 	SubProgram_Declarations(vector<Common*> Mv_Common){
         mv_Common=Mv_Common;
 	}
@@ -151,7 +296,7 @@ public:
 //	contain many statements
 class Statement_List {
 public:
-	Statement_List();
+	Statement_List(){};
 	Statement_List(vector<Statement*>Mv_Statement){
         mv_Statement=Mv_Statement;
 	}
@@ -163,11 +308,11 @@ public:
 	vector<Statement*>mv_Statement;
 };
 
+/*
 class Common {
 public:
 	Common();
 	virtual ~Common() = 0;
-
 	virtual string func_codeGeneration() = 0;
 	virtual int func_checkReturnType() = 0;
 	virtual int func_get_Common_Type() {
@@ -179,14 +324,14 @@ public:
     virtual Const_Declarations * get_const_dec() = 0;
     virtual Var_Declarations * get_var_dec() = 0;
     virtual int get_lineno() = 0;
-
-private:
+    
 
 };
 
 //	the Precodure block
 class Procedure : public Common {
 public:
+	Procedure(){};
 	Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List){
         m_lineno=M_lineno;
         mp_Id=Mp_Id;
@@ -196,7 +341,7 @@ public:
         mp_Statement_List=Mp_Statement_List;
 	}
 	~Procedure() override;
-
+	
 	string	func_codeGeneration() override;
 	int func_checkReturnType() override {
 	    return -1; // return VOID
@@ -220,8 +365,9 @@ public:
     int get_lineno() override {
 	    return m_lineno;
 	}
+	
 
-private:
+
 	int m_lineno;
 
 	Id					*mp_Id;
@@ -234,6 +380,7 @@ private:
 //	the Function block
 class Function : public Common {
 public:
+	Function(){};
 	Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List){
         m_returnType=M_returnType;
         m_lineno=M_lineno;
@@ -244,7 +391,7 @@ public:
         mp_Statement_List=Mp_Statement_List;
 	}
 	~Function() override;
-
+	
 	string	func_codeGeneration() override;
 	int func_checkReturnType() override {
 		return m_returnType;
@@ -269,8 +416,8 @@ public:
 	    return m_lineno;
 	}
 
+	
 
-private:
 	int m_returnType;
 	int m_lineno;
 
@@ -280,11 +427,12 @@ private:
 	Var_Declarations	*mp_Var_Declarations;
 	Statement_List		*mp_Statement_List;
 };
+*/
 
 //	the statements are partitioned by ';'
 class Statement {
 public:
-	Statement();
+	Statement(){};
 	~Statement();
 
 	string	func_codeGeneration();
@@ -307,7 +455,7 @@ public:
 // only used for function or procedure define
 class Parameter_List {
 public:
-	Parameter_List();
+	Parameter_List(){};
 	Parameter_List(int M_lineno,vector<Parameter*> Mv_Patameter){
         m_lineno=M_lineno;
         mv_Patameter=Mv_Patameter;
@@ -324,7 +472,7 @@ public:
 //	define the variable type
 class Variable {
 public:
-	Variable();
+	Variable(){};
 	~Variable();
 
 	string func_codeGeneration();
@@ -346,7 +494,7 @@ public:
 //	belong to statement
 class Procedure_Call {
 public:
-	Procedure_Call();
+	Procedure_Call(){};
 	~Procedure_Call();
 
 	string func_codeGeneration();
@@ -365,6 +513,12 @@ public:
 class Function_Call {
 public:
 	Function_Call();
+	Function_Call(int M_expNum,int M_lineno,Id				*Mp_Id,Expression_List	*Mp_Expression_List){
+	m_expNum=M_expNum;
+	m_lineno=M_lineno;
+	mp_Id=Mp_Id;
+	mp_Expression_List=Mp_Expression_List;
+	}
 	~Function_Call();
 
 	string func_codeGeneration();
@@ -380,7 +534,7 @@ public:
 // the expression can be calculate to a value
 class Expression {
 public:
-	Expression();
+	Expression(){};
 	~Expression();
 
 	string func_codeGeneration();
@@ -389,7 +543,7 @@ public:
 	int getType() { return type; }
 	int getRangeVal() { return rangeVal; };
 	bool getRangeValid() { return rangeValid; }
-private:
+
 	int m_lineno;
 	int rangeVal;
 	bool rangeValid;
@@ -418,7 +572,7 @@ public:
 	int getType() { return type; };
 	int getRangeVal() { return rangeVal; }
 	bool getRangeValid() { return rangeValid; }
-private:
+
 	int m_lineno;
 	int type;
 	int rangeVal;
@@ -445,7 +599,7 @@ public:
 	int getType() { return type; };
 	int getRangeVal() { return rangeVal; }
 	bool getRangeValid() { return rangeValid; }
-private:
+
 	int m_lineno;
 	int type;
 	int rangeVal;
@@ -460,7 +614,7 @@ private:
 // the smallest value unit
 class Factor {
 public:
-	Factor();
+	Factor(){};
 	~Factor();
 
 	string func_codeGeneration();
@@ -503,7 +657,7 @@ public:
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
 
-private:
+
 	int m_lineno;
 
 	Factor	*mp_Factor;
@@ -520,10 +674,10 @@ public:
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
 	int getType() { return type; };
-	int setType(int _type) {type = _type; }
+	void setType(int _type) {type = _type; }
 	int getRangeVal() { return rangeVal; }
 	bool getRangeValid() { return rangeValid; }
-private:
+
 	int rangeVal;
 	bool rangeValid;
 	int m_lineno;
@@ -535,7 +689,7 @@ private:
 // only used for var block
 class Type {
 public:
-	Type();
+	Type(){};
 	~Type();
 
 	string	func_codeGeneration();
@@ -552,22 +706,22 @@ public:
         return m_lineno;
     }
     vector<pair<int, int> > func_get_Period();
-
-
-private:
-	int		m_simpleType;
+    int		m_simpleType;
 	bool	m_isArray;
 	int		m_lineno;
 
 	//	if m_isArray == true
 	//	this pointer will point to the period(multi-dimension)
 	Period	*mp_Period;
+
+
+
 };
 
 //	used for const block
 class Const_Value {
 public:
-	Const_Value();
+	Const_Value(){};
 
 	~Const_Value();
 
@@ -597,11 +751,15 @@ public:
 class Assignop {
 public:
 	Assignop();
+	Assignop(Variable	*Mp_Variable,Expression* Mp_Expression){
+		mp_Variable = Mp_Variable;
+		mp_Expression = Mp_Expression;
+	}
 	~Assignop();
 
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
-private:
+
 	int m_lineno;
 
 	Variable	*mp_Variable;
@@ -611,12 +769,17 @@ private:
 class If_Then_Else {
 public:
 	If_Then_Else();
+	If_Then_Else(Expression	*_mp_Expression, Statement	*_mp_Statement_1, Statement	*_mp_Statement_2) {
+		mp_Expression = _mp_Expression;
+		mp_Statement_1 = _mp_Statement_1;
+		mp_Statement_2 = _mp_Statement_2;
+	}
 	~If_Then_Else();
 
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
 
-private:
+
 	int m_lineno;
 
 	Expression	*mp_Expression;
@@ -627,12 +790,18 @@ private:
 class For {
 public:
 	For();
+	For(Id	*_mp_Id, Expression	*_mp_Expression_1, Expression	*_mp_Expression_2, Statement	*_mp_Statment) {
+		mp_Id = _mp_Id;
+		mp_Expression_1 = _mp_Expression_1;
+		mp_Expression_2 = _mp_Expression_2;
+		mp_Statment = _mp_Statment;
+	}
 	~For();
 
 	string func_codeGeneration();
 	bool error_detect(string symbol_sheet_name);
 
-private:
+
 	int m_lineno;
 
 	Id			*mp_Id;
@@ -665,7 +834,7 @@ public:
 	    return mp_Id_List;
 	}
 
-private:
+
 	// define whether the parameter is variable element
 	bool	m_isVal;
 	int		m_lineno;
@@ -678,6 +847,12 @@ private:
 class Relop {
 public:
 	Relop();
+	Relop(int M_relopType,int M_lineno,Simple_Expression *Mp_Simple_Expression_1,Simple_Expression *Mp_Simple_Expression_2){
+        m_relopType=M_relopType;
+        m_lineno=M_lineno;
+        mp_Simple_Expression_1=Mp_Simple_Expression_1;
+        mp_Simple_Expression_2=Mp_Simple_Expression_1;
+	}
 	~Relop();
 
 	string	func_codeGeneration();
@@ -689,7 +864,7 @@ public:
 	void func_setRelopType(int _type) { m_relopType = _type; }
 	void setType(int _type) { type = _type; }           //设置或返回该表达式是什么类型；
 	int getType() { return type; }
-private:
+
 	int m_relopType;
 	int m_lineno;
 	int type;
@@ -701,6 +876,12 @@ private:
 class Addop {
 public:
 	Addop();
+	Addop(int M_addopType,int M_lineno,Simple_Expression	*Mp_Simple_Expression,Term				*Mp_Term){
+	m_addopType=M_addopType;
+	m_lineno=M_lineno;
+	mp_Simple_Expression=Mp_Simple_Expression;
+	mp_Term=Mp_Term;
+	}
 	~Addop();
 
 	string	func_codeGeneration();
@@ -717,7 +898,7 @@ public:
 	}
 
 
-private:
+
 	int m_addopType;
 	int m_lineno;
 	int type;
@@ -728,6 +909,12 @@ private:
 class Mulop {
 public:
 	Mulop();
+	Mulop(int M_mulopType,int M_lineno,Term	*Mp_Term,Factor	*Mp_Factor){
+	m_mulopType=M_mulopType;
+	m_lineno=M_lineno;
+	mp_Term=Mp_Term;
+	mp_Factor=Mp_Factor;
+	}
 	~Mulop();
 
 	string	func_codeGeneration();
@@ -737,7 +924,7 @@ public:
 	}
 	void setType(int _type) { type = _type; }
 	int getType() { return type; }
-private:
+
 	int m_mulopType;
 	int m_lineno;
 	int type;
@@ -748,7 +935,7 @@ private:
 
 class Id{
 public:
-	Id();
+	Id(){};
 	~Id();
 
 	string	func_codeGeneration();
@@ -781,7 +968,7 @@ public:
 
 class Id_List {
 public:
-	Id_List();
+	Id_List(){};
 	~Id_List();
 
 	string			func_codeGeneration();
@@ -809,7 +996,7 @@ public:
 
 class Period {
 public:
-    Period();
+    Period(){};
 	Period(vector<pair<int, int> > Mv_dims){
 	    mv_dims=Mv_dims;
 	}
@@ -820,16 +1007,16 @@ public:
 		return mv_dims;
 	}
 
-
-private:
 	// record the multi-dimension ranges
 	vector<pair<int, int> >mv_dims;
+
+
 
 };
 
 class Expression_List {
 public:
-	Expression_List();
+	Expression_List(){};
 	Expression_List(vector<Expression*>Mv_Expression,vector<int> MType){
         mv_Expression=Mv_Expression;
         mv_Type=MType;
@@ -857,157 +1044,133 @@ public:
 	vector<int>mv_Type;
 
 	// this vector default to be false
-	// 
-	// if the expression list used in 
+	//
+	// if the expression list used in
 	// function call or procedure call
-	// 
-	// we should know whether the parameter is 
-	// a variable element 
-	// 
-	// if this parameter is a variable element 
+	//
+	// we should know whether the parameter is
+	// a variable element
+	//
+	// if this parameter is a variable element
 	// it must be an id
 	vector<bool>mv_VarDefine;
 };
 
-
-//	以下类都是在抽象语法树中没有的类
-class Program_Head {
+class Common {
 public:
-	Program_Head(Id * M_Id,Id_List *M_Id_List){
-        m_Id=M_Id;
-        m_Id_List=M_Id_List;
+	Common(){};
+	~Common();
+	/*
+	virtual string func_codeGeneration() = 0;
+	virtual int func_checkReturnType() = 0;
+	virtual int func_get_Common_Type() {
+		return -1;
 	}
-	~Program_Head();
-
-	Id * m_Id;
-	Id_List *m_Id_List;
+	virtual bool create_symbolsheet() = 0;
+	virtual Id * get_func_id() = 0;
+    virtual Parameter_List * get_param_list() = 0;
+    virtual Const_Declarations * get_const_dec() = 0;
+    virtual Var_Declarations * get_var_dec() = 0;
+    virtual int get_lineno() = 0;
+    */
 
 };
-class Compound_Statement{
+
+//	the Precodure block
+class Procedure : public Common {
 public:
-	Compound_Statement(Statement_List * M_Statement_List){
-        m_Statement_List=M_Statement_List;
+	Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List){
+        m_lineno=M_lineno;
+        mp_Id=Mp_Id;
+        mp_Parameter_List=Mp_Parameter_List;
+        mp_Const_Declarations=Mp_Const_Declarations;
+        mp_Var_Declarations=Mp_Var_Declarations;
+        mp_Statement_List=Mp_Statement_List;
 	}
-	~Compound_Statement();
-
-	Statement_List * m_Statement_List;
-
-};
-class Const_Declaration {
-public:
-	Const_Declaration();
-	Const_Declaration(vector<pair<Id*, Const_Value*> > Mv_Const){
-        mv_Const=Mv_Const;
+	~Procedure();
+	/*
+	string	func_codeGeneration() override;
+	int func_checkReturnType() override {
+	    return -1; // return VOID
 	}
-	~Const_Declaration();
-
-	vector<pair<Id*, Const_Value*> > mv_Const;
-};
-
-class Var_Declaration {
-public:
-	Var_Declaration();
-	Var_Declaration(vector<pair<Id_List*, Type*> > Mv_Var){
-        mv_Var=Mv_Var;
+	int		func_get_Common_Type() override {
+		return COMMON_PROCEDURE;
 	}
-	~Var_Declaration();
-
-	vector<pair<Id_List*, Type*> > mv_Var;
-
-};
-
-class SubProgram_Declaration {
-public:
-	SubProgram_Declaration();
-	~SubProgram_Declaration();
-
-private:
-	vector<Subprogram*> mv_Subprogram;
-
-};
-
-class Subprogram {
-public:
-	Subprogram();
-	~Subprogram();
-
-private:
-	Subprogram_Head * m_Subprogram_Head;
-	Subprogram_Body *m_Subprogram_Body;
-
-};
-class Subprogram_Head {
-public:
-	Subprogram_Head(Id * M_ID,Formal_Parameter *M_Formal_Parameter,int SType){
-        m_ID=M_ID;
-        m_Formal_Parameter=M_Formal_Parameter;
-        Simple_Type=SType;
+	bool create_symbolsheet() override;
+    Id * get_func_id() override {
+        return mp_Id;
+    }
+    Parameter_List * get_param_list() override {
+        return mp_Parameter_List;
+    }
+    Const_Declarations * get_const_dec() override {
+        return mp_Const_Declarations;
+    }
+    Var_Declarations * get_var_dec() override {
+        return mp_Var_Declarations;
+    }
+    int get_lineno() override {
+	    return m_lineno;
 	}
-	~Subprogram_Head();
+	*/
 
-	Id * m_ID;
-	Formal_Parameter *m_Formal_Parameter;
-	int Simple_Type;
 
+	int m_lineno;
+
+	Id					*mp_Id;
+	Parameter_List		*mp_Parameter_List;
+	Const_Declarations	*mp_Const_Declarations;
+	Var_Declarations	*mp_Var_Declarations;
+	Statement_List		*mp_Statement_List;
 };
 
-class Subprogram_Body {
+//	the Function block
+class Function : public Common {
 public:
-	Subprogram_Body(Const_Declarations * M_Const_Declarations,Var_Declarations *M_Var_Declarations,Compound_Statement *M_Compound_Statement){
-        m_Const_Declarations=M_Const_Declarations;
-        m_Var_Declarations=M_Var_Declarations;
-        m_Compound_Statement=M_Compound_Statement;
+	Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List){
+        m_returnType=M_returnType;
+        m_lineno=M_lineno;
+        mp_Id=Mp_Id;
+        mp_Parameter_List=Mp_Parameter_List;
+        mp_Const_Declarations=Mp_Const_Declarations;
+        mp_Var_Declarations=Mp_Var_Declarations;
+        mp_Statement_List=Mp_Statement_List;
 	}
-	~Subprogram_Body();
+	~Function() ;
+	/*
+	string	func_codeGeneration() override;
+	int func_checkReturnType() override {
+		return m_returnType;
+	}
+	int	func_get_Common_Type() override{
+		return COMMON_FUNCTION;
+	}
+	bool create_symbolsheet() override;
+	Id * get_func_id() override {
+	    return mp_Id;
+	}
+	Parameter_List * get_param_list() override {
+	    return mp_Parameter_List;
+	}
+	Const_Declarations * get_const_dec() override {
+	    return mp_Const_Declarations;
+	}
+	Var_Declarations * get_var_dec() override {
+	    return mp_Var_Declarations;
+	}
+	int get_lineno() override {
+	    return m_lineno;
+	}
 
-private:
-	Const_Declarations * m_Const_Declarations;
-	Var_Declarations *m_Var_Declarations;
-	Compound_Statement *m_Compound_Statement;
+	*/
+
+	int m_returnType;
+	int m_lineno;
+
+	Id					*mp_Id;
+	Parameter_List		*mp_Parameter_List;
+	Const_Declarations	*mp_Const_Declarations;
+	Var_Declarations	*mp_Var_Declarations;
+	Statement_List		*mp_Statement_List;
 };
 
-class Formal_Parameter {
-public:
-	Formal_Parameter(Parameter_List * M_Parameter_List){
-        m_Parameter_List=M_Parameter_List;
-	}
-	~Formal_Parameter();
-
-private:
-	Parameter_List * m_Parameter_List;
-
-};
-class Var_Parameter {
-public:
-	Var_Parameter(Value_Parameter * M_Value_Parameter){
-	    m_Value_Parameter=M_Value_Parameter;
-	}
-	~Var_Parameter();
-
-private:
-	Value_Parameter * m_Value_Parameter;
-
-
-
-};
-class Value_Parameter {
-public:
-	Value_Parameter(Id_List *M_Id_List,int SType){
-	    M_Id_List=M_Id_List;
-	    Simple_Type=SType;
-	}
-	~Value_Parameter();
-
-	int Simple_Type;
-	Id_List * m_Id_List;
-};
-class Id_Varpart{
-public:
-	Id_Varpart();
-	Id_Varpart(Expression_List *M_Expression_List){
-       m_Expression_List=M_Expression_List;
-	}
-	~Id_Varpart();
-private:
-	Expression_List *m_Expression_List;	//这个指针可以为NULL
-};

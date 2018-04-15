@@ -572,7 +572,7 @@ char *yytext;
 /*错误处理，可以处理如：1&，此类的错误*/
 /*但是不能处理如：1.2a3，此识别结果为1.2 number和a3 identifier*/
 /*语法程序可能遇到的接口*/
-/*yytext存储了当前识别的字符串*/
+/*new std::string(yytext)存储了当前识别的字符串*/
 /*yylineno存储了行数，(yyrowno-yyleng) - (yyrowno-1)为列数范围*/
 #line 13 "pasc.l"
 #include<stdio.h>
@@ -863,152 +863,152 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 38 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return AND; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return AND; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 39 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return ARRAY; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return ARRAY; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 40 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return BEGIN_L; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return BEGIN_L; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 41 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return BOOLEAN; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return BOOLEAN; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 42 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CASE; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CASE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 43 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CHAR; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CHAR; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 44 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CONST; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return CONST; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 45 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return DIV; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return DIV; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 46 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return DO; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return DO; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 47 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return DOWNTO; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return DOWNTO; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 48 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return ELSE; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return ELSE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 49 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return END; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return END; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 50 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return FOR; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return FOR; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 51 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return FUNCTION; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return FUNCTION; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 52 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return IF; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return IF; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 53 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return INTEGER; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return INTEGER; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 54 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return MOD; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return MOD; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 55 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return NOT; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return NOT; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 56 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return OF; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return OF; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 57 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return OR; }
+{ yylval.m_str=new std::string(yytext); printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return OR; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 58 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return PROCEDURE; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return PROCEDURE; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 59 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return PROGRAM; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return PROGRAM; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 60 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return REAL; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return REAL; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 61 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return RECORD; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return RECORD; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 62 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return REPEAT; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return REPEAT; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 63 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return THEN; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return THEN; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 64 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return TYPE; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return TYPE; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 65 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return UNTIL; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return UNTIL; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 66 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return VAR; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return VAR; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 67 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return WHILE; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tkeyword\n",yytext); yyrowno+=yyleng;  return WHILE; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
@@ -1018,12 +1018,12 @@ YY_RULE_SETUP
 case 32:
 YY_RULE_SETUP
 #line 70 "pasc.l"
-{ yylval.m_char=yytext; printf("%s\tletter\n",yytext); yyrowno+=yyleng;  return LETTER; }
+{ yylval.m_char=yytext[1]; printf("%c\tletter\n",yytext[1]); yyrowno+=yyleng;  return LETTER; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 71 "pasc.l"
-{ yylval.m_id=yytext; printf("%s\tidentifier\n",yytext); yyrowno+=yyleng;  return IDENTIFIER; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tidentifier\n",yytext); yyrowno+=yyleng;  return IDENTIFIER; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
@@ -1038,112 +1038,112 @@ YY_RULE_SETUP
 case 36:
 YY_RULE_SETUP
 #line 74 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tsubboundary\n",yytext); yyrowno+=yyleng;  return SUBBOUNDARY; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tsubboundary\n",yytext); yyrowno+=yyleng;  return SUBBOUNDARY; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 75 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tassignop\n",yytext); yyrowno+=yyleng;  return ASSIGNOP; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tassignop\n",yytext); yyrowno+=yyleng;  return ASSIGNOP; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 78 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return LE_OP; }
+{ yylval.m_str=new std::string(yytext); printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return LE_OP; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 79 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return GE_OP; }
+{ yylval.m_str=new std::string(yytext); printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return GE_OP; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 80 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return NE_OP; }
+{ yylval.m_str=new std::string(yytext); printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return NE_OP; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 81 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '='; }
+{ yylval.m_str=new std::string(yytext); printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '='; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 82 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '<'; }
+{ yylval.m_str=new std::string(yytext); printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '<'; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
 #line 83 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '>'; }
+{ yylval.m_str=new std::string(yytext); printf("%s\trelop\n",yytext); yyrowno+=yyleng;  return '>'; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
 #line 85 "pasc.l"
-{ yylval.m_str=yytext; printf(",\n"); yyrowno+=yyleng;  return ','; }
+{ yylval.m_str=new std::string(yytext); printf(",\n"); yyrowno+=yyleng;  return ','; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 86 "pasc.l"
-{ yylval.m_str=yytext; printf(":\n"); yyrowno+=yyleng;  return ':'; }
+{ yylval.m_str=new std::string(yytext); printf(":\n"); yyrowno+=yyleng;  return ':'; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 87 "pasc.l"
-{ yylval.m_str=yytext; printf(";\n"); yyrowno+=yyleng;  return ';'; }
+{ yylval.m_str=new std::string(yytext); printf(";\n"); yyrowno+=yyleng;  return ';'; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
 #line 88 "pasc.l"
-{ yylval.m_str=yytext; printf(".\n"); yyrowno+=yyleng;  return '.'; }
+{ yylval.m_str=new std::string(yytext); printf(".\n"); yyrowno+=yyleng;  return '.'; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
 #line 89 "pasc.l"
-{ yylval.m_str=yytext; printf("(\n"); yyrowno+=yyleng;  return '('; }
+{ yylval.m_str=new std::string(yytext); printf("(\n"); yyrowno+=yyleng;  return '('; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
 #line 90 "pasc.l"
-{ yylval.m_str=yytext; printf(")\n"); yyrowno+=yyleng;  return ')'; }
+{ yylval.m_str=new std::string(yytext); printf(")\n"); yyrowno+=yyleng;  return ')'; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
 #line 91 "pasc.l"
-{ yylval.m_str=yytext; printf("[\n"); yyrowno+=yyleng;  return '['; }
+{ yylval.m_str=new std::string(yytext); printf("[\n"); yyrowno+=yyleng;  return '['; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
 #line 92 "pasc.l"
-{ yylval.m_str=yytext; printf("]\n"); yyrowno+=yyleng;  return ']'; }
+{ yylval.m_str=new std::string(yytext); printf("]\n"); yyrowno+=yyleng;  return ']'; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
 #line 93 "pasc.l"
-{ yylval.m_str=yytext; printf("{\n"); yyrowno+=yyleng;  return '{'; }
+{ yylval.m_str=new std::string(yytext); printf("{\n"); yyrowno+=yyleng;  return '{'; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
 #line 94 "pasc.l"
-{ yylval.m_str=yytext; printf("}\n"); yyrowno+=yyleng;  return '}'; }
+{ yylval.m_str=new std::string(yytext); printf("}\n"); yyrowno+=yyleng;  return '}'; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
 #line 96 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return '*'; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return '*'; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
 #line 97 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return '/'; }
+{ yylval.m_str=new std::string(yytext); printf("%s\tmulop\n",yytext); yyrowno+=yyleng;  return '/'; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
 #line 98 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return '-'; }
+{ yylval.m_str=new std::string(yytext); printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return '-'; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
 #line 99 "pasc.l"
-{ yylval.m_str=yytext; printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return '+'; }
+{ yylval.m_str=new std::string(yytext); printf("%s\taddop\n",yytext); yyrowno+=yyleng;  return '+'; }
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */

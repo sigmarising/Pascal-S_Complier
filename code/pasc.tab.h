@@ -42,8 +42,8 @@ extern int yydebug;
 /* "%code requires" blocks.  */
 #line 2 "pasc.y" /* yacc.c:1915  */
 
-	#include <Public_define.h>
-	#include <Syntax_Tree.h>
+	#include "Public_define.h"
+	#include "Syntax_Tree.h"
 
 #line 49 "pasc.tab.h" /* yacc.c:1915  */
 
@@ -104,55 +104,55 @@ union YYSTYPE
 {
 #line 30 "pasc.y" /* yacc.c:1915  */
 
-	Programstruct;
-	Program_Body;
-	Const_Declarations;
-	Var_Declarations;
-	SubProgram_Declarations;
-	Statement_List;
-	Common;
-	Procedure;
-	Function;
-	Statement;
-	Parameter_List;
-	Variable;
-	Procedure_Call;
-	Function_Call;
-	Expression;
-	Simple_Expression;
-	Term;
-	Factor;
-	Not;
-	Uminus;
-	Type;
-	Const_Value;
-	Assignop;
-	If_Then_Else;
-	For;
-	Parameter;
-	Relop;
-	Addop;
-	Mulop;
-	Id;
-	Id_List;
-	Period;
-	Expression_List;
-	Program_Head;
-	Compound_Statement;
-	Const_Declaration;
-	Var_Declaration;
-	SubProgram_Declaration;
-	Subprogram;
-	Subprogram_Head;
-	Subprogram_Body;
-	Formal_Parameter;
-	Var_Parameter;
-	Value_Parameter;
-	Id_Varpart;
-	int;
-	float;
-	string;
-	char;
+	Programstruct* programstruct;
+	Program_Body* program_Body;
+	Const_Declarations* const_Declarations;
+	Var_Declarations* var_Declarations;
+	SubProgram_Declarations* subProgram_Declarations;
+	Statement_List* statement_List;
+	Common* common;
+	Procedure* procedure;
+	Function* function;
+	Statement* statement;
+	Parameter_List* parameter_List;
+	Variable* variable;
+	Procedure_Call* procedure_Call;
+	Function_Call* function_Call;
+	Expression* expression;
+	Simple_Expression* simple_Expression;
+	Term* term;
+	Factor* factor;
+	Not* NOt;
+	Uminus* uminus;
+	Type* type;
+	Const_Value* const_Value;
+	Assignop* assignop;
+	If_Then_Else* if_Then_Else;
+	For* FOr;
+	Parameter* parameter;
+	Relop* relop;
+	Addop* addop;
+	Mulop* mulop;
+	Id* id;
+	Id_List* id_List;
+	Period* period;
+	Expression_List* expression_List;
+	Program_Head* program_Head;
+	Compound_Statement* compound_Statement;
+	Const_Declaration* const_Declaration;
+	Var_Declaration* var_Declaration;
+	SubProgram_Declaration* subProgram_Declaration;
+	Subprogram* subprogram;
+	Subprogram_Head* subprogram_Head;
+	Subprogram_Body* subprogram_Body;
+	Formal_Parameter* formal_Parameter;
+	Var_Parameter* var_Parameter;
+	Value_Parameter* value_Parameter;
+	Id_Varpart* id_Varpart;
+	int m_int;
+	float m_float;
+	std::string* m_str;
+	char m_char;
  	
 
 #line 159 "pasc.tab.h" /* yacc.c:1915  */
