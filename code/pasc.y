@@ -758,7 +758,8 @@ factor
 
 
 int main() {
-    return yyparse();
+    yyparse();
+    return 0;
 }
 
 

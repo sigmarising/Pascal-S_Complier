@@ -2541,7 +2541,9 @@ yyreturn:
 
 
 int main() {
-    return yyparse();
+    yyparse();
+    std::cout<< ROOT <<endl;
+    return 0;
 }
 
 
