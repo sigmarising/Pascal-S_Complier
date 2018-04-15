@@ -14,11 +14,12 @@
 	typedef pair<int,int> p_Per;
 	Programstruct* ROOT;
 	int yyparse(void);
-	void yyerror(const char *s);
 	extern int yylineno;
 	using namespace std;
+	void yyerror(const char* s);
+	#define YYERROR_VERBOSE 1
 }
-#define YYERROR_VERBOSE 1
+
 
 %token AND ARRAY BEGIN_L BOOLEAN CASE CHAR CONST DIV DO DOWNTO ELSE END FOR FUNCTION IF INTEGER MOD 
 %token NOT OF OR PROCEDURE PROGRAM REAL RECORD REPEAT THEN TO TYPE UNTIL VAR WHILE
@@ -761,6 +762,6 @@ int main() {
 }
 
 
-extern void yyerror(const char *s) {
-//  printf("Error '%s'\n", s);
+extern void yyerror(const char* s) {
+  printf("line: %d, Error '%s'\n",yylineno,s);
 }
