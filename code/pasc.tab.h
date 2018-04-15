@@ -102,7 +102,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 30 "pasc.y" /* yacc.c:1915  */
+#line 32 "pasc.y" /* yacc.c:1915  */
 
 	Programstruct* programstruct;
 	Program_Body* program_Body;

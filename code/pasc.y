@@ -8,15 +8,17 @@
 	#include <stdio.h>
 	#include <string>
 	#include "lex.yy.c"
+	#include <iostream>
 	typedef pair<Id*, Const_Value*> p_Const;
 	typedef pair<Id_List*, Type*> p_Var;
 	typedef pair<int,int> p_Per;
-
+	Programstruct* ROOT;
 	int yyparse(void);
-	void yyerror(char *s);
+	void yyerror(const char *s);
 	extern int yylineno;
 	using namespace std;
 }
+#define YYERROR_VERBOSE 1
 
 %token AND ARRAY BEGIN_L BOOLEAN CASE CHAR CONST DIV DO DOWNTO ELSE END FOR FUNCTION IF INTEGER MOD 
 %token NOT OF OR PROCEDURE PROGRAM REAL RECORD REPEAT THEN TO TYPE UNTIL VAR WHILE
@@ -126,6 +128,7 @@
 program 
 	: program_head program_body '.'	{
 		$$ = new Programstruct($1->m_Id, $1->m_Id_List, $2);
+		ROOT = $$;
 	} 
 
 program_head 
@@ -758,6 +761,6 @@ int main() {
 }
 
 
-void yyerror(char* s) {
-	fprintf(stderr,"%s",s);
+extern void yyerror(const char *s) {
+//  printf("Error '%s'\n", s);
 }

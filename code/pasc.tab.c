@@ -64,22 +64,24 @@
 	#include <stdio.h>
 	#include <string>
 	#include "lex.yy.c"
+	#include <iostream>
 	typedef pair<Id*, Const_Value*> p_Const;
 	typedef pair<Id_List*, Type*> p_Var;
 	typedef pair<int,int> p_Per;
-
+	Programstruct* ROOT;
 	int yyparse(void);
-	void yyerror(char *s);
+	void yyerror(const char *s);
 	extern int yylineno;
+	#define YYERROR_VERBOSE 1;
 	using namespace std;
 
-#line 77 "pasc.tab.c" /* yacc.c:316  */
+#line 79 "pasc.tab.c" /* yacc.c:316  */
 
 
 
 /* Copy the first part of user declarations.  */
 
-#line 83 "pasc.tab.c" /* yacc.c:339  */
+#line 85 "pasc.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -114,7 +116,7 @@ extern int yydebug;
 	#include "Public_define.h"
 	#include "Syntax_Tree.h"
 
-#line 118 "pasc.tab.c" /* yacc.c:355  */
+#line 120 "pasc.tab.c" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -171,7 +173,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 30 "pasc.y" /* yacc.c:355  */
+#line 32 "pasc.y" /* yacc.c:355  */
 
 	Programstruct* programstruct;
 	Program_Body* program_Body;
@@ -224,7 +226,7 @@ union YYSTYPE
 	char m_char;
  	
 
-#line 228 "pasc.tab.c" /* yacc.c:355  */
+#line 230 "pasc.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -241,7 +243,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 245 "pasc.tab.c" /* yacc.c:358  */
+#line 247 "pasc.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -542,15 +544,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   126,   126,   131,   140,   145,   153,   164,   167,   173,
-     182,   192,   203,   214,   225,   231,   237,   243,   289,   292,
-     299,   303,   310,   316,   326,   329,   332,   335,   342,   346,
-     353,   357,   363,   373,   379,   388,   391,   397,   401,   409,
-     412,   418,   424,   430,   435,   441,   445,   465,   475,   485,
-     495,   505,   518,   525,   549,   552,   558,   569,   582,   585,
-     613,   617,   624,   630,   636,   642,   648,   654,   660,   669,
-     672,   675,   678,   684,   687,   690,   693,   696,   699,   705,
-     710,   719,   731,   740
+       0,   129,   129,   135,   144,   149,   157,   168,   171,   177,
+     186,   196,   207,   218,   229,   235,   241,   247,   293,   296,
+     303,   307,   314,   320,   330,   333,   336,   339,   346,   350,
+     357,   361,   367,   377,   383,   392,   395,   401,   405,   413,
+     416,   422,   428,   434,   439,   445,   449,   469,   479,   489,
+     499,   509,   522,   529,   553,   556,   562,   573,   586,   589,
+     617,   621,   628,   634,   640,   646,   652,   658,   664,   673,
+     676,   679,   682,   688,   691,   694,   697,   700,   703,   709,
+     714,   723,   735,   744
 };
 #endif
 
@@ -1442,15 +1444,16 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 126 "pasc.y" /* yacc.c:1661  */
+#line 129 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.programstruct) = new Programstruct((yyvsp[-2].program_Head)->m_Id, (yyvsp[-2].program_Head)->m_Id_List, (yyvsp[-1].program_Body));
+		ROOT = (yyval.programstruct);
 	}
-#line 1450 "pasc.tab.c" /* yacc.c:1661  */
+#line 1453 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 3:
-#line 131 "pasc.y" /* yacc.c:1661  */
+#line 135 "pasc.y" /* yacc.c:1661  */
     {
 		Id* tmp = new Id();
 		tmp -> m_name = *((yyvsp[-4].m_str));
@@ -1458,19 +1461,19 @@ yyreduce:
 		tmp -> m_idType = TYPE_ID;
 		(yyval.program_Head) = new Program_Head(tmp, (yyvsp[-2].id_List));
 	}
-#line 1462 "pasc.tab.c" /* yacc.c:1661  */
+#line 1465 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 4:
-#line 140 "pasc.y" /* yacc.c:1661  */
+#line 144 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.program_Body) = new Program_Body((yyvsp[-3].const_Declarations), (yyvsp[-2].var_Declarations), (yyvsp[-1].subProgram_Declarations), (yyvsp[0].compound_Statement));
 	}
-#line 1470 "pasc.tab.c" /* yacc.c:1661  */
+#line 1473 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 5:
-#line 145 "pasc.y" /* yacc.c:1661  */
+#line 149 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.id_List) = new Id_List();
 		(yyval.id_List) = (yyvsp[-2].id_List);
@@ -1479,11 +1482,11 @@ yyreduce:
 		tmp -> m_lineno = yylineno;
 		(yyval.id_List) -> mv_Id.push_back(tmp);
 	}
-#line 1483 "pasc.tab.c" /* yacc.c:1661  */
+#line 1486 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 6:
-#line 153 "pasc.y" /* yacc.c:1661  */
+#line 157 "pasc.y" /* yacc.c:1661  */
     {
 		Id* tmp = new Id();
 		tmp -> m_name = *((yyvsp[0].m_str));
@@ -1492,27 +1495,27 @@ yyreduce:
 		(yyval.id_List) -> mv_Id.push_back(tmp);
 		(yyval.id_List) -> m_lineno = yylineno;
 	}
-#line 1496 "pasc.tab.c" /* yacc.c:1661  */
+#line 1499 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 7:
-#line 164 "pasc.y" /* yacc.c:1661  */
+#line 168 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.const_Declarations) = new Const_Declarations((yyvsp[-1].const_Declaration) -> mv_Const);
 	}
-#line 1504 "pasc.tab.c" /* yacc.c:1661  */
+#line 1507 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 8:
-#line 167 "pasc.y" /* yacc.c:1661  */
+#line 171 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.const_Declarations) = new Const_Declarations();
 	}
-#line 1512 "pasc.tab.c" /* yacc.c:1661  */
+#line 1515 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 9:
-#line 173 "pasc.y" /* yacc.c:1661  */
+#line 177 "pasc.y" /* yacc.c:1661  */
     {
 
 		Id* tmp = new Id();
@@ -1522,11 +1525,11 @@ yyreduce:
 		(yyvsp[-4].const_Declaration) -> mv_Const.push_back(p_Const(tmp, (yyvsp[0].const_Value)));
 		(yyval.const_Declaration) = new Const_Declaration((yyvsp[-4].const_Declaration) -> mv_Const);
 	}
-#line 1526 "pasc.tab.c" /* yacc.c:1661  */
+#line 1529 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 10:
-#line 182 "pasc.y" /* yacc.c:1661  */
+#line 186 "pasc.y" /* yacc.c:1661  */
     {
 		Id* tmp = new Id();
 		tmp -> m_name = *((yyvsp[-2].m_str));
@@ -1534,11 +1537,11 @@ yyreduce:
 		(yyval.const_Declaration) = new Const_Declaration();
 		(yyval.const_Declaration) -> mv_Const.push_back(p_Const(tmp,(yyvsp[0].const_Value)));
 	}
-#line 1538 "pasc.tab.c" /* yacc.c:1661  */
+#line 1541 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 11:
-#line 192 "pasc.y" /* yacc.c:1661  */
+#line 196 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.const_Value) = new Const_Value();
 		(yyval.const_Value) -> m_lineno = yylineno;
@@ -1550,11 +1553,11 @@ yyreduce:
 		tmp -> m_lineno = yylineno;
 		(yyval.const_Value) -> mp_Id = tmp;
 	}
-#line 1554 "pasc.tab.c" /* yacc.c:1661  */
+#line 1557 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 12:
-#line 203 "pasc.y" /* yacc.c:1661  */
+#line 207 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.const_Value) = new Const_Value();
 		(yyval.const_Value) -> m_lineno = yylineno;
@@ -1566,11 +1569,11 @@ yyreduce:
 		tmp -> m_lineno = yylineno;
 		(yyval.const_Value) -> mp_Id = tmp;	
 	}
-#line 1570 "pasc.tab.c" /* yacc.c:1661  */
+#line 1573 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 13:
-#line 214 "pasc.y" /* yacc.c:1661  */
+#line 218 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.const_Value) = new Const_Value();
 		(yyval.const_Value) -> m_lineno = yylineno;
@@ -1582,101 +1585,101 @@ yyreduce:
 		tmp -> m_lineno = yylineno;
 		(yyval.const_Value) -> mp_Id = tmp;
 	}
-#line 1586 "pasc.tab.c" /* yacc.c:1661  */
+#line 1589 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 14:
-#line 225 "pasc.y" /* yacc.c:1661  */
+#line 229 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.const_Value) = new Const_Value();
 		(yyval.const_Value) -> m_postNeg = CONST_POSTNEG_POSITIVE;
 		(yyval.const_Value) -> m_valueType = TYPE_REAL;
 		(yyval.const_Value) -> m_real = (yyvsp[0].m_float);
 	}
-#line 1597 "pasc.tab.c" /* yacc.c:1661  */
+#line 1600 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 15:
-#line 231 "pasc.y" /* yacc.c:1661  */
+#line 235 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.const_Value) = new Const_Value();
 		(yyval.const_Value) -> m_postNeg = CONST_POSTNEG_NEGATIVE;
 		(yyval.const_Value) -> m_valueType = TYPE_REAL;
 		(yyval.const_Value) -> m_real = (yyvsp[0].m_float);	
 	}
-#line 1608 "pasc.tab.c" /* yacc.c:1661  */
+#line 1611 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 16:
-#line 237 "pasc.y" /* yacc.c:1661  */
+#line 241 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.const_Value) = new Const_Value();
 		(yyval.const_Value) -> m_postNeg = CONST_POSTNEG_POSITIVE;
 		(yyval.const_Value) -> m_valueType = TYPE_REAL;
 		(yyval.const_Value) -> m_real = (yyvsp[0].m_float);
 	}
-#line 1619 "pasc.tab.c" /* yacc.c:1661  */
+#line 1622 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 17:
-#line 243 "pasc.y" /* yacc.c:1661  */
+#line 247 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.const_Value) = new Const_Value();
 		(yyval.const_Value) -> m_postNeg = CONST_POSTNEG_NULL;
 		(yyval.const_Value) -> m_valueType = TYPE_CHAR;
 		(yyval.const_Value) -> m_real = (yyvsp[0].m_char);
 	}
-#line 1630 "pasc.tab.c" /* yacc.c:1661  */
+#line 1633 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 18:
-#line 289 "pasc.y" /* yacc.c:1661  */
+#line 293 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.var_Declarations) = new Var_Declarations((yyvsp[-1].var_Declaration) -> mv_Var);
 	}
-#line 1638 "pasc.tab.c" /* yacc.c:1661  */
+#line 1641 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 19:
-#line 292 "pasc.y" /* yacc.c:1661  */
+#line 296 "pasc.y" /* yacc.c:1661  */
     {
 		vector<p_Var> tmp;
 		(yyval.var_Declarations) = new Var_Declarations(tmp);
 	}
-#line 1647 "pasc.tab.c" /* yacc.c:1661  */
+#line 1650 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 20:
-#line 299 "pasc.y" /* yacc.c:1661  */
+#line 303 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.var_Declaration) = new Var_Declaration((yyvsp[-4].var_Declaration) -> mv_Var);
 		(yyval.var_Declaration) -> mv_Var.push_back(p_Var((yyvsp[-2].id_List), (yyvsp[0].type)));
 	}
-#line 1656 "pasc.tab.c" /* yacc.c:1661  */
+#line 1659 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 21:
-#line 303 "pasc.y" /* yacc.c:1661  */
+#line 307 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.var_Declaration) = new Var_Declaration();
 		(yyval.var_Declaration) -> mv_Var.push_back(p_Var((yyvsp[-2].id_List), (yyvsp[0].type)));
 	}
-#line 1665 "pasc.tab.c" /* yacc.c:1661  */
+#line 1668 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 22:
-#line 310 "pasc.y" /* yacc.c:1661  */
+#line 314 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.type) = new Type();
 		(yyval.type) -> m_simpleType = (yyvsp[0].m_int);
 		(yyval.type) -> m_isArray = false;
 		(yyval.type) -> m_lineno = yylineno; 
 	}
-#line 1676 "pasc.tab.c" /* yacc.c:1661  */
+#line 1679 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 23:
-#line 316 "pasc.y" /* yacc.c:1661  */
+#line 320 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.type) = new Type();
 		(yyval.type) -> m_lineno = yylineno;
@@ -1684,78 +1687,78 @@ yyreduce:
 		(yyval.type) -> mp_Period = (yyvsp[-3].period);
 		(yyval.type) -> m_simpleType = (yyvsp[0].m_int); 
 	}
-#line 1688 "pasc.tab.c" /* yacc.c:1661  */
+#line 1691 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 24:
-#line 326 "pasc.y" /* yacc.c:1661  */
+#line 330 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.m_int) = TYPE_INTERGER;
 	}
-#line 1696 "pasc.tab.c" /* yacc.c:1661  */
+#line 1699 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 25:
-#line 329 "pasc.y" /* yacc.c:1661  */
+#line 333 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.m_int) = TYPE_REAL;
 	}
-#line 1704 "pasc.tab.c" /* yacc.c:1661  */
+#line 1707 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 26:
-#line 332 "pasc.y" /* yacc.c:1661  */
+#line 336 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.m_int) = TYPE_BOOLEAN;
 	}
-#line 1712 "pasc.tab.c" /* yacc.c:1661  */
+#line 1715 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 27:
-#line 335 "pasc.y" /* yacc.c:1661  */
+#line 339 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.m_int) = TYPE_CHAR;
 	}
-#line 1720 "pasc.tab.c" /* yacc.c:1661  */
+#line 1723 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 28:
-#line 342 "pasc.y" /* yacc.c:1661  */
+#line 346 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.period) = new Period((yyvsp[-4].period) -> mv_dims);
 		(yyval.period) -> mv_dims.push_back(p_Per((yyvsp[-2].m_int), (yyvsp[0].m_int)));
 	}
-#line 1729 "pasc.tab.c" /* yacc.c:1661  */
+#line 1732 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 29:
-#line 346 "pasc.y" /* yacc.c:1661  */
+#line 350 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.period) = new Period();
 		(yyval.period) -> mv_dims.push_back(p_Per((yyvsp[-2].m_int), (yyvsp[0].m_int)));
 	}
-#line 1738 "pasc.tab.c" /* yacc.c:1661  */
+#line 1741 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 30:
-#line 353 "pasc.y" /* yacc.c:1661  */
+#line 357 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.subProgram_Declarations) = new SubProgram_Declarations((yyvsp[-2].subProgram_Declarations) -> mv_Common);
 		(yyval.subProgram_Declarations) -> mv_Common.push_back((yyvsp[-1].common));
 	}
-#line 1747 "pasc.tab.c" /* yacc.c:1661  */
+#line 1750 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 31:
-#line 357 "pasc.y" /* yacc.c:1661  */
+#line 361 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.subProgram_Declarations) = new SubProgram_Declarations();
 	}
-#line 1755 "pasc.tab.c" /* yacc.c:1661  */
+#line 1758 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 32:
-#line 363 "pasc.y" /* yacc.c:1661  */
+#line 367 "pasc.y" /* yacc.c:1661  */
     {
 		if((yyvsp[-1].subprogram_Head) -> Simple_Type == TYPE_NULL) {
 			(yyval.common) = new Procedure(yylineno, (yyvsp[-1].subprogram_Head) -> m_ID, (yyvsp[-1].subprogram_Head)-> m_Formal_Parameter -> m_Parameter_List, (yyvsp[0].subprogram_Body) -> m_Const_Declarations, (yyvsp[0].subprogram_Body) -> m_Var_Declarations, (yyvsp[0].subprogram_Body)-> m_Compound_Statement -> m_Statement_List);
@@ -1764,134 +1767,134 @@ yyreduce:
 			(yyval.common) = new Function((yyvsp[-1].subprogram_Head) -> Simple_Type, yylineno, (yyvsp[-1].subprogram_Head) -> m_ID, (yyvsp[-1].subprogram_Head)-> m_Formal_Parameter -> m_Parameter_List, (yyvsp[0].subprogram_Body) -> m_Const_Declarations, (yyvsp[0].subprogram_Body) -> m_Var_Declarations, (yyvsp[0].subprogram_Body)-> m_Compound_Statement -> m_Statement_List);
 		}
 	}
-#line 1768 "pasc.tab.c" /* yacc.c:1661  */
+#line 1771 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 33:
-#line 373 "pasc.y" /* yacc.c:1661  */
+#line 377 "pasc.y" /* yacc.c:1661  */
     {
 		Id* tmp = new Id();
 		tmp -> m_name = *((yyvsp[-4].m_str));
 		tmp -> m_lineno = yylineno;
 		(yyval.subprogram_Head) = new Subprogram_Head(tmp, (yyvsp[-3].formal_Parameter), (yyvsp[-1].m_int));
 	}
-#line 1779 "pasc.tab.c" /* yacc.c:1661  */
+#line 1782 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 34:
-#line 379 "pasc.y" /* yacc.c:1661  */
+#line 383 "pasc.y" /* yacc.c:1661  */
     {
 		Id* tmp = new Id();
 		tmp -> m_name = *((yyvsp[-2].m_str));
 		tmp -> m_lineno = yylineno;
 		(yyval.subprogram_Head) = new Subprogram_Head(tmp, (yyvsp[-1].formal_Parameter), TYPE_NULL);
 	}
-#line 1790 "pasc.tab.c" /* yacc.c:1661  */
+#line 1793 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 35:
-#line 388 "pasc.y" /* yacc.c:1661  */
+#line 392 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.formal_Parameter) = new Formal_Parameter((yyvsp[-1].parameter_List));
 	}
-#line 1798 "pasc.tab.c" /* yacc.c:1661  */
+#line 1801 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 36:
-#line 391 "pasc.y" /* yacc.c:1661  */
+#line 395 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.formal_Parameter) = new Formal_Parameter(NULL);
 	}
-#line 1806 "pasc.tab.c" /* yacc.c:1661  */
+#line 1809 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 37:
-#line 397 "pasc.y" /* yacc.c:1661  */
+#line 401 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.parameter_List) = new Parameter_List(yylineno, (yyvsp[-2].parameter_List) -> mv_Patameter);
 		(yyval.parameter_List) -> mv_Patameter.push_back((yyvsp[0].parameter));
 	}
-#line 1815 "pasc.tab.c" /* yacc.c:1661  */
+#line 1818 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 38:
-#line 401 "pasc.y" /* yacc.c:1661  */
+#line 405 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.parameter_List) = new Parameter_List();
 		(yyval.parameter_List) -> m_lineno = yylineno;
 		(yyval.parameter_List) -> mv_Patameter.push_back((yyvsp[0].parameter));
 	}
-#line 1825 "pasc.tab.c" /* yacc.c:1661  */
+#line 1828 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 39:
-#line 409 "pasc.y" /* yacc.c:1661  */
+#line 413 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.parameter) = new Parameter(true, yylineno, (yyvsp[0].var_Parameter) -> m_Value_Parameter -> m_Id_List);
 	}
-#line 1833 "pasc.tab.c" /* yacc.c:1661  */
+#line 1836 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 40:
-#line 412 "pasc.y" /* yacc.c:1661  */
+#line 416 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.parameter) = new Parameter(false, yylineno, (yyvsp[0].value_Parameter) -> m_Id_List);
 	}
-#line 1841 "pasc.tab.c" /* yacc.c:1661  */
+#line 1844 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 41:
-#line 418 "pasc.y" /* yacc.c:1661  */
+#line 422 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.var_Parameter) = new Var_Parameter((yyvsp[0].value_Parameter));
 	}
-#line 1849 "pasc.tab.c" /* yacc.c:1661  */
+#line 1852 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 42:
-#line 424 "pasc.y" /* yacc.c:1661  */
+#line 428 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.value_Parameter) = new Value_Parameter((yyvsp[-2].id_List), (yyvsp[0].m_int));
 	}
-#line 1857 "pasc.tab.c" /* yacc.c:1661  */
+#line 1860 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 43:
-#line 430 "pasc.y" /* yacc.c:1661  */
+#line 434 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.subprogram_Body) = new Subprogram_Body((yyvsp[-2].const_Declarations), (yyvsp[-1].var_Declarations), (yyvsp[0].compound_Statement));
 	}
-#line 1865 "pasc.tab.c" /* yacc.c:1661  */
+#line 1868 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 44:
-#line 435 "pasc.y" /* yacc.c:1661  */
+#line 439 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.compound_Statement) = new Compound_Statement((yyvsp[-1].statement_List));
 	}
-#line 1873 "pasc.tab.c" /* yacc.c:1661  */
+#line 1876 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 45:
-#line 441 "pasc.y" /* yacc.c:1661  */
+#line 445 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.statement_List) = new Statement_List((yyvsp[-2].statement_List) -> mv_Statement);
 		(yyval.statement_List) -> mv_Statement.push_back((yyvsp[0].statement));
 	}
-#line 1882 "pasc.tab.c" /* yacc.c:1661  */
+#line 1885 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 46:
-#line 445 "pasc.y" /* yacc.c:1661  */
+#line 449 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.statement_List) = new Statement_List();
 		(yyval.statement_List) -> mv_Statement.push_back((yyvsp[0].statement));
 	}
-#line 1891 "pasc.tab.c" /* yacc.c:1661  */
+#line 1894 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 47:
-#line 465 "pasc.y" /* yacc.c:1661  */
+#line 469 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.statement) = new Statement();
 		(yyval.statement) -> m_stateType = STATEMENT_ASSIGN;
@@ -1902,11 +1905,11 @@ yyreduce:
 		(yyval.statement) -> mp_If_Then_Else = NULL;
 		(yyval.statement) -> mp_For = NULL;
 	}
-#line 1906 "pasc.tab.c" /* yacc.c:1661  */
+#line 1909 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 48:
-#line 475 "pasc.y" /* yacc.c:1661  */
+#line 479 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.statement) = new Statement();
 		(yyval.statement) -> m_stateType = STATEMENT_PROCEDURE;
@@ -1917,11 +1920,11 @@ yyreduce:
 		(yyval.statement) -> mp_If_Then_Else = NULL;
 		(yyval.statement) -> mp_For = NULL;
 	}
-#line 1921 "pasc.tab.c" /* yacc.c:1661  */
+#line 1924 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 49:
-#line 485 "pasc.y" /* yacc.c:1661  */
+#line 489 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.statement) = new Statement();
 		(yyval.statement) -> m_stateType = STATEMENT_COMPOUND;
@@ -1932,11 +1935,11 @@ yyreduce:
 		(yyval.statement) -> mp_If_Then_Else = NULL;
 		(yyval.statement) -> mp_For = NULL;
 	}
-#line 1936 "pasc.tab.c" /* yacc.c:1661  */
+#line 1939 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 50:
-#line 495 "pasc.y" /* yacc.c:1661  */
+#line 499 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.statement) = new Statement();
 		(yyval.statement) -> m_stateType = STATEMENT_IF;
@@ -1947,11 +1950,11 @@ yyreduce:
 		(yyval.statement) -> mp_Statement_List = NULL;
 		(yyval.statement) -> mp_For = NULL;
 	}
-#line 1951 "pasc.tab.c" /* yacc.c:1661  */
+#line 1954 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 51:
-#line 505 "pasc.y" /* yacc.c:1661  */
+#line 509 "pasc.y" /* yacc.c:1661  */
     {
 		Id* tmp = new Id();
 		tmp -> m_name = *((yyvsp[-6].m_str));
@@ -1965,19 +1968,19 @@ yyreduce:
 		(yyval.statement) -> mp_Statement_List = NULL;
 		(yyval.statement) -> mp_If_Then_Else = NULL;
 	}
-#line 1969 "pasc.tab.c" /* yacc.c:1661  */
+#line 1972 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 52:
-#line 518 "pasc.y" /* yacc.c:1661  */
+#line 522 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.statement) = new Statement();
 	}
-#line 1977 "pasc.tab.c" /* yacc.c:1661  */
+#line 1980 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 53:
-#line 525 "pasc.y" /* yacc.c:1661  */
+#line 529 "pasc.y" /* yacc.c:1661  */
     {
 		Id* tmp = new Id();
 		tmp -> m_name = *((yyvsp[-1].m_str));
@@ -1993,27 +1996,27 @@ yyreduce:
 			(yyval.variable) -> mp_Expression_List = NULL;
 		}
 	}
-#line 1997 "pasc.tab.c" /* yacc.c:1661  */
+#line 2000 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 54:
-#line 549 "pasc.y" /* yacc.c:1661  */
+#line 553 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.id_Varpart) = new Id_Varpart((yyvsp[-1].expression_List));
 	}
-#line 2005 "pasc.tab.c" /* yacc.c:1661  */
+#line 2008 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 55:
-#line 552 "pasc.y" /* yacc.c:1661  */
+#line 556 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.id_Varpart) = new Id_Varpart(NULL);
 	}
-#line 2013 "pasc.tab.c" /* yacc.c:1661  */
+#line 2016 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 56:
-#line 558 "pasc.y" /* yacc.c:1661  */
+#line 562 "pasc.y" /* yacc.c:1661  */
     {
 		Id* tmp = new Id();
 		tmp -> m_name = *((yyvsp[0].m_str));
@@ -2025,11 +2028,11 @@ yyreduce:
 		(yyval.procedure_Call) -> mp_Expression_List = NULL;
 
 	}
-#line 2029 "pasc.tab.c" /* yacc.c:1661  */
+#line 2032 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 57:
-#line 569 "pasc.y" /* yacc.c:1661  */
+#line 573 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.procedure_Call) = new Procedure_Call();
 		(yyval.procedure_Call) -> m_lineno = yylineno;
@@ -2040,212 +2043,212 @@ yyreduce:
 		(yyval.procedure_Call) -> mp_Id = tmp;
 		(yyval.procedure_Call) -> mp_Expression_List = (yyvsp[-1].expression_List);
 	}
-#line 2044 "pasc.tab.c" /* yacc.c:1661  */
+#line 2047 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 58:
-#line 582 "pasc.y" /* yacc.c:1661  */
+#line 586 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.statement) = (yyvsp[0].statement);
 	}
-#line 2052 "pasc.tab.c" /* yacc.c:1661  */
+#line 2055 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 59:
-#line 585 "pasc.y" /* yacc.c:1661  */
+#line 589 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.statement) = NULL;
 	}
-#line 2060 "pasc.tab.c" /* yacc.c:1661  */
+#line 2063 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 60:
-#line 613 "pasc.y" /* yacc.c:1661  */
+#line 617 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.expression_List) = new Expression_List((yyvsp[-2].expression_List) -> mv_Expression, (yyvsp[-2].expression_List) -> mv_Type);
 		(yyval.expression_List) -> mv_Expression.push_back((yyvsp[0].expression));
 	}
-#line 2069 "pasc.tab.c" /* yacc.c:1661  */
+#line 2072 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 61:
-#line 617 "pasc.y" /* yacc.c:1661  */
+#line 621 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.expression_List) = new Expression_List();
 		(yyval.expression_List) -> mv_Expression.push_back((yyvsp[0].expression));
 	}
-#line 2078 "pasc.tab.c" /* yacc.c:1661  */
+#line 2081 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 62:
-#line 624 "pasc.y" /* yacc.c:1661  */
+#line 628 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.expression) = new Expression();
 		(yyval.expression) -> m_lineno = yylineno;
 		(yyval.expression) -> mp_Simple_Expression = NULL;
 		(yyval.expression) -> mp_Relop = new Relop(RELOP_LARGE, yylineno, (yyvsp[-2].simple_Expression), (yyvsp[0].simple_Expression));
 	}
-#line 2089 "pasc.tab.c" /* yacc.c:1661  */
+#line 2092 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 63:
-#line 630 "pasc.y" /* yacc.c:1661  */
+#line 634 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.expression) = new Expression();
 		(yyval.expression) -> m_lineno = yylineno;
 		(yyval.expression) -> mp_Simple_Expression = NULL;
 		(yyval.expression) -> mp_Relop = new Relop(RELOP_LESS, yylineno, (yyvsp[-2].simple_Expression), (yyvsp[0].simple_Expression));
 	}
-#line 2100 "pasc.tab.c" /* yacc.c:1661  */
+#line 2103 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 64:
-#line 636 "pasc.y" /* yacc.c:1661  */
+#line 640 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.expression) = new Expression();
 		(yyval.expression) -> m_lineno = yylineno;
 		(yyval.expression) -> mp_Simple_Expression = NULL;
 		(yyval.expression) -> mp_Relop = new Relop(RELOP_NOT_EQUAL, yylineno, (yyvsp[-2].simple_Expression), (yyvsp[0].simple_Expression));
 	}
-#line 2111 "pasc.tab.c" /* yacc.c:1661  */
+#line 2114 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 65:
-#line 642 "pasc.y" /* yacc.c:1661  */
+#line 646 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.expression) = new Expression();
 		(yyval.expression) -> m_lineno = yylineno;
 		(yyval.expression) -> mp_Simple_Expression = NULL;
 		(yyval.expression) -> mp_Relop = new Relop(RELOP_LESS_EQUAL, yylineno, (yyvsp[-2].simple_Expression), (yyvsp[0].simple_Expression));
 	}
-#line 2122 "pasc.tab.c" /* yacc.c:1661  */
+#line 2125 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 66:
-#line 648 "pasc.y" /* yacc.c:1661  */
+#line 652 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.expression) = new Expression();
 		(yyval.expression) -> m_lineno = yylineno;
 		(yyval.expression) -> mp_Simple_Expression = NULL;
 		(yyval.expression) -> mp_Relop = new Relop(RELOP_LARGE_EQUAL, yylineno, (yyvsp[-2].simple_Expression), (yyvsp[0].simple_Expression));
 	}
-#line 2133 "pasc.tab.c" /* yacc.c:1661  */
+#line 2136 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 67:
-#line 654 "pasc.y" /* yacc.c:1661  */
+#line 658 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.expression) = new Expression();
 		(yyval.expression) -> m_lineno = yylineno;
 		(yyval.expression) -> mp_Simple_Expression = NULL;
 		(yyval.expression) -> mp_Relop = new Relop(RELOP_EQUAL, yylineno, (yyvsp[-2].simple_Expression), (yyvsp[0].simple_Expression));
 	}
-#line 2144 "pasc.tab.c" /* yacc.c:1661  */
+#line 2147 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 68:
-#line 660 "pasc.y" /* yacc.c:1661  */
+#line 664 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.expression) = new Expression();
 		(yyval.expression) -> m_lineno = yylineno;
 		(yyval.expression) -> mp_Simple_Expression = (yyvsp[0].simple_Expression);
 		(yyval.expression) -> mp_Relop = NULL;
 	}
-#line 2155 "pasc.tab.c" /* yacc.c:1661  */
+#line 2158 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 69:
-#line 669 "pasc.y" /* yacc.c:1661  */
+#line 673 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.simple_Expression) = new Simple_Expression(yylineno, NULL, (yyvsp[0].term));
 	}
-#line 2163 "pasc.tab.c" /* yacc.c:1661  */
+#line 2166 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 70:
-#line 672 "pasc.y" /* yacc.c:1661  */
+#line 676 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.simple_Expression) = new Simple_Expression(yylineno, new Addop(ADDOP_ADD, yylineno, (yyvsp[-2].simple_Expression), (yyvsp[0].term)),NULL);
 	}
-#line 2171 "pasc.tab.c" /* yacc.c:1661  */
+#line 2174 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 71:
-#line 675 "pasc.y" /* yacc.c:1661  */
+#line 679 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.simple_Expression) = new Simple_Expression(yylineno, new Addop(ADDOP_SUB, yylineno, (yyvsp[-2].simple_Expression), (yyvsp[0].term)),NULL);
 	}
-#line 2179 "pasc.tab.c" /* yacc.c:1661  */
+#line 2182 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 72:
-#line 678 "pasc.y" /* yacc.c:1661  */
+#line 682 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.simple_Expression) = new Simple_Expression(yylineno, new Addop(ADDOP_OR, yylineno, (yyvsp[-2].simple_Expression), (yyvsp[0].term)),NULL);
 	}
-#line 2187 "pasc.tab.c" /* yacc.c:1661  */
+#line 2190 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 73:
-#line 684 "pasc.y" /* yacc.c:1661  */
+#line 688 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.term) = new Term(yylineno, new Mulop(MULOP_MULTIPLY, yylineno, (yyvsp[-2].term), (yyvsp[0].factor)), NULL);
 	}
-#line 2195 "pasc.tab.c" /* yacc.c:1661  */
+#line 2198 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 74:
-#line 687 "pasc.y" /* yacc.c:1661  */
+#line 691 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.term) = new Term(yylineno, new Mulop(MULOP_REAL_DIV, yylineno, (yyvsp[-2].term), (yyvsp[0].factor)), NULL);
 	}
-#line 2203 "pasc.tab.c" /* yacc.c:1661  */
+#line 2206 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 75:
-#line 690 "pasc.y" /* yacc.c:1661  */
+#line 694 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.term) = new Term(yylineno, new Mulop(MULOP_AND, yylineno, (yyvsp[-2].term), (yyvsp[0].factor)), NULL);
 	}
-#line 2211 "pasc.tab.c" /* yacc.c:1661  */
+#line 2214 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 76:
-#line 693 "pasc.y" /* yacc.c:1661  */
+#line 697 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.term) = new Term(yylineno, new Mulop(MULOP_INT_DIV, yylineno, (yyvsp[-2].term), (yyvsp[0].factor)), NULL);
 	}
-#line 2219 "pasc.tab.c" /* yacc.c:1661  */
+#line 2222 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 77:
-#line 696 "pasc.y" /* yacc.c:1661  */
+#line 700 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.term) = new Term(yylineno, new Mulop(MULOP_MOD, yylineno, (yyvsp[-2].term), (yyvsp[0].factor)), NULL);
 	}
-#line 2227 "pasc.tab.c" /* yacc.c:1661  */
+#line 2230 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 78:
-#line 699 "pasc.y" /* yacc.c:1661  */
+#line 703 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.term) = new Term(yylineno, NULL, (yyvsp[0].factor));
 	}
-#line 2235 "pasc.tab.c" /* yacc.c:1661  */
+#line 2238 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 79:
-#line 705 "pasc.y" /* yacc.c:1661  */
+#line 709 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.factor) = new Factor();
 		(yyval.factor) -> m_lineno = yylineno;
 		(yyval.factor) -> m_real = (yyvsp[0].m_float);
 	}
-#line 2245 "pasc.tab.c" /* yacc.c:1661  */
+#line 2248 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 80:
-#line 710 "pasc.y" /* yacc.c:1661  */
+#line 714 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.factor) = new Factor();
 		(yyval.factor) -> m_lineno = yylineno;
@@ -2255,11 +2258,11 @@ yyreduce:
 		(yyval.factor) -> mp_Not = NULL;
 		(yyval.factor) -> mp_Uminus = NULL;
 	}
-#line 2259 "pasc.tab.c" /* yacc.c:1661  */
+#line 2262 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 81:
-#line 719 "pasc.y" /* yacc.c:1661  */
+#line 723 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.factor) = new Factor();
 		(yyval.factor) -> m_lineno = yylineno;
@@ -2272,11 +2275,11 @@ yyreduce:
 		(yyval.factor) -> mp_Not = NULL;
 		(yyval.factor) -> mp_Uminus = NULL;
 	}
-#line 2276 "pasc.tab.c" /* yacc.c:1661  */
+#line 2279 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 82:
-#line 731 "pasc.y" /* yacc.c:1661  */
+#line 735 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.factor) = new Factor();
 		(yyval.factor) -> m_lineno = yylineno;
@@ -2286,11 +2289,11 @@ yyreduce:
 		(yyval.factor) -> mp_Not = NULL;
 		(yyval.factor) -> mp_Uminus = NULL;
 	}
-#line 2290 "pasc.tab.c" /* yacc.c:1661  */
+#line 2293 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
   case 83:
-#line 740 "pasc.y" /* yacc.c:1661  */
+#line 744 "pasc.y" /* yacc.c:1661  */
     {
 		(yyval.factor) = new Factor();
 		(yyval.factor) -> m_lineno = yylineno;
@@ -2301,11 +2304,11 @@ yyreduce:
 		(yyval.factor) -> mp_Not -> m_lineno = yylineno;
 		(yyval.factor) -> mp_Uminus = NULL;
 	}
-#line 2305 "pasc.tab.c" /* yacc.c:1661  */
+#line 2308 "pasc.tab.c" /* yacc.c:1661  */
     break;
 
 
-#line 2309 "pasc.tab.c" /* yacc.c:1661  */
+#line 2312 "pasc.tab.c" /* yacc.c:1661  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2533,7 +2536,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 751 "pasc.y" /* yacc.c:1906  */
+#line 756 "pasc.y" /* yacc.c:1906  */
 
 
 
@@ -2542,6 +2545,6 @@ int main() {
 }
 
 
-void yyerror(char* s) {
-	fprintf(stderr,"%s",s);
+extern void yyerror(const char *s) {
+//  printf("Error '%s'\n", s);
 }
