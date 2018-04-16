@@ -2542,7 +2542,6 @@ yyreturn:
 
 int main() {
     yyparse();
-    std::cout<< ROOT <<endl;
     return 0;
 }
 
