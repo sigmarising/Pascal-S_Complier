@@ -187,7 +187,7 @@ public:
 class Value_Parameter {
 public:
     Value_Parameter(Id_List *M_Id_List,int SType){
-        M_Id_List=M_Id_List;
+        m_Id_List=M_Id_List;
         Simple_Type=SType;
     }
     ~Value_Parameter();
@@ -344,14 +344,7 @@ public:
 //    the Precodure block
 class Procedure : public Common {
 public:
-    Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List){
-        m_lineno=M_lineno;
-        mp_Id=Mp_Id;
-        mp_Parameter_List=Mp_Parameter_List;
-        mp_Const_Declarations=Mp_Const_Declarations;
-        mp_Var_Declarations=Mp_Var_Declarations;
-        mp_Statement_List=Mp_Statement_List;
-    }
+    Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
     /*
      string    func_codeGeneration() override;
      int func_checkReturnType() override {
@@ -393,15 +386,7 @@ public:
 //    the Function block
 class Function : public Common {
 public:
-    Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List){
-        m_returnType=M_returnType;
-        m_lineno=M_lineno;
-        mp_Id=Mp_Id;
-        mp_Parameter_List=Mp_Parameter_List;
-        mp_Const_Declarations=Mp_Const_Declarations;
-        mp_Var_Declarations=Mp_Var_Declarations;
-        mp_Statement_List=Mp_Statement_List;
-    }
+    Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
     /*
      string    func_codeGeneration() override;
      int func_checkReturnType() override {

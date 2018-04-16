@@ -533,4 +533,22 @@ void Term::outputTree() {
         mp_Factor->outputTree();
 }
 
+Procedure::Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List){
+	m_lineno=M_lineno;
+    mp_Id=Mp_Id;
+    mp_Parameter_List=Mp_Parameter_List;
+    mp_Const_Declarations=Mp_Const_Declarations;
+    mp_Var_Declarations=Mp_Var_Declarations;
+    mp_Statement_List=Mp_Statement_List;
+}
+
+Function::Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List){
+    m_returnType=M_returnType;
+    m_lineno=M_lineno;
+    mp_Id=Mp_Id;
+    mp_Parameter_List=Mp_Parameter_List;
+    mp_Const_Declarations=Mp_Const_Declarations;
+    mp_Var_Declarations=Mp_Var_Declarations;
+    mp_Statement_List=Mp_Statement_List;
+}
 
