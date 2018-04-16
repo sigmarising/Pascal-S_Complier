@@ -2542,7 +2542,8 @@ yyreturn:
 
 int main() {
     yyparse();
-    std::cout<< ROOT <<endl;
+    cout<<"begin"<<endl;
+    ROOT->outputTree();
     return 0;
 }
 
