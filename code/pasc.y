@@ -6,16 +6,20 @@
 
 %code top {
 	#include <stdio.h>
+	#include <string>
 	#include "lex.yy.c"
-	#define YYSTYPE int
-	typedef pair<Id*, Const_Value*> p_Const
-	typedef pair<Id_List*, Type*> p_Var
-	typedef pair<int,int> p_Per
-
+	#include <iostream>
+	typedef pair<Id*, Const_Value*> p_Const;
+	typedef pair<Id_List*, Type*> p_Var;
+	typedef pair<int,int> p_Per;
+	Programstruct* ROOT;
 	int yyparse(void);
-	void yyerror(char *s);
 	extern int yylineno;
+	using namespace std;
+	void yyerror(const char* s);
+	#define YYERROR_VERBOSE 1
 }
+
 
 %token AND ARRAY BEGIN_L BOOLEAN CASE CHAR CONST DIV DO DOWNTO ELSE END FOR FUNCTION IF INTEGER MOD 
 %token NOT OF OR PROCEDURE PROGRAM REAL RECORD REPEAT THEN TO TYPE UNTIL VAR WHILE
@@ -27,109 +31,111 @@
 
 
 %union {
-	Programstruct;
-	Program_Body;
-	Const_Declarations;
-	Var_Declarations;
-	SubProgram_Declarations;
-	Statement_List;
-	Common;
-	Procedure;
-	Function;
-	Statement;
-	Parameter_List;
-	Variable;
-	Procedure_Call;
-	Function_Call;
-	Expression;
-	Simple_Expression;
-	Term;
-	Factor;
-	Not;
-	Uminus;
-	Type;
-	Const_Value;
-	Assignop;
-	If_Then_Else;
-	For;
-	Parameter;
-	Relop;
-	Addop;
-	Mulop;
-	Id;
-	Id_List;
-	Period;
-	Expression_List;
-	Program_Head;
-	Compound_Statement;
-	Const_Declaration;
-	Var_Declaration;
-	SubProgram_Declaration;
-	Subprogram;
-	Subprogram_Head;
-	Subprogram_Body;
-	Formal_Parameter;
-	Var_Parameter;
-	Value_Parameter;
-	Id_Varpart;
-	int;
-	float;
-	string;
-	char;
+	Programstruct* programstruct;
+	Program_Body* program_Body;
+	Const_Declarations* const_Declarations;
+	Var_Declarations* var_Declarations;
+	SubProgram_Declarations* subProgram_Declarations;
+	Statement_List* statement_List;
+	Common* common;
+	Procedure* procedure;
+	Function* function;
+	Statement* statement;
+	Parameter_List* parameter_List;
+	Variable* variable;
+	Procedure_Call* procedure_Call;
+	Function_Call* function_Call;
+	Expression* expression;
+	Simple_Expression* simple_Expression;
+	Term* term;
+	Factor* factor;
+	Not* NOt;
+	Uminus* uminus;
+	Type* type;
+	Const_Value* const_Value;
+	Assignop* assignop;
+	If_Then_Else* if_Then_Else;
+	For* FOr;
+	Parameter* parameter;
+	Relop* relop;
+	Addop* addop;
+	Mulop* mulop;
+	Id* id;
+	Id_List* id_List;
+	Period* period;
+	Expression_List* expression_List;
+	Program_Head* program_Head;
+	Compound_Statement* compound_Statement;
+	Const_Declaration* const_Declaration;
+	Var_Declaration* var_Declaration;
+	SubProgram_Declaration* subProgram_Declaration;
+	Subprogram* subprogram;
+	Subprogram_Head* subprogram_Head;
+	Subprogram_Body* subprogram_Body;
+	Formal_Parameter* formal_Parameter;
+	Var_Parameter* var_Parameter;
+	Value_Parameter* value_Parameter;
+	Id_Varpart* id_Varpart;
+	int m_int;
+	float m_float;
+	std::string* m_str;
+	char m_char;
  	
 }
 
-%token <int> DIGITS
-%token <float> NUMBER
-%token <string> IDENTIFIER
-%token <char> LETTER;
+%token <m_int> DIGITS
+%token <m_float> NUMBER
+%token <m_str> IDENTIFIER
+%token <m_char> LETTER;
 
-%type <Programstruct> program
-%type <Program_Head> program_head
-%type <Program_Body> program_body
-%type <Id_List> identifier_list
-%type <Const_Declarations> const_declarations
-%type <Const_Declaration> const_declaration
-%type <Const_Value> const_variable
-%type <Var_Declarations> var_declarations
-%type <Var_Declaration> var_declaration
-%type <Type> type
-%type <int> standard_type
-%type <Period> period
-%type <SubProgram_Declarations> subprogram_declarations
-%type <Subprogram> subprogram
-%type <Subprogram_Head> subprogram_head
-%type <Formal_Parameter> formal_parameter
-%type <Parameter_List> parameter_list
-%type <Parameter> parameter
-%type <Var_Parameter> var_parameter
-%type <Value_Parameter> value_parameter
-%type <Subprogram_Body> subprogram_body
-%type <Compound_Statement> compound_statement
-%type <Statement_List> statement_list
-%type <Statement> statement
-%type <Variable> variable
-%type <Id_Varpart> id_varpart
-%type <Procedure_Call> call_procedure_statement
-%type <Statement> else_part
-%type <Expression_List> expression_list
-%type <Expression> expression
-%type <Simple_Expression> simple_expression
-%type <Term> term
-%type <Factor> factor
+%type <programstruct> program
+%type <program_Head> program_head
+%type <program_Body> program_body
+%type <id_List> identifier_list
+%type <const_Declarations> const_declarations
+%type <const_Declaration> const_declaration
+%type <const_Value> const_variable
+%type <var_Declarations> var_declarations
+%type <var_Declaration> var_declaration
+%type <type> type
+%type <m_int> standard_type
+%type <period> period
+%type <subProgram_Declarations> subprogram_declarations
+%type <common> subprogram
+%type <subprogram_Head> subprogram_head
+%type <formal_Parameter> formal_parameter
+%type <parameter_List> parameter_list
+%type <parameter> parameter
+%type <var_Parameter> var_parameter
+%type <value_Parameter> value_parameter
+%type <subprogram_Body> subprogram_body
+%type <compound_Statement> compound_statement
+%type <statement_List> statement_list
+%type <statement> statement
+%type <variable> variable
+%type <id_Varpart> id_varpart
+%type <procedure_Call> call_procedure_statement
+%type <statement> else_part
+%type <expression_List> expression_list
+%type <expression> expression
+%type <simple_Expression> simple_expression
+%type <term> term
+%type <factor> factor
 
 
 
 %%
+
 program 
 	: program_head program_body '.'	{
 		$$ = new Programstruct($1->m_Id, $1->m_Id_List, $2);
+		ROOT = $$;
 	} 
 
 program_head 
 	: PROGRAM IDENTIFIER '(' identifier_list ')' ';' {
 		Id* tmp = new Id();
-		tmp -> m_name = $2;
+		tmp -> m_name = *($2);
 		tmp -> m_lineno = yylineno;
 		tmp -> m_idType = TYPE_ID;
 		$$ = new Program_Head(tmp, $4);
@@ -142,18 +148,18 @@ program_body
 
 identifier_list 
 	: identifier_list ',' IDENTIFIER {
-		$$ = new ID_List();
+		$$ = new Id_List();
 		$$ = $1;
 		Id* tmp = new Id();
-		tmp -> m_name = $3;
+		tmp -> m_name = *($3);
 		tmp -> m_lineno = yylineno;
 		$$ -> mv_Id.push_back(tmp);
 	}
 	| IDENTIFIER {
 		Id* tmp = new Id();
-		tmp -> m_name = $1;
+		tmp -> m_name = *($1);
 		tmp -> m_lineno = yylineno;
-		$$ = new ID_List();
+		$$ = new Id_List();
 		$$ -> mv_Id.push_back(tmp);
 		$$ -> m_lineno = yylineno;
 	}
@@ -172,17 +178,17 @@ const_declaration
 	: const_declaration ';' IDENTIFIER '=' const_variable {
 
 		Id* tmp = new Id();
-		tmp -> m_name = $3;
+		tmp -> m_name = *($3);
 		tmp -> m_lineno = yylineno;
 
 		$1 -> mv_Const.push_back(p_Const(tmp, $5));
-		$$ = new Const_Declarations($1 -> mv_Const);
+		$$ = new Const_Declaration($1 -> mv_Const);
 	}
 	| IDENTIFIER '=' const_variable {
 		Id* tmp = new Id();
-		tmp -> m_name = $1;
+		tmp -> m_name = *($1);
 		tmp -> m_lineno = yylineno;
-		$$ = new Const_Declarations();
+		$$ = new Const_Declaration();
 		$$ -> mv_Const.push_back(p_Const(tmp,$3));
 	}
 	;
@@ -193,33 +199,33 @@ const_variable
 		$$ -> m_lineno = yylineno;
 		$$ -> m_postNeg = CONST_POSTNEG_POSITIVE;
 		$$ -> m_valueType = TYPE_ID;
-		$$ -> m_isID = true;
+		$$ -> m_isId = true;
 		Id* tmp = new Id();
-		tmp -> m_name = $2;
+		tmp -> m_name = *($2);
 		tmp -> m_lineno = yylineno;
-		$$ -> mp_ID = tmp;
+		$$ -> mp_Id = tmp;
 	}
 	| '-' IDENTIFIER {
 		$$ = new Const_Value();
 		$$ -> m_lineno = yylineno;
 		$$ -> m_postNeg = CONST_POSTNEG_NEGATIVE;
 		$$ -> m_valueType = TYPE_ID;
-		$$ -> m_isID = true;
+		$$ -> m_isId = true;
 		Id* tmp = new Id();
-		tmp -> m_name = $2;
+		tmp -> m_name = *($2);
 		tmp -> m_lineno = yylineno;
-		$$ -> mp_ID = tmp;	
+		$$ -> mp_Id = tmp;	
 	} 
 	| IDENTIFIER {
 		$$ = new Const_Value();
 		$$ -> m_lineno = yylineno;
 		$$ -> m_postNeg = CONST_POSTNEG_POSITIVE;
 		$$ -> m_valueType = TYPE_ID;
-		$$ -> m_isID = true;
+		$$ -> m_isId = true;
 		Id* tmp = new Id();
-		tmp -> m_name = $1;
+		tmp -> m_name = *($1);
 		tmp -> m_lineno = yylineno;
-		$$ -> mp_ID = tmp;
+		$$ -> mp_Id = tmp;
 	}
 	| '+' NUMBER {
 		$$ = new Const_Value();
@@ -361,23 +367,23 @@ subprogram_declarations
 subprogram
 	: subprogram_head subprogram_body {
 		if($1 -> Simple_Type == TYPE_NULL) {
-			$$ = new Procedure(yylineno, $1 -> m_ID, $1-> m_Formal_Parameter, $2 -> m_Const_Declarations, $2 -> m_Var_Declarations, $2-> m_Compound_Statement);
+			$$ = new Procedure(yylineno, $1 -> m_ID, $1-> m_Formal_Parameter -> m_Parameter_List, $2 -> m_Const_Declarations, $2 -> m_Var_Declarations, $2-> m_Compound_Statement -> m_Statement_List);
 		}
 		else {
-			$$ = new Function($1 -> Simple_Type, yylineno, $1 -> m_ID, $1-> m_Formal_Parameter, $2 -> m_Const_Declarations, $2 -> m_Var_Declarations, $2-> m_Compound_Statement)
+			$$ = new Function($1 -> Simple_Type, yylineno, $1 -> m_ID, $1-> m_Formal_Parameter -> m_Parameter_List, $2 -> m_Const_Declarations, $2 -> m_Var_Declarations, $2-> m_Compound_Statement -> m_Statement_List);
 		}
 	}
 
 subprogram_head 
 	: FUNCTION IDENTIFIER formal_parameter ':' standard_type ';' {
 		Id* tmp = new Id();
-		tmp -> m_name = $2;
+		tmp -> m_name = *($2);
 		tmp -> m_lineno = yylineno;
 		$$ = new Subprogram_Head(tmp, $3, $5);
 	}
 	| PROCEDURE IDENTIFIER formal_parameter ';' {
 		Id* tmp = new Id();
-		tmp -> m_name = $2;
+		tmp -> m_name = *($2);
 		tmp -> m_lineno = yylineno;
 		$$ = new Subprogram_Head(tmp, $3, TYPE_NULL);
 	}
@@ -398,7 +404,7 @@ parameter_list
 		$$ -> mv_Patameter.push_back($3);
 	}
 	| parameter {
-		$$ = new Parameter_List()
+		$$ = new Parameter_List();
 		$$ -> m_lineno = yylineno;
 		$$ -> mv_Patameter.push_back($1);
 	}
@@ -432,7 +438,7 @@ subprogram_body
 
 compound_statement 
 	: BEGIN_L statement_list END {
-		compound_statement = new Compound_Statement($2);
+		$$ = new Compound_Statement($2);
 	}
 	;
 
@@ -465,9 +471,9 @@ statement
 		$$ = new Statement();
 		$$ -> m_stateType = STATEMENT_ASSIGN;
 		$$ -> m_lineno = yylineno;
-		$$ -> mp_Assignop = Assignop($1, $3);
+		$$ -> mp_Assignop = new Assignop($1, $3);
 		$$ -> mp_Procedure_call = NULL;
-		$$ -> Statement_List = NULL;
+		$$ -> mp_Statement_List = NULL;
 		$$ -> mp_If_Then_Else = NULL;
 		$$ -> mp_For = NULL;
 	}
@@ -477,7 +483,7 @@ statement
 		$$ -> m_lineno = yylineno;
 		$$ -> mp_Procedure_call = $1;
 		$$ -> mp_Assignop = NULL;
-		$$ -> Statement_List = NULL;
+		$$ -> mp_Statement_List = NULL;
 		$$ -> mp_If_Then_Else = NULL;
 		$$ -> mp_For = NULL;
 	}
@@ -485,7 +491,7 @@ statement
 		$$ = new Statement();
 		$$ -> m_stateType = STATEMENT_COMPOUND;
 		$$ -> m_lineno = yylineno;
-		$$ -> Statement_List = $1;
+		$$ -> mp_Statement_List = $1 -> m_Statement_List;
 		$$ -> mp_Assignop = NULL;
 		$$ -> mp_Procedure_call = NULL;
 		$$ -> mp_If_Then_Else = NULL;
@@ -498,12 +504,12 @@ statement
 		$$ -> mp_If_Then_Else = new If_Then_Else($2, $4, $5);
 		$$ -> mp_Assignop = NULL;
 		$$ -> mp_Procedure_call = NULL;
-		$$ -> Statement_List = NULL;
+		$$ -> mp_Statement_List = NULL;
 		$$ -> mp_For = NULL;
 	}
 	| FOR IDENTIFIER ASSIGNOP expression TO expression DO statement {
 		Id* tmp = new Id();
-		tmp -> m_name = $2;
+		tmp -> m_name = *($2);
 		tmp -> m_lineno = yylineno;
 		$$ = new Statement();
 		$$ -> m_stateType = STATEMENT_FOR;
@@ -511,11 +517,11 @@ statement
 		$$ -> mp_For = new For(tmp, $4, $6, $8);
 		$$ -> mp_Assignop = NULL;
 		$$ -> mp_Procedure_call = NULL;
-		$$ -> Statement_List = NULL;
+		$$ -> mp_Statement_List = NULL;
 		$$ -> mp_If_Then_Else = NULL;
 	}
 	| {
-		$$ = new Statement()
+		$$ = new Statement();
 	}
 	;
 
@@ -523,7 +529,7 @@ statement
 variable 
 	: IDENTIFIER id_varpart {
 		Id* tmp = new Id();
-		tmp -> m_name = $1;
+		tmp -> m_name = *($1);
 		tmp -> m_lineno = yylineno;
 		$$ = new Variable();
 		$$ -> mp_Id = tmp;
@@ -556,13 +562,13 @@ id_varpart
 call_procedure_statement 
 	: IDENTIFIER {
 		Id* tmp = new Id();
-		tmp -> m_name = $1;
+		tmp -> m_name = *($1);
 		tmp -> m_lineno = yylineno;
 		$$ = new Procedure_Call();
 		$$ -> m_lineno = yylineno;
 		$$ -> m_expNum = 0;
-		$$ -> mp_Id = $1;
-		$$ -> mp_Expression_List = NULL；
+		$$ -> mp_Id = tmp;
+		$$ -> mp_Expression_List = NULL;
 
 	}
 	| IDENTIFIER '(' expression_list ')' {
@@ -570,10 +576,10 @@ call_procedure_statement
 		$$ -> m_lineno = yylineno;
 		$$ -> m_expNum = $3 -> mv_Expression.size();
 		Id* tmp = new Id();
-		tmp -> m_name = $1;
+		tmp -> m_name = *($1);
 		tmp -> m_lineno = yylineno;
 		$$ -> mp_Id = tmp;
-		$$ -> mp_Expression_List = $3；
+		$$ -> mp_Expression_List = $3;
 	}
 	;
 
@@ -704,7 +710,7 @@ factor
 	: NUMBER {
 		$$ = new Factor();
 		$$ -> m_lineno = yylineno;
-		$$ -> m_real($1);
+		$$ -> m_real = $1;
 	}
 	| variable {
 		$$ = new Factor();
@@ -720,7 +726,7 @@ factor
 		$$ -> m_lineno = yylineno;
 		$$ -> mp_Variable = NULL;
 		Id* tmp = new Id();
-		tmp -> m_name = $1;
+		tmp -> m_name = *($1);
 		tmp -> m_lineno = yylineno;
 		$$ -> mp_Function_Call = new Function_Call($3 -> mv_Expression.size(), yylineno, tmp, $3);
 		$$ -> mp_Expression = NULL;
@@ -742,18 +748,21 @@ factor
 		$$ -> mp_Variable = NULL;
 		$$ -> mp_Function_Call = NULL;
 		$$ -> mp_Expression = NULL;
-		$$ -> mp_Not = $2;
+		$$ -> mp_Not -> mp_Factor = $2;
+		$$ -> mp_Not -> m_lineno = yylineno;
 		$$ -> mp_Uminus = NULL;
 	}
 	;
+
 %%
 
 
 int main() {
-    return yyparse();
+    yyparse();
+    return 0;
 }
 
 
-void yyerror(char* s) {
-	fprintf(stderr,"%s",s);
+extern void yyerror(const char* s) {
+  printf("line: %d, Error '%s'\n",yylineno,s);
 }
