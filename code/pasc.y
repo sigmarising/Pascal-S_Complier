@@ -753,15 +753,13 @@ factor
 		$$ -> mp_Uminus = NULL;
 	}
 	;
-
 %%
 
 
 int main() {
-    yyparse();
+    return yyparse();
     //cout<<"begin"<<endl;
     //ROOT->outputTree();
-    return 0;
 }
 
 
