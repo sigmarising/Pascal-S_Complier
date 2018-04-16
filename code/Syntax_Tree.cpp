@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include "Syntax_Tree.h"
+#include "Public_define.h"
 #include <iostream>
 using namespace std;
 

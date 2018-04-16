@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include "Public_define.h"
 using namespace std;
 
 // class declare
@@ -324,7 +325,7 @@ public:
 
 class Common {
 public:
-    /*
+    
      virtual string func_codeGeneration() = 0;
      virtual int func_checkReturnType() = 0;
      virtual int func_get_Common_Type() {
@@ -336,7 +337,7 @@ public:
      virtual Const_Declarations * get_const_dec() = 0;
      virtual Var_Declarations * get_var_dec() = 0;
      virtual int get_lineno() = 0;
-     */
+     
      virtual void outputTree() = 0;
     
 };
@@ -345,7 +346,7 @@ public:
 class Procedure : public Common {
 public:
     Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
-    /*
+    
      string    func_codeGeneration() override;
      int func_checkReturnType() override {
      return -1; // return VOID
@@ -369,7 +370,7 @@ public:
      int get_lineno() override {
      return m_lineno;
      }
-     */
+     
     
     
     int m_lineno;
@@ -387,32 +388,32 @@ public:
 class Function : public Common {
 public:
     Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
-    /*
-     string    func_codeGeneration() override;
-     int func_checkReturnType() override {
-     return m_returnType;
-     }
-     int    func_get_Common_Type() override{
-     return COMMON_FUNCTION;
-     }
-     bool create_symbolsheet() override;
-     Id * get_func_id() override {
-     return mp_Id;
-     }
-     Parameter_List * get_param_list() override {
-     return mp_Parameter_List;
-     }
-     Const_Declarations * get_const_dec() override {
-     return mp_Const_Declarations;
-     }
-     Var_Declarations * get_var_dec() override {
-     return mp_Var_Declarations;
-     }
-     int get_lineno() override {
-     return m_lineno;
-     }
-     
-     */
+    
+    string    func_codeGeneration() override;
+    int func_checkReturnType() override {
+    return m_returnType;
+    }
+    int    func_get_Common_Type() override{
+    return COMMON_FUNCTION;
+    }
+    bool create_symbolsheet() override;
+    Id * get_func_id() override {
+    return mp_Id;
+    }
+    Parameter_List * get_param_list() override {
+    return mp_Parameter_List;
+    }
+    Const_Declarations * get_const_dec() override {
+    return mp_Const_Declarations;
+    }
+    Var_Declarations * get_var_dec() override {
+    return mp_Var_Declarations;
+    }
+    int get_lineno() override {
+    return m_lineno;
+    }
+    
+    
     
     int m_returnType;
     int m_lineno;

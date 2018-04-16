@@ -210,8 +210,8 @@ typedef pair<symbolsheet_name, symbolSheet> symbolsheet_list_item;
 
 //	the interface to call code_genaration
 //		input_Tree	: the syntax tree
-//		output_File : the filename without suffix
-void semantic_Error_Detect(Programstruct *input_Tree, string output_File);
+//      output      : whether to continue
+bool semantic_Error_Detect(Programstruct *input_Tree);
 
 bool lookup_symbol(string symbolSheet_name, string symbol_name);
 

@@ -2540,12 +2540,17 @@ yyreturn:
 
 
 
-int main() {
+int lexyacc() {
+    cout<<"begin"<<endl;
+    return yyparse();
+}
+
+/*int main() {
     yyparse();
     cout<<"begin"<<endl;
     ROOT->outputTree();
     return 0;
-}
+}*/
 
 
 extern void yyerror(const char* s) {
