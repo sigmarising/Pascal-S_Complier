@@ -215,11 +215,11 @@ bool semantic_Error_Detect(Programstruct *input_Tree);
 
 bool lookup_symbol(string symbolSheet_name, string symbol_name);
 
-int get_symbol_type(string symbol_sheet, string symbol_name);
+int get_symbol_type(string symbolSheet_name, string symbol_name);
 
 ranges get_symbol_range(string symbolSheet_name, string symbol_name);
 
-int get_array_type(string symbol_sheet, string symbol_name);
+int get_array_type(string symbolSheet_name, string symbol_name);
 
 int get_func_return_type(string symbol_name);
 
@@ -227,4 +227,4 @@ bool lookup_func(string symbol_name);                          //判断是否是
 bool lookup_procedure(string symbol_name);
 
 int get_symbol_narg(string symbolSheet_name, string symbol_name);  //返回参数个数
-vector<int> get_symbol_narg_type(string symbol_sheet, string symbol_name);
+vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name);
