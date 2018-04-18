@@ -3,6 +3,7 @@
 #include <set>
 #include <cassert>
 
+map<symbolsheet_name, symbolSheet> symbolSheet_list;
 typedef pair<bool, symbolsheet_name> symbolSheet_create_result;
 
 symbolSheet_create_result Program_Body::create_symbolsheet() {

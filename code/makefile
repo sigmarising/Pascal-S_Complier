@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -g
-OBJS = main.o Syntax_TTree.o pasc.tab.o SemanticAnalysis.o CodeGenerate.o
+OBJS = main.o Syntax_Tree.o pasc.tab.o SemanticAnalysis.o CodeGenerate.o
 
 pas2c : $(OBJS)
 	$(CC) $(CFLAGS) -o pas2c $(OBJS) 
@@ -18,4 +18,4 @@ SemanticAnalysis.o : SemanticAnalysis.h
 CodeGenerate.o : CodeGenerate.h
 
 clean:
-	rm -f *.o pasc
+	rm -f *.o pas2c

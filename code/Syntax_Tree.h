@@ -347,7 +347,7 @@ public:
 //    the Precodure block
 class Procedure : public Common {
 public:
-    Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List) {};
+    Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
     string    func_codeGeneration() override;
     int func_checkReturnType() override {
      return -1; // return VOID
@@ -387,7 +387,7 @@ public:
 //    the Function block
 class Function : public Common {
 public:
-    Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List) {};
+    Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
     string    func_codeGeneration() override;
     int func_checkReturnType() override {
     return m_returnType;

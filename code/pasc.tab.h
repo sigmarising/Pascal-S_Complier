@@ -167,5 +167,6 @@ typedef union YYSTYPE YYSTYPE;
 extern YYSTYPE yylval;
 
 int yyparse (void);
+int lexyacc();
 
 #endif /* !YY_YY_PASC_TAB_H_INCLUDED  */

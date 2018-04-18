@@ -11,8 +11,8 @@
 #include <utility>
 #include <iostream>
 
-enum TYPE {
-    VOID = -1, INT, REAL, BOOLEAN, CHAR
+enum TYPES {
+    VOID = -1, INT, _REAL, _BOOLEAN, _CHAR
 };  // VOID is for proc
 enum SUBPRGRM_TYPE {
     NONE = -1, FUNC, PROC
@@ -23,7 +23,7 @@ typedef string symbol_name;
 typedef vector<int> subprgrm_nargs_types;
 
 struct Property {
-    TYPE type;  // = INT;  // also indicate the array element's type
+    TYPES type;  // = INT;  // also indicate the array element's type
     SUBPRGRM_TYPE subprgrm_type;  // = NONE;
     bool is_const;  // = false;
     float const_val;  // = 0;
@@ -44,7 +44,7 @@ public:
     bool add_parameter_symbols(Parameter_List *parameter_list) {
         for (auto parameter: parameter_list->mv_Patameter) {
             vector<Id *> parameter_symbols = parameter->func_get_mv_id();
-            auto type = (TYPE) parameter->func_get_m_type();
+            auto type = (TYPES) parameter->func_get_m_type();
             SUBPRGRM_TYPE subprgrm_type = NONE;
             bool is_const = false;
             float const_val = 0;
@@ -78,18 +78,18 @@ public:
     bool add_const_symbols(Const_Declarations *const_declarations) {
         for (auto const_symbol: const_declarations->mv_Const) {
             string name = const_symbol.first->m_name;
-            auto type = (TYPE) const_symbol.second->m_valueType;
+            auto type = (TYPES) const_symbol.second->m_valueType;
             SUBPRGRM_TYPE subprgrm_type = NONE;
             bool is_const = true;
 //            bool is_func = false;
             float const_val = 0;
             if (type == INT) {
                 const_val = const_symbol.second->m_int;
-            } else if (type == REAL) {
+            } else if (type == _REAL) {
                 const_val = const_symbol.second->m_int;
-            } else if (type == CHAR) {
+            } else if (type == _CHAR) {
                 const_val = const_symbol.second->m_int;
-            } else if (type == BOOLEAN) {
+            } else if (type == _BOOLEAN) {
                 const_val = const_symbol.second->m_int;
             } else {
                 std::cout << "行" << const_symbol.second->m_lineno << ": 常量声明的类型错误" << endl;
@@ -121,7 +121,7 @@ public:
     bool add_var_symbols(Var_Declarations *var_declarations) {
         for (auto vars: var_declarations->mv_Var) {
             vector<Id *> var_symbols = vars.first->mv_Id;
-            auto type = (TYPE) vars.second->func_checkSimpleType();
+            auto type = (TYPES) vars.second->func_checkSimpleType();
             SUBPRGRM_TYPE subprgrm_type = NONE;
             bool is_const = false;
 //            bool is_func = false;
@@ -160,7 +160,7 @@ public:
     bool add_subprgrm_symbols(SubProgram_Declarations *subProgram_declarations) {
         for (auto subprgrm: subProgram_declarations->mv_Common) {
             string name = subprgrm->get_func_id()->m_name;
-            auto type = (TYPE) subprgrm->func_checkReturnType();  // func: return type; proc: VOID
+            auto type = (TYPES) subprgrm->func_checkReturnType();  // func: return type; proc: VOID
             auto subprgrm_type = (SUBPRGRM_TYPE) subprgrm->func_get_Common_Type();  // none-subprgrm | func | proc
             bool is_const = false;
             float const_val = 0;
@@ -205,7 +205,7 @@ public:
 
 };
 
-map<symbolsheet_name, symbolSheet> symbolSheet_list;
+extern map<symbolsheet_name, symbolSheet> symbolSheet_list;
 typedef pair<symbolsheet_name, symbolSheet> symbolsheet_list_item;
 
 //	the interface to call code_genaration
