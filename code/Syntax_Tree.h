@@ -296,6 +296,7 @@ public:
     }
     ~SubProgram_Declarations();
     bool error_detect(string symbolSheet_name);
+    bool definition_error_detect();
     string    func_codeGeneration();
     void    func_checkType();
 
