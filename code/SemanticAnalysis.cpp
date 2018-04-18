@@ -1,52 +1,201 @@
 #include "SemanticAnalysis.h"
 #include <iostream>
+#include <set>
+#include <cassert>
 
-bool Program_Body::create_symbolsheet() {
+typedef pair<bool, symbolsheet_name> symbolSheet_create_result;
+
+symbolSheet_create_result Program_Body::create_symbolsheet() {
     symbolSheet global_sheet;
     global_sheet.sheet_name = "0";
-    if (global_sheet.add_const_symbols(mp_Const_Declarations) &&
+    if (mp_Const_Declarations->error_detect(global_sheet.sheet_name) &&
+        global_sheet.add_const_symbols(mp_Const_Declarations) &&
+        mp_Var_Declarations->error_detect(global_sheet.sheet_name) &&
         global_sheet.add_var_symbols(mp_Var_Declarations) &&
+        mp_SubProgram_Declarations->error_detect(global_sheet.sheet_name) &&
         global_sheet.add_subprgrm_symbols(mp_SubProgram_Declarations))
-        symbolSheet_list.insert(symbolsheet_list_item("0", global_sheet));
-    return !symbolSheet_list.empty();
+        symbolSheet_list.insert(symbolsheet_list_item(global_sheet.sheet_name, global_sheet));
+    return symbolSheet_create_result(!symbolSheet_list.empty(), global_sheet.sheet_name);
 }
 
-bool Procedure::create_symbolsheet() {
-    auto s = (int) symbolSheet_list.size();
+symbolSheet_create_result Procedure::create_symbolsheet() {
+    auto s = symbolSheet_list.size();
     symbolSheet proc_sheet;
     proc_sheet.sheet_name = mp_Id->m_name;  // uses proc name
-    if (proc_sheet.add_parameter_symbols(mp_Parameter_List) &&
+    if (mp_Parameter_List->error_detect(proc_sheet.sheet_name) &&
+        proc_sheet.add_parameter_symbols(mp_Parameter_List) &&
+        mp_Const_Declarations->error_detect(proc_sheet.sheet_name) &&
         proc_sheet.add_const_symbols(mp_Const_Declarations) &&
+        mp_Var_Declarations->error_detect(proc_sheet.sheet_name) &&
         proc_sheet.add_var_symbols(mp_Var_Declarations))
         symbolSheet_list.insert(symbolsheet_list_item(proc_sheet.sheet_name, proc_sheet));
-    return (bool) ((int) symbolSheet_list.size() - s);
+    return symbolSheet_create_result(bool(symbolSheet_list.size() - s), proc_sheet.sheet_name);
 }
 
-bool Function::create_symbolsheet() {
-    auto s = (int) symbolSheet_list.size();
+symbolSheet_create_result Function::create_symbolsheet() {
+    auto s = symbolSheet_list.size();
     symbolSheet func_sheet;
     func_sheet.sheet_name = mp_Id->m_name;  // uses proc name
     if (func_sheet.add_parameter_symbols(mp_Parameter_List) &&
         func_sheet.add_const_symbols(mp_Const_Declarations) &&
         func_sheet.add_var_symbols(mp_Var_Declarations))
         symbolSheet_list.insert(symbolsheet_list_item(func_sheet.sheet_name, func_sheet));
-    return (bool) ((int) symbolSheet_list.size() - s);
+    return symbolSheet_create_result(bool(symbolSheet_list.size() - s), func_sheet.sheet_name);
 }
 
 //注意 Programstruct的错误检测，还不是特别完善
-bool Programstruct::error_detect(string symbol_sheet_name) {
+bool Programstruct::error_detect() {
     bool flag = true;
     if (this->mp_Program_Body)
-        flag = mp_Program_Body->error_detect(symbol_sheet_name);
+        flag = mp_Program_Body->error_detect();
     return flag;
 }
 
-//注意 一半完成,还有声明部分没解决
-bool Program_Body::error_detect(string symbol_sheet_name) {
+//声明部分已经解决
+bool Program_Body::error_detect() {
+    symbolSheet_create_result re = Program_Body::create_symbolsheet();
+    symbolsheet_name name = re.second;
     bool flag = true;
+    if (mp_SubProgram_Declarations)
+        flag = mp_SubProgram_Declarations->definition_error_detect();
     if (mp_Statement_List)
-        flag = mp_Statement_List->error_detect(symbol_sheet_name);
+        flag = flag && mp_Statement_List->error_detect(name);
     return flag;                                  //此处需要为flag&&另一个bool值
+}
+
+bool Const_Declarations::error_detect(string symbolSheet_name) {
+    set<string> id_set;
+    bool flag = true;
+    for (auto const_symbol: mv_Const) {
+        if (symbolSheet_name != "0" && const_symbol.first->m_name == symbolSheet_name) {
+            cout << "子程序\"" << symbolSheet_name << "\"声明的常量\"" << const_symbol.first->m_name
+                 << "\"不能与子程序名相同" << endl;
+            flag = false;
+            break;
+        }
+        auto result = id_set.insert(const_symbol.first->m_name);
+        if (!result.second) {
+            if (symbolSheet_name == "0") {
+                cout << "全局常量声明中存在重复声明错误" << endl;
+            } else {
+                cout << "子程序\"" << symbolSheet_name << "\"常量声明中存在重复声明错误";
+            }
+            flag = false;
+            break;
+        }
+    }
+    return flag;
+}
+
+bool Var_Declarations::error_detect(string symbolSheet_name) {
+    set<string> id_set;
+    bool flag = true;
+    symbolSheet sheet = symbolSheet_list[symbolSheet_name];
+    for (auto type_group: mv_Var) {
+        for (auto id: type_group.first->mv_Id) {
+            string id_name = id->m_name;
+            if (symbolSheet_name != "0" && id_name == symbolSheet_name) {
+                cout << "子程序\"" << symbolSheet_name << "\"声明的变量\"" << id_name
+                     << "\"不能与子程序名相同" << endl;
+                flag = false;
+                break;
+            }
+            auto result = id_set.insert(id_name);
+            if (!result.second || sheet.exists(id_name)) {
+                if (symbolSheet_name == "0") {
+                    cout << "全局变量声明行中存在重复声明错误" << endl;
+                } else {
+                    cout << "子程序\"" << symbolSheet_name << "\"变量声明行中存在重复声明错误";
+                }
+                flag = false;
+                break;
+            }
+        }
+    }
+    return flag;
+}
+
+bool SubProgram_Declarations::error_detect(string symbolSheet_name) {
+    set<string> id_set;
+    bool flag = true;
+    symbolSheet sheet = symbolSheet_list[symbolSheet_name];
+    for (auto subprgrm: mv_Common) {
+        string id_name = subprgrm->get_func_id()->m_name;
+        auto result = id_set.insert(id_name);
+        if (!result.second || sheet.exists(id_name)) {
+            cout << "子程序\"" << id_name << "\"重复声明错误" << endl;
+            flag = false;
+            break;
+        }
+    }
+    return flag;
+}
+
+bool SubProgram_Declarations::definition_error_detect() {
+    bool flag = true;
+    for (auto subprgrm: mv_Common) {
+        flag = flag && subprgrm->error_detect();
+        if (!flag) {
+            break;
+        }
+    }
+    return flag;
+}
+
+bool Procedure::error_detect() {
+    string proc_name = mp_Id->m_name;
+    symbolSheet sheet = symbolSheet_list[proc_name];
+    bool flag = true;
+    if (mp_Parameter_List)
+        flag = mp_Parameter_List->error_detect(proc_name);
+    if (mp_Const_Declarations)
+        flag = flag && mp_Const_Declarations->error_detect(proc_name);
+    if (mp_Var_Declarations)
+        flag = flag && mp_Var_Declarations->error_detect(proc_name);
+    if (mp_Statement_List)
+        flag = flag && mp_Statement_List->error_detect(proc_name);
+    return flag;
+}
+
+bool Function::error_detect() {
+    string func_name = mp_Id->m_name;
+    symbolSheet sheet = symbolSheet_list[func_name];
+    bool flag = true;
+    if (mp_Parameter_List)
+        flag = mp_Parameter_List->error_detect(func_name);
+    if (mp_Const_Declarations)
+        flag = flag && mp_Const_Declarations->error_detect(func_name);
+    if (mp_Var_Declarations)
+        flag = flag && mp_Var_Declarations->error_detect(func_name);
+    if (mp_Statement_List)
+        flag = flag && mp_Statement_List->error_detect(func_name);
+    return flag;
+}
+
+bool Parameter_List::error_detect(string symbolSheet_name) {
+    set<string> id_set;
+    bool flag = true;
+    symbolSheet sheet = symbolSheet_list[symbolSheet_name];
+    for (auto parameter: mv_Patameter) {
+        vector<Id*> parameter_symbols = parameter->func_get_mv_id();
+        for (auto id: parameter_symbols) {
+            string id_name = id->m_name;
+            if (id_name == symbolSheet_name) {
+                cout << "子程序\"" << symbolSheet_name << "\"声明的形式参数\"" << id_name
+                     << "\"不能与子程序名相同" << endl;
+                flag = false;
+                break;
+            }
+            auto result = id_set.insert(id_name);
+            if (!result.second) {
+                cout << "子程序\"" << symbolSheet_name <<"\"声明行中形式参数\"" << id_name
+                     << "\"存在重复声明错误" << endl;
+                flag = false;
+                break;
+            }
+        }
+    }
+    return flag;
 }
 
 // Statement_List的语义错误检测
@@ -667,4 +816,28 @@ vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name) {
             return global_sheet.symbols[symbol_name].nargs_types;
         }
     }
+}
+
+bool semantic_Error_Detect(Programstruct *input_Tree) {
+    // TODO: add semantic error detection api
+    bool flag = true;
+
+    // first, build the symbol sheets
+    if (input_Tree->mp_Program_Body)
+        flag = input_Tree->mp_Program_Body->create_symbolsheet().first;
+    if (!input_Tree->mp_Program_Body->mp_SubProgram_Declarations->mv_Common.empty()) {
+        for (auto subprogram: input_Tree->mp_Program_Body->mp_SubProgram_Declarations->mv_Common) {
+            flag = flag && subprogram->create_symbolsheet().first;
+            if (!flag) {
+                break;
+            }
+        }
+    }
+    assert(!symbolSheet_list.empty());
+    assert(symbolSheet_list.find("0") != symbolSheet_list.end());
+    // then, check semantic error
+    if (flag) {
+        flag = flag && input_Tree->mp_Program_Body->error_detect();
+    }
+    return flag;
 }

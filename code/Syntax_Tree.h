@@ -73,10 +73,10 @@ public:
         m_Id_List=M_Id_List;
     }
     ~Program_Head();
-    
+
     Id * m_Id;
     Id_List *m_Id_List;
-    
+
 };
 class Compound_Statement{
 public:
@@ -84,9 +84,9 @@ public:
         m_Statement_List=M_Statement_List;
     }
     ~Compound_Statement();
-    
+
     Statement_List * m_Statement_List;
-    
+
 };
 class Const_Declaration {
 public:
@@ -95,7 +95,7 @@ public:
         mv_Const=Mv_Const;
     }
     ~Const_Declaration();
-    
+
     vector<pair<Id*, Const_Value*> > mv_Const;
 };
 
@@ -106,9 +106,9 @@ public:
         mv_Var=Mv_Var;
     }
     ~Var_Declaration();
-    
+
     vector<pair<Id_List*, Type*> > mv_Var;
-    
+
 };
 
 class SubProgram_Declaration {
@@ -116,20 +116,20 @@ public:
     SubProgram_Declaration();
     ~SubProgram_Declaration();
     vector<Subprogram*> mv_Subprogram;
-    
-    
-    
+
+
+
 };
 
 class Subprogram {
 public:
     Subprogram();
     ~Subprogram();
-    
-    
+
+
     Subprogram_Head * m_Subprogram_Head;
     Subprogram_Body *m_Subprogram_Body;
-    
+
 };
 class Subprogram_Head {
 public:
@@ -139,11 +139,11 @@ public:
         Simple_Type=SType;
     }
     ~Subprogram_Head();
-    
+
     Id * m_ID;
     Formal_Parameter *m_Formal_Parameter;
     int Simple_Type;
-    
+
 };
 
 class Subprogram_Body {
@@ -154,8 +154,8 @@ public:
         m_Compound_Statement=M_Compound_Statement;
     }
     ~Subprogram_Body();
-    
-    
+
+
     Const_Declarations * m_Const_Declarations;
     Var_Declarations *m_Var_Declarations;
     Compound_Statement *m_Compound_Statement;
@@ -167,10 +167,10 @@ public:
         m_Parameter_List=M_Parameter_List;
     }
     ~Formal_Parameter();
-    
-    
+
+
     Parameter_List * m_Parameter_List;
-    
+
 };
 class Var_Parameter {
 public:
@@ -178,12 +178,12 @@ public:
         m_Value_Parameter=M_Value_Parameter;
     }
     ~Var_Parameter();
-    
-    
+
+
     Value_Parameter * m_Value_Parameter;
-    
-    
-    
+
+
+
 };
 class Value_Parameter {
 public:
@@ -192,7 +192,7 @@ public:
         Simple_Type=SType;
     }
     ~Value_Parameter();
-    
+
     int Simple_Type;
     Id_List * m_Id_List;
 };
@@ -204,7 +204,7 @@ public:
         m_Expression_List=M_Expression_List;
     }
     ~Id_Varpart();
-    
+
     Expression_List *m_Expression_List;    //这个指针可以为NULL
 };
 
@@ -219,14 +219,14 @@ public:
         mp_Program_Body=Mp_Program_Body;
     }
     ~Programstruct();
-    
+
     string func_codeGeneration();
-    bool error_detect(string);
-    
+    bool error_detect();
+
     Id * mp_Id;
     Id_List            *mp_Id_List;
     Program_Body    *mp_Program_Body;
-    
+
     void outputTree();
 };
 
@@ -241,17 +241,17 @@ public:
         mp_Statement_List=Mp_Compound_Statements -> m_Statement_List;
     }
     ~Program_Body();
-    
+
     string func_codeGeneration();
-    bool create_symbolsheet();
-    bool error_detect(string);
-    
+    pair<bool, string> create_symbolsheet();
+    bool error_detect();
+
     Const_Declarations        *mp_Const_Declarations;
     Var_Declarations        *mp_Var_Declarations;
     SubProgram_Declarations    *mp_SubProgram_Declarations;
     Statement_List            *mp_Statement_List;
-    
-    void outputTree(); 
+
+    void outputTree();
 };
 
 //    Const Block
@@ -262,27 +262,27 @@ public:
         mv_Const=Mv_Const;
     }
     ~Const_Declarations();
-    
+    bool error_detect(string symbolSheet_name);
     string func_codeGeneration();
-    
+
     vector<pair<Id*, Const_Value*> > mv_Const;
-    
-    void outputTree(); 
+
+    void outputTree();
 };
 
 //    Var Block
 class Var_Declarations {
 public:
-    Var_Declarations();
+    Var_Declarations() {};
     Var_Declarations(vector<pair<Id_List*, Type*> > Mv_Var){
         mv_Var=Mv_Var;
     }
     ~Var_Declarations();
-    
+    bool error_detect(string symbolSheet_name);
     string func_codeGeneration();
-    
+
     vector<pair<Id_List*, Type*> >mv_Var;
-    
+
     void outputTree();
 };
 
@@ -295,14 +295,15 @@ public:
         mv_Common=Mv_Common;
     }
     ~SubProgram_Declarations();
-    
+    bool error_detect(string symbolSheet_name);
+    bool definition_error_detect();
     string    func_codeGeneration();
     void    func_checkType();
-    
+
     vector<Common*>mv_Common;
-    
+
     void outputTree();
-    
+
 };
 
 //    contain many statements
@@ -313,82 +314,80 @@ public:
         mv_Statement=Mv_Statement;
     }
     ~Statement_List();
-    
+
     string func_codeGeneration();
     bool error_detect(string);
-    
+
     vector<Statement*>mv_Statement;
-    
+
     void outputTree();
 };
 
 
 class Common {
 public:
-    
+
      virtual string func_codeGeneration() = 0;
      virtual int func_checkReturnType() = 0;
      virtual int func_get_Common_Type() {
      return -1;
      }
-     virtual bool create_symbolsheet() = 0;
+     virtual pair<bool, string> create_symbolsheet() = 0;
+     virtual bool error_detect() = 0;
      virtual Id * get_func_id() = 0;
      virtual Parameter_List * get_param_list() = 0;
      virtual Const_Declarations * get_const_dec() = 0;
      virtual Var_Declarations * get_var_dec() = 0;
      virtual int get_lineno() = 0;
-     
+
      virtual void outputTree() = 0;
-    
+
 };
 
 //    the Precodure block
 class Procedure : public Common {
 public:
-    Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
-    
-     string    func_codeGeneration() override;
-     int func_checkReturnType() override {
+    Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List) {};
+    string    func_codeGeneration() override;
+    int func_checkReturnType() override {
      return -1; // return VOID
      }
-     int        func_get_Common_Type() override {
+    int func_get_Common_Type() override {
      return COMMON_PROCEDURE;
      }
-     bool create_symbolsheet() override;
-     Id * get_func_id() override {
+    pair<bool, string> create_symbolsheet() override;
+    bool error_detect() override;
+    Id * get_func_id() override {
      return mp_Id;
      }
-     Parameter_List * get_param_list() override {
+    Parameter_List * get_param_list() override {
      return mp_Parameter_List;
      }
-     Const_Declarations * get_const_dec() override {
+    Const_Declarations * get_const_dec() override {
      return mp_Const_Declarations;
      }
-     Var_Declarations * get_var_dec() override {
+    Var_Declarations * get_var_dec() override {
      return mp_Var_Declarations;
      }
-     int get_lineno() override {
+    int get_lineno() override {
      return m_lineno;
      }
-     
-    
-    
+
     int m_lineno;
-    
+
     Id                    *mp_Id;
     Parameter_List        *mp_Parameter_List;
     Const_Declarations    *mp_Const_Declarations;
     Var_Declarations    *mp_Var_Declarations;
     Statement_List        *mp_Statement_List;
-    
+
     void outputTree();
 };
 
 //    the Function block
 class Function : public Common {
 public:
-    Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
-    
+    Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List) {};
     string    func_codeGeneration() override;
     int func_checkReturnType() override {
     return m_returnType;
@@ -396,7 +395,8 @@ public:
     int    func_get_Common_Type() override{
     return COMMON_FUNCTION;
     }
-    bool create_symbolsheet() override;
+    pair<bool, string> create_symbolsheet() override;
+    bool error_detect() override;
     Id * get_func_id() override {
     return mp_Id;
     }
@@ -412,18 +412,18 @@ public:
     int get_lineno() override {
     return m_lineno;
     }
-    
-    
-    
+
+
+
     int m_returnType;
     int m_lineno;
-    
+
     Id                    *mp_Id;
     Parameter_List        *mp_Parameter_List;
     Const_Declarations    *mp_Const_Declarations;
     Var_Declarations    *mp_Var_Declarations;
     Statement_List        *mp_Statement_List;
-    
+
     void outputTree();
 };
 
@@ -433,14 +433,14 @@ class Statement {
 public:
     Statement(){};
     ~Statement();
-    
+
     string    func_codeGeneration();
     void    func_checkType();
     bool error_detect(string symbol_sheet_name);
-    
+
     int m_stateType;
     int m_lineno;
-    
+
     //    the below pointers
     //    only one can be assigned to non-NULL
     //    the others must be null
@@ -449,7 +449,7 @@ public:
     Statement_List    *mp_Statement_List;        // which refered to begin-block-end
     If_Then_Else    *mp_If_Then_Else;
     For                *mp_For;
-    
+
     void outputTree();
 };
 
@@ -462,13 +462,14 @@ public:
         mv_Patameter=Mv_Patameter;
     }
     ~Parameter_List();
-    
+
+    bool error_detect(string symbolSheet_name);
     string func_codeGeneration();
-    
+
     int m_lineno;
-    
+
     vector<Parameter*> mv_Patameter;
-    
+
     void outputTree();
 };
 
@@ -477,13 +478,13 @@ class Variable {
 public:
     Variable(){};
     ~Variable();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
     int getType() { return type; }
     bool    m_isArray;
     int        m_lineno;
-    
+
     Id                *mp_Id;
     int type;
     //    default to be null
@@ -492,7 +493,7 @@ public:
     //    this pointer point to the index of array(multi-dimension)
     //        partition by ',' in pascal
     Expression_List    *mp_Expression_List;
-    
+
     void outputTree();
 };
 
@@ -501,20 +502,20 @@ class Procedure_Call {
 public:
     Procedure_Call(){};
     ~Procedure_Call();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
-    
+
     int    m_proCall_Tpye;
-    
+
     int m_expNum;
     int m_lineno;
-    
+
     Id                *mp_Id;
     Expression_List    *mp_Expression_List;
-    
+
     void outputTree();
-    
+
 };
 
 class Function_Call {
@@ -527,16 +528,16 @@ public:
         mp_Expression_List=Mp_Expression_List;
     }
     ~Function_Call();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
-    
+
     int m_expNum;
     int m_lineno;
-    
+
     Id                *mp_Id;
     Expression_List    *mp_Expression_List;
-    
+
     void outputTree();
 };
 
@@ -545,25 +546,25 @@ class Expression {
 public:
     Expression(){};
     ~Expression();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
     void setType(int _type) { type = _type; };
     int getType() { return type; }
     int getRangeVal() { return rangeVal; };
     bool getRangeValid() { return rangeValid; }
-    
+
     int m_lineno;
     int rangeVal;
     bool rangeValid;
-    
+
     //  the below two pointers
     //    only one can be assign to non-NULL
     //    the other must be NULL
     Relop                *mp_Relop;
     Simple_Expression    *mp_Simple_Expression;
     int type;
-    
+
     void outputTree();
 };
 
@@ -576,14 +577,14 @@ public:
         mp_Term=Mp_Term;
     }
     ~Simple_Expression();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
     void setType(int _type) { type = _type; };
     int getType() { return type; };
     int getRangeVal() { return rangeVal; }
     bool getRangeValid() { return rangeValid; }
-    
+
     int m_lineno;
     int type;
     int rangeVal;
@@ -593,7 +594,7 @@ public:
     //    the other must be NULL
     Addop    *mp_Addop;
     Term    *mp_Term;
-    
+
     void outputTree();
 };
 
@@ -605,14 +606,14 @@ public:
         mp_Factor=Mp_Factor;
     }
     ~Term();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
     void setType(int _type) { type = _type; }
     int getType() { return type; };
     int getRangeVal() { return rangeVal; }
     bool getRangeValid() { return rangeValid; }
-    
+
     int m_lineno;
     int type;
     int rangeVal;
@@ -622,7 +623,7 @@ public:
     //    the other must be NULL
     Mulop    *mp_Mulop;
     Factor    *mp_Factor;
-    
+
     void outputTree();
 };
 
@@ -631,7 +632,7 @@ class Factor {
 public:
     Factor(){};
     ~Factor();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
     int getType() { return type; }//返回数据类型，integer,char等等
@@ -641,15 +642,15 @@ public:
     }
     int getRangeVal() { return rangeVal; }
     bool getRangeValid() { return rangeValid; }
-    
+
     int rangeVal;
     bool rangeValid;
-    
+
     int        m_int;
     float    m_real;
     char    m_char;
     bool    m_bool;
-    
+
     int m_factorType;
     int m_lineno;
     int type;
@@ -661,7 +662,7 @@ public:
     Expression        *mp_Expression;
     Not                *mp_Not;
     Uminus            *mp_Uminus;
-    
+
     void outputTree();
 };
 
@@ -670,15 +671,15 @@ class Not {
 public:
     Not();
     ~Not();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
-    
-    
+
+
     int m_lineno;
-    
+
     Factor    *mp_Factor;
-    
+
     void outputTree();
 };
 
@@ -689,21 +690,21 @@ class Uminus {
 public:
     Uminus();
     ~Uminus();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
     int getType() { return type; };
     void setType(int _type) {type = _type; }
     int getRangeVal() { return rangeVal; }
     bool getRangeValid() { return rangeValid; }
-    
+
     int rangeVal;
     bool rangeValid;
     int m_lineno;
     int m_unimusType;
     int type;
     Factor    *mp_Factor;
-    
+
     void outputTree();
 };
 
@@ -712,17 +713,17 @@ class Type {
 public:
     Type(){};
     ~Type();
-    
+
     string    func_codeGeneration();
     string  func_code_getperiod();
-    
+
     int        func_checkSimpleType() {
         return m_simpleType;
     }
     bool    func_check_isArray() {
         return m_isArray;
     }
-    
+
     int get_lineno() {
         return m_lineno;
     }
@@ -730,44 +731,44 @@ public:
     int        m_simpleType;
     bool    m_isArray;
     int        m_lineno;
-    
+
     //    if m_isArray == true
     //    this pointer will point to the period(multi-dimension)
     Period    *mp_Period;
-    
+
     void outputTree();
-    
+
 };
 
 //    used for const block
 class Const_Value {
 public:
     Const_Value(){};
-    
+
     ~Const_Value();
-    
+
     string    func_codeGeneration();
     int        func_checkValueType() {
         return m_valueType;
     }
-    
-    
+
+
     int        m_postNeg;
     int        m_valueType;
-    
+
     // the below value are all unsigned
     int        m_int;
     float    m_real;
     char    m_char;
     bool    m_bool;
-    
+
     int        m_lineno;
     bool    m_isId;
-    
+
     //    if m_isId == true
     //    this pointer point to the refered ID
     Id    *mp_Id;
-    
+
     void outputTree();
 };
 
@@ -779,15 +780,15 @@ public:
         mp_Expression = Mp_Expression;
     }
     ~Assignop();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
-    
+
     int m_lineno;
-    
+
     Variable    *mp_Variable;
     Expression    *mp_Expression;
-    
+
     void outputTree();
 };
 
@@ -800,17 +801,17 @@ public:
         mp_Statement_2 = _mp_Statement_2;
     }
     ~If_Then_Else();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
-    
-    
+
+
     int m_lineno;
-    
+
     Expression    *mp_Expression;
     Statement    *mp_Statement_1;
     Statement    *mp_Statement_2;
-    
+
     void outputTree();
 };
 
@@ -824,18 +825,18 @@ public:
         mp_Statment = _mp_Statment;
     }
     ~For();
-    
+
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
-    
-    
+
+
     int m_lineno;
-    
+
     Id            *mp_Id;
     Expression    *mp_Expression_1;
     Expression    *mp_Expression_2;
     Statement    *mp_Statment;
-    
+
     void outputTree();
 };
 
@@ -847,7 +848,7 @@ public:
         mp_Id_List=Mp_Id_List;
     }
     ~Parameter();
-    
+
     string    func_codeGeneration();
     bool    func_isVal() {
         return m_isVal;
@@ -862,17 +863,17 @@ public:
     Id_List* get_idlist() {
         return mp_Id_List;
     }
-    
-    
+
+
     // define whether the parameter is variable element
     bool    m_isVal;
     int        m_lineno;
     int        m_Type;
-    
+
     Id_List    *mp_Id_List;
-    
+
     void outputTree();
-    
+
 };
 
 class Relop {
@@ -885,24 +886,24 @@ public:
         mp_Simple_Expression_2=Mp_Simple_Expression_1;
     }
     ~Relop();
-    
+
     string    func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
-    
+
     int        func_checkRelopType() {
         return m_relopType;
     }
     void func_setRelopType(int _type) { m_relopType = _type; }
     void setType(int _type) { type = _type; }           //设置或返回该表达式是什么类型；
     int getType() { return type; }
-    
+
     int m_relopType;
     int m_lineno;
     int type;
-    
+
     Simple_Expression *mp_Simple_Expression_1;
     Simple_Expression *mp_Simple_Expression_2;
-    
+
     void outputTree();
 };
 
@@ -916,12 +917,12 @@ public:
         mp_Term=Mp_Term;
     }
     ~Addop();
-    
+
     string    func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
     int getType() { return type; }
     void setType(int _type) { type = _type; } //设置type的值
-    
+
     int        func_checkAddopType() {
         return m_addopType;
     }
@@ -929,15 +930,15 @@ public:
     {
         m_addopType = _type;
     }
-    
-    
-    
+
+
+
     int m_addopType;
     int m_lineno;
     int type;
     Simple_Expression    *mp_Simple_Expression;
     Term                *mp_Term;
-    
+
     void outputTree();
 };
 
@@ -951,7 +952,7 @@ public:
         mp_Factor=Mp_Factor;
     }
     ~Mulop();
-    
+
     string    func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
     int        func_checkMulopType() {
@@ -959,14 +960,14 @@ public:
     }
     void setType(int _type) { type = _type; }
     int getType() { return type; }
-    
+
     int m_mulopType;
     int m_lineno;
     int type;
-    
+
     Term    *mp_Term;
     Factor    *mp_Factor;
-    
+
     void outputTree();
 };
 
@@ -974,7 +975,7 @@ class Id{
 public:
     Id(){};
     ~Id();
-    
+
     string    func_codeGeneration();
     int    func_checkType() {
         return m_idType;
@@ -985,12 +986,12 @@ public:
     bool    func_isVal() {
         return m_isVal;
     }
-    
+
     string    m_name;
     int        m_idType;
     int        m_lineno;
-    
-    
+
+
     // This note only used in function and procedure
     // to identify whether the id
     // is a variable element
@@ -1001,7 +1002,7 @@ public:
     // default to be false
     //
     bool    m_isVal;
-    
+
     void outputTree();
 };
 
@@ -1009,7 +1010,7 @@ class Id_List {
 public:
     Id_List(){};
     ~Id_List();
-    
+
     string            func_codeGeneration();
     vector<Id*>        func_get_mv_Id() {
         return mv_Id;
@@ -1027,11 +1028,11 @@ public:
     bool isVal() {
         return mv_Id.front()->m_isVal;  // the vector should be the same kind
     }
-    
+
     int m_lineno;
-    
+
     vector<Id*>mv_Id;
-    
+
     void outputTree();
 };
 
@@ -1042,17 +1043,17 @@ public:
         mv_dims=Mv_dims;
     }
     ~Period();
-    
+
     string                    func_codeGeneration();
     vector<pair<int, int> >    func_get_Range() {
         return mv_dims;
     }
-    
+
     // record the multi-dimension ranges
     vector<pair<int, int> >mv_dims;
-    
+
     void outputTree();
-    
+
 };
 
 class Expression_List {
@@ -1065,25 +1066,25 @@ public:
     ~Expression_List();
     string func_codeGeneration();
     bool error_detect(string symbol_sheet_name);
-    
+
     vector<Expression*> func_get_mv_exp() {
         return mv_Expression;
     }
     vector<int>            func_get_mv_type() {
         return mv_Type;
     }
-    
+
     vector<int> rangeVal;
     vector<bool> rangeValid;
     vector<Expression*>mv_Expression;
-    
+
     // store the Type of each expression
     // allowed type:
     //        TYPE_INTERGER
     //        TYPE_REAL
     //        TYPE_CHAR
     vector<int>mv_Type;
-    
+
     // this vector default to be false
     //
     // if the expression list used in
@@ -1095,7 +1096,7 @@ public:
     // if this parameter is a variable element
     // it must be an id
     vector<bool>mv_VarDefine;
-    
+
     void outputTree();
 };
 
