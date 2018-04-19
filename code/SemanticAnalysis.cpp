@@ -247,9 +247,9 @@ bool If_Then_Else::error_detect(string symbol_sheet_name) {
         flag = false;
     }
     if (mp_Statement_1)
-        flag = flag && mp_Statement_1;
+        flag = flag && mp_Statement_1->error_detect(symbol_sheet_name);
     if (mp_Statement_1 && mp_Statement_2)
-        flag = flag && mp_Statement_2;
+        flag = flag && mp_Statement_2->error_detect(symbol_sheet_name);
     else if (!mp_Statement_1 && mp_Statement_2) {
         cout << "行" << m_lineno << ": 语法树错误" << endl;
         flag = false;
