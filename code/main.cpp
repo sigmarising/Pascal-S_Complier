@@ -8,7 +8,7 @@ using namespace std;
 extern Programstruct* ROOT;
 
 int main(int argc, char* argv[]){
-    if (1 == lexyacc())
+    if (1 == Lexical_Syntax())
         exit(1);
     cout << "part 1 ok!" <<endl;
 

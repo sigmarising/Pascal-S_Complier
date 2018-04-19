@@ -245,6 +245,24 @@ const_variable
 		$$ -> m_valueType = TYPE_REAL;
 		$$ -> m_real = $1;
 	}
+	| '+' DIGITS {
+		$$ = new Const_Value();
+		$$ -> m_postNeg = CONST_POSTNEG_POSITIVE;
+		$$ -> m_valueType = TYPE_INTERGER;
+		$$ -> m_int = $2;
+	}
+	| '-' DIGITS {
+		$$ = new Const_Value();
+		$$ -> m_postNeg = CONST_POSTNEG_NEGATIVE;
+		$$ -> m_valueType = TYPE_INTERGER;
+		$$ -> m_int = $2;
+	}
+	| DIGITS {
+		$$ = new Const_Value();
+		$$ -> m_postNeg = CONST_POSTNEG_POSITIVE;
+		$$ -> m_valueType = TYPE_INTERGER;
+		$$ -> m_int = $1;
+	}
 	| LETTER {
 		$$ = new Const_Value();
 		$$ -> m_postNeg = CONST_POSTNEG_NULL;
@@ -707,10 +725,17 @@ term
 	;
 
 factor 
-	: NUMBER {
+	: DIGITS {
+		$$ = new Factor();
+		$$ -> m_lineno = yylineno;
+		$$ -> m_int = $1;
+		$$ -> m_factorType = FACTOR_VALUE_INT;
+	}
+	| NUMBER {
 		$$ = new Factor();
 		$$ -> m_lineno = yylineno;
 		$$ -> m_real = $1;
+		$$ -> m_factorType = FACTOR_VALUE_REAL;
 	}
 	| variable {
 		$$ = new Factor();
@@ -720,6 +745,7 @@ factor
 		$$ -> mp_Expression = NULL;
 		$$ -> mp_Not = NULL;
 		$$ -> mp_Uminus = NULL;
+		$$ -> m_factorType = FACTOR_VAR;
 	}
 	| IDENTIFIER '(' expression_list ')' {
 		$$ = new Factor();
@@ -732,6 +758,7 @@ factor
 		$$ -> mp_Expression = NULL;
 		$$ -> mp_Not = NULL;
 		$$ -> mp_Uminus = NULL;
+		$$ -> m_factorType = FACTOR_FUNCCALL;
 	}
 	| '(' expression ')' {
 		$$ = new Factor();
@@ -741,6 +768,7 @@ factor
 		$$ -> mp_Expression = $2;
 		$$ -> mp_Not = NULL;
 		$$ -> mp_Uminus = NULL;
+		$$ -> m_factorType = FACTOR_BRACKETS;
 	}
 	| NOT factor {
 		$$ = new Factor();
@@ -751,15 +779,18 @@ factor
 		$$ -> mp_Not -> mp_Factor = $2;
 		$$ -> mp_Not -> m_lineno = yylineno;
 		$$ -> mp_Uminus = NULL;
+		$$ -> m_factorType = FACTOR_NOT;
 	}
 	;
 %%
 
 
 int main() {
-    return yyparse();
+    yyparse();
+    ROOT->outputTree();
+    return 0;
     //cout<<"begin"<<endl;
-    //ROOT->outputTree();
+    
 }
 
 
