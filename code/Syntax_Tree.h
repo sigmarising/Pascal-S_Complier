@@ -72,6 +72,10 @@ public:
         m_Id=M_Id;
         m_Id_List=M_Id_List;
     }
+    Program_Head(){
+        m_Id=NULL;
+        m_Id_List=NULL;
+    };
     ~Program_Head();
 
     Id * m_Id;
@@ -83,6 +87,9 @@ public:
     Compound_Statement(Statement_List * M_Statement_List){
         m_Statement_List=M_Statement_List;
     }
+    Compound_Statement(){
+        m_Statement_List=NULL;
+    };
     ~Compound_Statement();
 
     Statement_List * m_Statement_List;
@@ -113,17 +120,18 @@ public:
 
 class SubProgram_Declaration {
 public:
-    SubProgram_Declaration();
+    SubProgram_Declaration(){};
     ~SubProgram_Declaration();
     vector<Subprogram*> mv_Subprogram;
-
-
 
 };
 
 class Subprogram {
 public:
-    Subprogram();
+    Subprogram(){
+        m_Subprogram_Head=NULL;
+        m_Subprogram_Body=NULL;
+    };
     ~Subprogram();
 
 
@@ -137,6 +145,11 @@ public:
         m_ID=M_ID;
         m_Formal_Parameter=M_Formal_Parameter;
         Simple_Type=SType;
+    }
+    Subprogram_Head(){
+        m_ID=NULL;
+        m_Formal_Parameter=NULL;
+        Simple_Type=0;
     }
     ~Subprogram_Head();
 
@@ -153,6 +166,11 @@ public:
         m_Var_Declarations=M_Var_Declarations;
         m_Compound_Statement=M_Compound_Statement;
     }
+    Subprogram_Body(){
+        m_Const_Declarations=NULL;
+        m_Var_Declarations=NULL;
+        m_Compound_Statement=NULL;
+    }
     ~Subprogram_Body();
 
 
@@ -166,9 +184,11 @@ public:
     Formal_Parameter(Parameter_List * M_Parameter_List){
         m_Parameter_List=M_Parameter_List;
     }
+    Formal_Parameter(){
+        m_Parameter_List=NULL;
+
+    }
     ~Formal_Parameter();
-
-
     Parameter_List * m_Parameter_List;
 
 };
@@ -177,6 +197,11 @@ public:
     Var_Parameter(Value_Parameter * M_Value_Parameter){
         m_Value_Parameter=M_Value_Parameter;
     }
+    Var_Parameter(){
+        m_Value_Parameter=NULL;
+    }
+
+
     ~Var_Parameter();
 
 
@@ -191,6 +216,10 @@ public:
         m_Id_List=M_Id_List;
         Simple_Type=SType;
     }
+    Value_Parameter(){
+        Simple_Type=0;
+        m_Id_List=NULL;
+    }
     ~Value_Parameter();
 
     int Simple_Type;
@@ -199,9 +228,11 @@ public:
 
 class Id_Varpart{
 public:
-    Id_Varpart();
     Id_Varpart(Expression_List *M_Expression_List){
         m_Expression_List=M_Expression_List;
+    }
+    Id_Varpart(){
+        m_Expression_List=NULL;
     }
     ~Id_Varpart();
 
@@ -217,6 +248,11 @@ public:
         mp_Id=Mp_Id;
         mp_Id_List=Mp_Id_List;
         mp_Program_Body=Mp_Program_Body;
+    }
+    Programstruct(){
+        mp_Id=NULL;
+        mp_Id_List=NULL;
+        mp_Program_Body=NULL;
     }
     ~Programstruct();
 
@@ -240,6 +276,12 @@ public:
         mp_SubProgram_Declarations=Mp_SubProgram_Declarations;
         mp_Statement_List=Mp_Compound_Statements -> m_Statement_List;
     }
+    Program_Body(){
+        mp_Const_Declarations=NULL;
+        mp_Var_Declarations=NULL;
+        mp_SubProgram_Declarations=NULL;
+        mp_Statement_List=NULL;
+    }
     ~Program_Body();
 
     string func_codeGeneration();
@@ -257,10 +299,12 @@ public:
 //    Const Block
 class Const_Declarations {
 public:
-    Const_Declarations(){};
     Const_Declarations(vector<pair<Id*, Const_Value*> > Mv_Const){
         mv_Const=Mv_Const;
     }
+    Const_Declarations(){
+
+    };
     ~Const_Declarations();
     bool error_detect(string symbolSheet_name);
     string func_codeGeneration();
@@ -348,6 +392,14 @@ public:
 class Procedure : public Common {
 public:
     Procedure(int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
+    Procedure(){
+        m_lineno=0;
+        mp_Id=NULL;
+        mp_Parameter_List=NULL;
+        mp_Const_Declarations=NULL;
+        mp_Var_Declarations=NULL;
+        mp_Statement_List=NULL;
+    }
     string    func_codeGeneration() override;
     int func_checkReturnType() override {
      return -1; // return VOID
@@ -388,6 +440,15 @@ public:
 class Function : public Common {
 public:
     Function(int M_returnType,int M_lineno,Id *Mp_Id,Parameter_List *Mp_Parameter_List,Const_Declarations *Mp_Const_Declarations,Var_Declarations *Mp_Var_Declarations,Statement_List *Mp_Statement_List);
+    Function(){
+        m_returnType=0;
+        m_lineno=0;
+        mp_Id=NULL;
+        mp_Parameter_List=NULL;
+        mp_Const_Declarations=NULL;
+        mp_Var_Declarations=NULL;
+        mp_Statement_List=NULL;
+    }
     string    func_codeGeneration() override;
     int func_checkReturnType() override {
     return m_returnType;
@@ -431,7 +492,14 @@ public:
 //    the statements are partitioned by ';'
 class Statement {
 public:
-    Statement(){};
+    Statement(){
+        mp_Assignop=NULL;
+        mp_Procedure_call=NULL;        // which include the read and write call
+        mp_Statement_List=NULL;        // which refered to begin-block-end
+        mp_If_Then_Else=NULL;
+        mp_For=NULL;
+
+    };
     ~Statement();
 
     string    func_codeGeneration();
@@ -456,7 +524,10 @@ public:
 // only used for function or procedure define
 class Parameter_List {
 public:
-    Parameter_List(){};
+    Parameter_List(){
+        m_lineno=0;
+
+    };
     Parameter_List(int M_lineno,vector<Parameter*> Mv_Patameter){
         m_lineno=M_lineno;
         mv_Patameter=Mv_Patameter;
@@ -476,7 +547,13 @@ public:
 //    define the variable type
 class Variable {
 public:
-    Variable(){};
+    Variable(){
+        m_isArray=false;
+        m_lineno=0;
+        mp_Id=NULL;
+        mp_Expression_List=NULL;
+        type=0;
+    };
     ~Variable();
 
     string func_codeGeneration();
@@ -500,7 +577,13 @@ public:
 //    belong to statement
 class Procedure_Call {
 public:
-    Procedure_Call(){};
+    Procedure_Call(){
+        m_proCall_Tpye=0;
+        m_expNum=0;
+        m_lineno=0;
+        mp_Id=NULL;
+        mp_Expression_List=NULL;
+    };
     ~Procedure_Call();
 
     string func_codeGeneration();
@@ -520,7 +603,10 @@ public:
 
 class Function_Call {
 public:
-    Function_Call();
+    Function_Call(){
+        mp_Id=NULL;
+        mp_Expression_List=NULL;
+    };
     Function_Call(int M_expNum,int M_lineno,Id                *Mp_Id,Expression_List    *Mp_Expression_List){
         m_expNum=M_expNum;
         m_lineno=M_lineno;
@@ -544,7 +630,14 @@ public:
 // the expression can be calculate to a value
 class Expression {
 public:
-    Expression(){};
+    Expression(){
+        mp_Relop=NULL;
+        mp_Simple_Expression=NULL;
+        m_lineno=0;
+        rangeVal=0;
+        rangeValid=0;
+        type=0;
+    };
     ~Expression();
 
     string func_codeGeneration();
@@ -576,6 +669,14 @@ public:
         mp_Addop=Mp_Addop;
         mp_Term=Mp_Term;
     }
+    Simple_Expression(){
+        mp_Addop=NULL;
+        mp_Term=NULL;
+        rangeValid=0;
+        rangeVal=0;
+        type=0;
+        m_lineno=0;
+    }
     ~Simple_Expression();
 
     string func_codeGeneration();
@@ -605,6 +706,14 @@ public:
         mp_Mulop=Mp_Mulop;
         mp_Factor=Mp_Factor;
     }
+    Term(){
+        mp_Mulop=NULL;
+        mp_Factor=NULL;
+        m_lineno=0;
+        type=0;
+        rangeVal=0;
+        rangeValid=0;
+    }
     ~Term();
 
     string func_codeGeneration();
@@ -630,7 +739,23 @@ public:
 // the smallest value unit
 class Factor {
 public:
-    Factor(){};
+    Factor(){
+        rangeVal=0;
+        rangeValid=0;
+        m_int=0;
+        m_real=0;
+        m_char=0;
+        m_bool=0;
+        m_factorType=0;
+        m_lineno=0;
+        type=0;
+
+        mp_Variable=NULL;
+        mp_Function_Call=NULL;
+        mp_Expression=NULL;
+        mp_Not=NULL;
+        mp_Uminus=NULL;
+    };
     ~Factor();
 
     string func_codeGeneration();
@@ -669,7 +794,10 @@ public:
 //    the operator 'not'
 class Not {
 public:
-    Not();
+    Not(){
+        mp_Factor=NULL;
+        m_lineno=0;
+    };
     ~Not();
 
     string func_codeGeneration();
@@ -688,7 +816,15 @@ public:
 //        -1 +2 -i +j
 class Uminus {
 public:
-    Uminus();
+    Uminus(){
+    rangeVal=0;
+    rangeValid=0;
+    m_lineno=0;
+    m_unimusType=0;
+    type=0;
+    mp_Factor=NULL;
+
+    };
     ~Uminus();
 
     string func_codeGeneration();
@@ -711,7 +847,13 @@ public:
 // only used for var block
 class Type {
 public:
-    Type(){};
+    Type(){
+        m_simpleType=0;
+        m_isArray=0;
+        m_lineno=0;
+        mp_Period=NULL;
+
+    };
     ~Type();
 
     string    func_codeGeneration();
@@ -743,7 +885,9 @@ public:
 //    used for const block
 class Const_Value {
 public:
-    Const_Value(){};
+    Const_Value(){
+        mp_Id=NULL;
+    };
 
     ~Const_Value();
 
@@ -774,7 +918,11 @@ public:
 
 class Assignop {
 public:
-    Assignop();
+    Assignop(){
+        mp_Variable=NULL;
+        mp_Expression=NULL;
+
+    };
     Assignop(Variable    *Mp_Variable,Expression* Mp_Expression){
         mp_Variable = Mp_Variable;
         mp_Expression = Mp_Expression;
@@ -794,7 +942,11 @@ public:
 
 class If_Then_Else {
 public:
-    If_Then_Else();
+    If_Then_Else(){
+        mp_Expression=NULL;
+        mp_Statement_1=NULL;
+        mp_Statement_2=NULL;
+    };
     If_Then_Else(Expression    *_mp_Expression, Statement    *_mp_Statement_1, Statement    *_mp_Statement_2) {
         mp_Expression = _mp_Expression;
         mp_Statement_1 = _mp_Statement_1;
@@ -817,7 +969,12 @@ public:
 
 class For {
 public:
-    For();
+    For(){
+        mp_Id=NULL;
+        mp_Expression_1=NULL;
+        mp_Expression_2=NULL;
+        mp_Statment=NULL;
+    };
     For(Id    *_mp_Id, Expression    *_mp_Expression_1, Expression    *_mp_Expression_2, Statement    *_mp_Statment) {
         mp_Id = _mp_Id;
         mp_Expression_1 = _mp_Expression_1;
@@ -846,6 +1003,9 @@ public:
         m_isVal=M_isVal;
         m_lineno=M_lineno;
         mp_Id_List=Mp_Id_List;
+    }
+    Parameter(){
+        mp_Id_List=NULL;
     }
     ~Parameter();
 
@@ -878,7 +1038,10 @@ public:
 
 class Relop {
 public:
-    Relop();
+    Relop(){
+        mp_Simple_Expression_1=NULL;
+        mp_Simple_Expression_2=NULL;
+    };
     Relop(int M_relopType,int M_lineno,Simple_Expression *Mp_Simple_Expression_1,Simple_Expression *Mp_Simple_Expression_2){
         m_relopType=M_relopType;
         m_lineno=M_lineno;
@@ -909,7 +1072,10 @@ public:
 
 class Addop {
 public:
-    Addop();
+    Addop(){
+        mp_Simple_Expression=NULL;
+        mp_Term=NULL;
+    };
     Addop(int M_addopType,int M_lineno,Simple_Expression    *Mp_Simple_Expression,Term                *Mp_Term){
         m_addopType=M_addopType;
         m_lineno=M_lineno;
@@ -944,7 +1110,10 @@ public:
 
 class Mulop {
 public:
-    Mulop();
+    Mulop(){
+        mp_Term=NULL;
+        mp_Factor=NULL;
+    };
     Mulop(int M_mulopType,int M_lineno,Term    *Mp_Term,Factor    *Mp_Factor){
         m_mulopType=M_mulopType;
         m_lineno=M_lineno;
@@ -1008,7 +1177,9 @@ public:
 
 class Id_List {
 public:
-    Id_List(){};
+    Id_List(){
+        m_lineno=0；
+    };
     ~Id_List();
 
     string            func_codeGeneration();
@@ -1099,7 +1270,6 @@ public:
 
     void outputTree();
 };
-
 
 
 
