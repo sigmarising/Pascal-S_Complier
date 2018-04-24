@@ -1178,7 +1178,7 @@ public:
 class Id_List {
 public:
     Id_List(){
-        m_lineno=0；
+        m_lineno=0;
     };
     ~Id_List();
 
