@@ -3,9 +3,9 @@
 //	Version		: 0.3
 //	Author		: Yun Zhang
 
+#include "../include/CodeGenerate.h"
 #include <fstream>
 #include <strstream>
-#include "CodeGenerate.h"
 using namespace std;
 
 
@@ -33,7 +33,7 @@ string Programstruct::func_codeGeneration() {
 		"\n";
 
 	string Code_program_body = mp_Program_Body->func_codeGeneration();
-	
+
 	string Code_return = Code_head + Code_program_body;
 
 	return Code_return;
@@ -47,7 +47,7 @@ string Program_Body::func_codeGeneration() {
 
 	string Code_sub_program = mp_SubProgram_Declarations->func_codeGeneration();
 
-	string Code_main_begin = 
+	string Code_main_begin =
 		"int main(int argc, char* argv[]) {\n";
 
 	string Code_Statement_List = mp_Statement_List->func_codeGeneration();
@@ -67,7 +67,7 @@ string Const_Declarations::func_codeGeneration() {
 	string Code_return = "\n";
 
 	for (int i = 0; i < mv_Const.size(); i++) {
-		
+
 		Code_return += "const ";
 
 		switch (mv_Const[i].second->func_checkValueType()) {
@@ -151,9 +151,9 @@ string Var_Declarations::func_codeGeneration() {
 			Code_return += ";\n";
 		}
 	}
-	
+
 	Code_return += "\n";
-	
+
 	return Code_return;
 }
 
@@ -163,7 +163,7 @@ string SubProgram_Declarations::func_codeGeneration() {
 	for (int i = 0; i < mv_Common.size(); i++) {
 		Code_return += mv_Common[i]->func_codeGeneration();
 	}
-	
+
 	return Code_return;
 }
 
@@ -188,14 +188,14 @@ string Procedure::func_codeGeneration() {
 	Code_return += "(";
 	Code_return += mp_Parameter_List->func_codeGeneration();
 	Code_return += ") {\n";
-	
+
 	Code_return += mp_Const_Declarations->func_codeGeneration();
 	Code_return += mp_Var_Declarations->func_codeGeneration();
 	Code_return += mp_Statement_List->func_codeGeneration();
 
 	Code_return += "}\n";
 	Code_return += "\n";
-	
+
 	return Code_return;
 }
 
@@ -223,7 +223,7 @@ string Function::func_codeGeneration() {
 		throw "Invalid Type!!!";
 		break;
 	}
-	
+
 	Code_return += mp_Id->func_codeGeneration();
 	Code_return += "(";
 	Code_return += mp_Parameter_List->func_codeGeneration();
@@ -275,7 +275,7 @@ string Statement::func_codeGeneration() {
 
 string Parameter_List::func_codeGeneration() {
 	string Code_return = "";
-	
+
 	for (int i = 0; i < mv_Patameter.size(); i++) {
 		Code_return += mv_Patameter[i]->func_codeGeneration();
 		if (i != mv_Patameter.size() - 1) {
@@ -319,7 +319,7 @@ string Parameter::func_codeGeneration() {
 		if (i != mv_id.size() - 1)
 			Code_return += ", ";
 	}
-	
+
 	return Code_return;
 }
 
@@ -330,7 +330,7 @@ string Variable::func_codeGeneration() {
 
 	if (m_isArray) {
 		vector<Expression*>mv_Expression = mp_Expression_List->func_get_mv_exp();
-		
+
 		for (int i = 0; i < mv_Expression.size(); i++) {
 			Code_return += "[";
 
@@ -339,7 +339,7 @@ string Variable::func_codeGeneration() {
 			Code_return += "]";
 		}
 	}
-	
+
 	return Code_return;
 }
 
@@ -475,7 +475,7 @@ string Expression::func_codeGeneration() {
 	else {
 		Code_return += mp_Simple_Expression->func_codeGeneration();
 	}
-	
+
 	return Code_return;
 }
 
@@ -488,7 +488,7 @@ string Simple_Expression::func_codeGeneration() {
 	else {
 		Code_return += mp_Term->func_codeGeneration();
 	}
-	
+
 	return Code_return;
 }
 
@@ -501,7 +501,7 @@ string Term::func_codeGeneration() {
 	else {
 		Code_return += mp_Factor->func_codeGeneration();
 	}
-	
+
 	return Code_return;
 }
 
@@ -564,7 +564,7 @@ string Not::func_codeGeneration() {
 	string Code_return = "!";
 
 	Code_return += mp_Factor->func_codeGeneration();
-	
+
 	return Code_return;
 }
 
@@ -584,7 +584,7 @@ string Uminus::func_codeGeneration() {
 		throw "Invalid UMINUS_TYPE!!!";
 		break;
 	}
-	
+
 	Code_return += mp_Factor->func_codeGeneration();
 
 	return Code_return;
@@ -598,7 +598,7 @@ string Assignop::func_codeGeneration() {
 	Code_return += mp_Expression->func_codeGeneration();
 	Code_return += ";";
 
-	
+
 	return Code_return;
 }
 
@@ -615,7 +615,7 @@ string If_Then_Else::func_codeGeneration() {
 		Code_return += mp_Statement_2->func_codeGeneration();
 		Code_return += "\n}";
 	}
-	
+
 	return Code_return;
 }
 
@@ -637,7 +637,7 @@ string For::func_codeGeneration() {
 
 	Code_return += mp_Statment->func_codeGeneration();
 	Code_return += "\n}";
-	
+
 	return Code_return;
 }
 
@@ -653,7 +653,7 @@ string Id::func_codeGeneration() {
 }
 
 string Const_Value::func_codeGeneration() {
-	
+
 	string Code_return = "";
 
 	switch (m_postNeg) {
@@ -695,7 +695,7 @@ string Const_Value::func_codeGeneration() {
 		case TYPE_BOOLEAN:
 			if (m_bool)
 				Code_return += "true";
-			else 
+			else
 				Code_return += "false";
 
 		default:
@@ -789,14 +789,14 @@ string Relop::func_codeGeneration() {
 	case RELOP_LARGE_EQUAL:
 		Code_return += " >= ";
 		break;
-	
+
 	default:
 		throw "Invalid RELOP_TYPE!!!";
 		break;
 	}
 
 	Code_return += mp_Simple_Expression_2->func_codeGeneration();
-	
+
 	return Code_return;
 }
 
@@ -804,7 +804,7 @@ string Addop::func_codeGeneration() {
 	string Code_return;
 
 	Code_return += mp_Simple_Expression->func_codeGeneration();
-	
+
 	switch (m_addopType) {
 	case ADDOP_ADD:
 		Code_return += " + ";
@@ -822,9 +822,9 @@ string Addop::func_codeGeneration() {
 		throw "Invalid AddopType!!!";
 		break;
 	}
-	
+
 	Code_return += mp_Term->func_codeGeneration();
-	
+
 	return Code_return;
 }
 
@@ -860,7 +860,7 @@ string Mulop::func_codeGeneration() {
 	}
 
 	Code_return += mp_Factor->func_codeGeneration();
-	
+
 	return Code_return;
 }
 
@@ -877,7 +877,7 @@ string Expression_List::func_codeGeneration() {
 		if (i != mv_Expression.size() - 1)
 			Code_return += ", ";
 	}
-	
+
 	return Code_return;
 }
 
@@ -896,7 +896,7 @@ string Type::func_code_getperiod() {
 	return mp_Period->func_codeGeneration();
 }
 
-vector<pair<int, int>> Type::func_get_Period() {
+vector<pair<int, int> > Type::func_get_Period() {
 	return mp_Period->func_get_Range();
 }
 

@@ -11,4 +11,4 @@
 //	the interface to call code_genaration
 //		input_Tree	: the syntax tree
 //		output_File : the filename without suffix
-void Code_Generate(Programstruct* input_Tree, string output_File);
+void Code_Generate(Programstruct *input_Tree, string output_File);

@@ -1,4 +1,4 @@
-#include "SemanticAnalysis.h"
+#include "../include/SemanticAnalysis.h"
 #include <iostream>
 #include <map>
 #include <cassert>

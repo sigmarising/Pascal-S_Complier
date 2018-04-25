@@ -6,7 +6,6 @@
 #pragma once
 #ifndef SEMANTICANALYSIS_H_
 #define SEMANTICANALYSIS_H_
-#include "Public_define.h"
 #include "Syntax_Tree.h"
 #include <map>
 #include <set>
