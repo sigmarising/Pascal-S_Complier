@@ -1,7 +1,7 @@
 /*警告：书上的文法具有移进规约冲突,135-137行部分，已解决*/
 %code requires {
-	#include "../include/Public_define.h"
-	#include "../include/Syntax_Tree.h"
+	#include "Public_define.h"
+	#include "Syntax_Tree.h"
 }
 
 %code top {
@@ -13,11 +13,17 @@
 	typedef pair<Id_List*, Type*> p_Var;
 	typedef pair<int,int> p_Per;
 	Programstruct* ROOT;
+	int errorNum = 0;
+
 	int yyparse(void);
 	extern int yylineno;
-	using namespace std;
 	void yyerror(const char* s);
+
 	#define YYERROR_VERBOSE 1
+	extern int yydebug;
+	#define YYDEBUG 1
+
+	using namespace std;
 }
 
 
@@ -453,6 +459,11 @@ subprogram_body
 	: const_declarations var_declarations compound_statement {
 		$$ = new Subprogram_Body($1, $2, $3);
 	}
+	/*
+	| error const_declarations var_declarations compound_statement{
+		$$ = new Subprogram_Body(NULL,NULL,NULL);
+	}
+	*/
 
 compound_statement 
 	: BEGIN_L statement_list END {
@@ -468,6 +479,12 @@ statement_list
 	| statement {
 		$$ = new Statement_List();
 		$$ -> mv_Statement.push_back($1);
+	}
+	| statement_list ';' error {
+		$$ = new Statement_List();
+	}
+	| error {
+		$$ = new Statement_List();
 	}
 	;
 
@@ -485,17 +502,18 @@ statement
 	;
 */
 statement 
-	: variable ASSIGNOP expression {
+	: variable ASSIGNOP expression {	//赋值
 		$$ = new Statement();
 		$$ -> m_stateType = STATEMENT_ASSIGN;
 		$$ -> m_lineno = yylineno;
 		$$ -> mp_Assignop = new Assignop($1, $3);
+		$$ -> mp_Assignop -> m_lineno = yylineno;
 		$$ -> mp_Procedure_call = NULL;
 		$$ -> mp_Statement_List = NULL;
 		$$ -> mp_If_Then_Else = NULL;
 		$$ -> mp_For = NULL;
 	}
-	| call_procedure_statement {
+	| call_procedure_statement {	//函数
 		$$ = new Statement();
 		$$ -> m_stateType = STATEMENT_PROCEDURE;
 		$$ -> m_lineno = yylineno;
@@ -505,7 +523,7 @@ statement
 		$$ -> mp_If_Then_Else = NULL;
 		$$ -> mp_For = NULL;
 	}
-	| compound_statement {
+	| compound_statement {	//函数内部
 		$$ = new Statement();
 		$$ -> m_stateType = STATEMENT_COMPOUND;
 		$$ -> m_lineno = yylineno;
@@ -515,7 +533,7 @@ statement
 		$$ -> mp_If_Then_Else = NULL;
 		$$ -> mp_For = NULL;
 	}
-	| IF expression THEN statement else_part {
+	| IF expression THEN statement else_part {	//if语句
 		$$ = new Statement();
 		$$ -> m_stateType = STATEMENT_IF;
 		$$ -> m_lineno = yylineno;
@@ -525,7 +543,31 @@ statement
 		$$ -> mp_Statement_List = NULL;
 		$$ -> mp_For = NULL;
 	}
-	| FOR IDENTIFIER ASSIGNOP expression TO expression DO statement {
+	/*
+	| IF error THEN statement else_part {
+		$$ = new Statement();
+		$$ -> m_stateType = STATEMENT_IF;
+		$$ -> m_lineno = yylineno;
+		$$ -> mp_If_Then_Else = new If_Then_Else(new Expression(), $4, $5);
+		$$ -> mp_Assignop = NULL;
+		$$ -> mp_Procedure_call = NULL;
+		$$ -> mp_Statement_List = NULL;
+		$$ -> mp_For = NULL;
+	}
+	*/
+	/*
+	| IF expression THEN error else_part {
+		$$ = new Statement();
+		$$ -> m_stateType = STATEMENT_IF;
+		$$ -> m_lineno = yylineno;
+		$$ -> mp_If_Then_Else = new If_Then_Else($2, new Statement(), $5);
+		$$ -> mp_Assignop = NULL;
+		$$ -> mp_Procedure_call = NULL;
+		$$ -> mp_Statement_List = NULL;
+		$$ -> mp_For = NULL;
+	}
+	*/
+	| FOR IDENTIFIER ASSIGNOP expression TO expression DO statement {	//for循环
 		Id* tmp = new Id();
 		tmp -> m_name = *($2);
 		tmp -> m_lineno = yylineno;
@@ -785,14 +827,25 @@ factor
 %%
 
 
-int main() {
+int yacc() {
+	yydebug = 1;
     yyparse();
-    ROOT->outputTree();
-    return 0;
+    //ROOT->outputTree();
+    return errorNum;
     //cout<<"begin"<<endl;
 }
 
 
 extern void yyerror(const char* s) {
-  printf("line: %d, Error '%s'\n",yylineno,s);
+	/*
+	va_list ap;
+	va_start(ap,s);
+	if(yylloc.first_line){
+		fprintf(stderr,"%d.%d-%d.%d:error: ",yylloc.first_line,yylloc.first_column,yylloc.last_line,yylloc.last_column);
+	}
+	vfprintf(stderr,s,ap);
+	fprintf(stderr,"\n");
+	*/
+	printf("line: %d, Error '%s'\n",yylineno,s);
+	errorNum++;
 }

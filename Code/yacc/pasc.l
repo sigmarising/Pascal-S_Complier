@@ -67,7 +67,6 @@ character [\']({letter}|[' '])[\']
 "record"		{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return RECORD; }
 "repeat"		{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return REPEAT; }
 "then"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return THEN; }
-"to"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return TO; }
 "type"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return TYPE; }
 "until"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return UNTIL; }
 "var"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return VAR; }
