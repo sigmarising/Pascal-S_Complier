@@ -66,7 +66,7 @@
 #define FACTOR_VALUE_INT	5
 #define FACTOR_VALUE_REAL	6
 #define FACTOR_VALUE_CHAR	7
-#define FACTOR_vALUE_BOOL	8
+#define FACTOR_VALUE_BOOL	8
 
 // the uminus type
 #define UMINUS_POSITIVE		0

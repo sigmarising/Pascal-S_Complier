@@ -10,14 +10,14 @@ extern Programstruct* ROOT;
 int main(int argc, char* argv[]){
     if (1 == Lexical_Syntax())
         exit(1);
-    cout << "part 1 ok!" <<endl;
+    cout << endl << "PART 1 OK!" << endl << endl;
 
     if (!semantic_Error_Detect(ROOT))
         exit(2);
-    cout << "part 2 ok!" <<endl;
+    cout << endl << "PART 2 OK!" << endl << endl;
     
     Code_Generate(ROOT, "output");
-    cout << "part 3 ok!" <<endl;
+    cout << endl << "PART 3 OK!" << endl << endl;
 
     return 0;
 }

@@ -545,7 +545,7 @@ string Factor::func_codeGeneration() {
 		Code_return += "\'";
 		break;
 
-	case FACTOR_vALUE_BOOL:
+	case FACTOR_VALUE_BOOL:
 		if (m_bool)
 			Code_return += "true";
 		else
