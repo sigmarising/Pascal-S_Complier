@@ -1,7 +1,7 @@
 /*警告：书上的文法具有移进规约冲突,135-137行部分，已解决*/
 %code requires {
-	#include "Public_define.h"
-	#include "Syntax_Tree.h"
+	#include "../include/Public_define.h"
+	#include "../include/Syntax_Tree.h"
 }
 
 %code top {
@@ -790,7 +790,6 @@ int main() {
     ROOT->outputTree();
     return 0;
     //cout<<"begin"<<endl;
-    
 }
 
 

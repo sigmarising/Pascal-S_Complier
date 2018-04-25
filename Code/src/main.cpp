@@ -7,19 +7,21 @@
 using namespace std;
 
 extern Programstruct *ROOT;
-extern int yacc();
+
 int main(int argc, char *argv[]) {
-    cout << "1111" << endl;
-//    if (yacc() == 1)
-//      exit(1);
-    cout << "yacc: " << yacc() << endl;
-    cout << "part 1 ok!" << endl;
+    if (Lexical_Syntax() == 1)
+        exit(1);
+
+    cout << endl << "PART 1 OK!" << endl << endl;
+
     if (!semantic_Error_Detect(ROOT))
         exit(2);
-    cout << "part 2 ok!" << endl;
+
+    cout << endl << "PART 2 OK!" << endl << endl;
 
     Code_Generate(ROOT, "output");
-    cout << "part 3 ok!" << endl;
+
+    cout << endl << "PART 3 OK!" << endl << endl;
 
     return 0;
 }

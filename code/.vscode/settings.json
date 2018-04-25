@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "array": "c",
-        "initializer_list": "c",
-        "iostream": "cpp",
-        "ostream": "cpp"
-    }
-}

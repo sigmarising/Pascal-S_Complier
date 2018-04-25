@@ -40,12 +40,12 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 2 "pasc.y" /* yacc.c:1915  */
+#line 2 "pasc.y" /* yacc.c:1909  */
 
-	#include "Public_define.h"
-	#include "Syntax_Tree.h"
+	#include "../include/Public_define.h"
+	#include "../include/Syntax_Tree.h"
 
-#line 49 "pasc.tab.h" /* yacc.c:1915  */
+#line 49 "pasc.tab.h" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -102,7 +102,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 33 "pasc.y" /* yacc.c:1915  */
+#line 33 "pasc.y" /* yacc.c:1909  */
 
 	Programstruct* programstruct;
 	Program_Body* program_Body;
@@ -155,7 +155,7 @@ union YYSTYPE
 	char m_char;
  	
 
-#line 159 "pasc.tab.h" /* yacc.c:1915  */
+#line 159 "pasc.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -166,6 +166,8 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE yylval;
 
-int yyparse ();
+int yyparse (void);
+
+int Lexical_Syntax();
 
 #endif /* !YY_YY_PASC_TAB_H_INCLUDED  */
