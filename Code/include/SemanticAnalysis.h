@@ -47,6 +47,7 @@ struct Property {
     float const_val;  // = 0;
     ranges array_ranges;  // not none -> array
     int subprgrm_nargs;  // = 0;
+    vector<bool> nargs_var_or_not;
     subprgrm_nargs_types nargs_types;
     int dec_line;  // = 0;
     int ref_line;  // = -1;
@@ -67,6 +68,7 @@ public:
             bool is_const = false;
             float const_val = 0;
             int func_nargs = 0;
+            vector<bool> nargs_var_or_not = {false};
             subprgrm_nargs_types nargs_types;
             int dec_line = 0;
             int ref_line = -1;
@@ -78,6 +80,7 @@ public:
                     const_val,
                     array_ranges,
                     func_nargs,
+                    nargs_var_or_not,
                     nargs_types,
                     dec_line,
                     ref_line
@@ -98,6 +101,7 @@ public:
             bool is_const = false;
             float const_val = 0;
             int func_nargs = -1;  // -1 indicates the subprogram could have variable length of parameters
+            vector<bool> nargs_var_or_not = {false};
             subprgrm_nargs_types nargs_types;
             int dec_line = 0;
             int ref_line = -1;
@@ -109,6 +113,7 @@ public:
                     const_val,
                     array_ranges,
                     func_nargs,
+                    nargs_var_or_not,
                     nargs_types,
                     dec_line,
                     ref_line
@@ -134,6 +139,7 @@ public:
             bool is_const = false;
             float const_val = 0;
             int func_nargs = 0;
+            vector<bool> nargs_var_or_not = {false};
             subprgrm_nargs_types nargs_types;
             int dec_line = parameter->get_lineno();
             int ref_line = -1;
@@ -152,6 +158,7 @@ public:
                         const_val,
                         array_ranges,
                         func_nargs,
+                        nargs_var_or_not,
                         nargs_types,
                         dec_line,
                         ref_line
@@ -205,6 +212,7 @@ public:
             }
             ranges array_ranges = {};
             int func_nargs = 0;
+            vector<bool> nargs_var_or_not = {false};
             subprgrm_nargs_types nargs_types;
             int dec_line = const_symbol.second->m_lineno;
             int ref_line = -1;
@@ -215,6 +223,7 @@ public:
                     const_val,
                     array_ranges,
                     func_nargs,
+                    nargs_var_or_not,
                     nargs_types,
                     dec_line,
                     ref_line
@@ -249,6 +258,7 @@ public:
                 array_ranges = vars.second->func_get_Period();
             }
             int func_nargs = 0;
+            vector<bool> nargs_var_or_not = {false};
             subprgrm_nargs_types nargs_types;
             int dec_line = vars.second->get_lineno();
             int ref_line = -1;
@@ -267,6 +277,7 @@ public:
                         const_val,
                         array_ranges,
                         func_nargs,
+                        nargs_var_or_not,
                         nargs_types,
                         dec_line,
                         ref_line
@@ -307,12 +318,15 @@ public:
             ranges array_ranges;
             vector<Parameter *> parameters = subprgrm->get_param_list()->mv_Patameter;
             int subprgrm_nargs = 0;
+            vector<bool> nargs_var_or_not;
             subprgrm_nargs_types nargs_types;
             for (auto ids: parameters) {
+                bool isVar = ids->m_isVal;
                 subprgrm_nargs += ids->get_idlist()->get_id_num();
                 Id_List *id_list = ids->get_idlist();
                 for (auto id: id_list->mv_Id) {
                     nargs_types.push_back(id->m_idType);
+                    nargs_var_or_not.push_back(isVar);
                 }
             }
             int dec_line = subprgrm->get_lineno();
@@ -324,6 +338,7 @@ public:
                     const_val,
                     array_ranges,
                     subprgrm_nargs,
+                    nargs_var_or_not,
                     nargs_types,
                     dec_line,
                     ref_line
@@ -373,6 +388,7 @@ bool lookup_func(string symbol_name);                          //判断是否是
 bool lookup_procedure(string symbol_name);
 
 int get_symbol_narg(string symbolSheet_name, string symbol_name);  //返回参数个数
+vector<bool> get_symbol_nargs_var_or_not(string symbolSheet_name, string symbol_name);  // return the subprogram's 'nargs_var_or_not' list
 vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name);
 
 #endif

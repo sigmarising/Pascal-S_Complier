@@ -22,11 +22,16 @@ bool Programstruct::error_detect() {
 //声明部分已经解决
 bool Program_Body::error_detect() {
     bool flag = true;
-    if (mp_SubProgram_Declarations)
+    if (mp_SubProgram_Declarations) {
+        //cout<<"Program_body subgram"<<endl;
         flag = mp_SubProgram_Declarations->definition_error_detect();
+
+    }
     cout << "definition finished" << endl;
-    if (mp_Statement_List)
-        flag = flag && mp_Statement_List->error_detect("0");
+    if (mp_Statement_List) {
+        //cout<<" Program_Body Statement_list "<<endl;
+        flag = mp_Statement_List->error_detect("0") && flag;
+    }
     cout << "program body finished" << endl;
     return flag;                                  //此处需要为flag&&另一个bool值
 }
@@ -101,16 +106,17 @@ bool SubProgram_Declarations::error_detect(string symbolSheet_name) {
 bool SubProgram_Declarations::definition_error_detect() {
     bool flag = true;
     for (auto subprgrm: mv_Common) {
-        flag = flag && subprgrm->error_detect();
-        if (!flag) {
-            break;
-        }
+        flag = subprgrm->error_detect()&&flag;
+        /*if (!flag) {    尽量一次检测所有的错误
+        //    break;
+        }*/
     }
     return flag;
 }
 
 bool Procedure::error_detect() {
     string proc_name = mp_Id->m_name;
+    //cout<<"Proc_name "<< proc_name<<endl;
     symbolSheet sheet = symbolSheet_list[proc_name];
     bool flag = true;
     if (mp_Parameter_List)
@@ -126,6 +132,7 @@ bool Procedure::error_detect() {
 
 bool Function::error_detect() {
     string func_name = mp_Id->m_name;
+    //cout<<"Proc_name "<< func_name<<endl;
     symbolSheet sheet = symbolSheet_list[func_name];
     bool flag = true;
     if (mp_Parameter_List)
@@ -167,10 +174,14 @@ bool Parameter_List::error_detect(string symbolSheet_name) {
 // Statement_List的语义错误检测
 bool Statement_List::error_detect(string symbol_sheet_name) {
     bool flag = true;
-    cout << mv_Statement.size() << endl;
-    for (auto i : mv_Statement) {
-        if (i)
-            flag = flag && i->error_detect(symbol_sheet_name);
+    cout << "Statement_size "<<mv_Statement.size() << endl;
+    for (int i=0;i<mv_Statement.size();i++) {
+        if (mv_Statement[i]) {
+
+            bool flag1=true;
+            flag1 = mv_Statement[i]->error_detect(symbol_sheet_name);
+            flag =flag &&flag1;
+        }
         else
             cout << "null"<< endl;
 
@@ -181,21 +192,34 @@ bool Statement_List::error_detect(string symbol_sheet_name) {
 
 
 bool Statement::error_detect(string symbol_sheet_name) {
-//    cout << "processing line " << m_lineno << " statement" << endl;
+    cout << "processing line " << m_lineno << " statement" << endl;
     bool flag = true;
     if (mp_Assignop)
+    {
+        //cout<<"fuzhi"<<endl;
         flag = mp_Assignop->error_detect(symbol_sheet_name);
-    else if (mp_Procedure_call)
+    }
+    else if (mp_Procedure_call) {
+        //cout<<"Procedure_call"<<endl;
         flag = mp_Procedure_call->error_detect(symbol_sheet_name);
-    else if (mp_Statement_List)
+
+    }
+    else if (mp_Statement_List) {
+        //cout<<"statement_list"<<endl;
         flag = mp_Statement_List->error_detect(symbol_sheet_name);
-    else if (mp_If_Then_Else)
+
+    }
+    else if (mp_If_Then_Else) {
+        //cout<<"If_Then_Else"<<endl;
         flag = mp_If_Then_Else->error_detect(symbol_sheet_name);
-    else if (mp_For)
+    }
+    else if (mp_For) {
+        //cout<<"For"<<endl;
         flag = mp_For->error_detect(symbol_sheet_name);
+    }
     else
         cout << "null" << endl;
-//    cout << "finish line " << m_lineno << endl;
+    cout<<flag<<" Statement"<<endl;
     return flag;
 }
 
@@ -205,6 +229,14 @@ bool Assignop::error_detect(string symbol_sheet_name) {
         flag = flag && mp_Variable->error_detect(symbol_sheet_name);
     if (mp_Expression)
         flag = flag && mp_Variable->error_detect(symbol_sheet_name);
+    int type1=mp_Variable->getType();
+    int type2=mp_Expression->getType();
+    bool flag1 = (type1 == type2 || type1 == TYPE_INTERGER&&type2 == TYPE_REAL ||
+            type2 == TYPE_INTERGER&&type1 == TYPE_REAL);
+    if(!flag1) {
+        std::cout << "行" << m_lineno << ": 类型不能转化" << endl;
+        flag=false;
+    }
     if (!mp_Variable || !mp_Expression) {
         flag = false;
         std::cout << "行" << m_lineno << ": 语法树错误" << endl;
@@ -285,14 +317,16 @@ bool Variable::error_detect(string symbol_sheet_name) {
                 vector <pair<int, int>> rangeTemp = get_symbol_range(symbol_sheet_name, mp_Id->func_getName());
                 for (int i = 0; i < rangeTemp.size(); i++) {
                     if (rangeValid1[i]) {
-                        if (rangeVal1[i] < rangeTemp[i].first && rangeVal1[i] > rangeTemp[i].second) {
+                        if (rangeVal1[i] < rangeTemp[i].first || rangeVal1[i] > rangeTemp[i].second) {
                             std::cout << "行" << m_lineno << ": 数组越界" << endl;
                             flag = false;
                         }
                     }
                 }
-            } else
+            } else {
+                this->type = type1;
                 m_isArray = false;
+            }
             return flag;
         } else {
             std::cout << "行" << m_lineno << ": 未声明变量\"" << mp_Id->func_getName() << "\"" << endl;
@@ -347,12 +381,15 @@ bool Function_Call::error_detect(string symbol_sheet_name)
     }
     vector<int> types = mp_Expression_List->func_get_mv_type();
     vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
-    for (int i=0;i<types.size();i++)
+    for (int i=0;i<types.size();i++) {
         if (types[i] != arg_types[i])
         {
             std::cout << "行" << m_lineno << ": 第"<<i<<"个实参形参不匹配" << endl;
             return false;
         }
+    }
+    vector<bool> nargs_var_or_not = get_symbol_nargs_var_or_not(symbol_sheet_name, mp_Id->func_getName());
+    this->mp_Expression_List->mv_VarDefine = nargs_var_or_not;
     return flag1;
 
 }
@@ -381,16 +418,16 @@ bool Function_Call::error_detect(string symbol_sheet_name)
 bool Procedure_Call::error_detect(string symbol_sheet_name)
 {
 //    cout << "beep" << endl;
-    bool flag1 = lookup_procedure(mp_Id->func_getName());
+    bool flag1 = lookup_procedure(mp_Id->func_getName())||lookup_func(mp_Id->func_getName());
     if (!flag1)
     {
-        std::cout << "行" << m_lineno << ": 非过程" << endl;
+        std::cout << "行" << m_lineno << ": 非过程或者函数" << endl;
         return false;
     }
     flag1 = mp_Expression_List->error_detect(symbol_sheet_name);
     int nrgs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
     if (nrgs == -1) {
-//        cout << "beepbeep" << endl;
+        //cout << "beepbeep" << endl;
         return flag1;
     }
     if (nrgs != mp_Expression_List->func_get_mv_type().size())
@@ -402,10 +439,12 @@ bool Procedure_Call::error_detect(string symbol_sheet_name)
     vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
     for (int i = 0; i<types.size(); i++) {
         if (types[i] != arg_types[i]) {
-            std::cout << "行" << m_lineno << ": 第" << i << "个实参形参不匹配" << endl;
-            return false;
+            std::cout << "行" << m_lineno << ": 第" << i+1 << "个实参形参不匹配" << endl;
+            flag1=false;
         }
     }
+    vector<bool> nargs_var_or_not = get_symbol_nargs_var_or_not(symbol_sheet_name, mp_Id->func_getName());
+    this->mp_Expression_List->mv_VarDefine = nargs_var_or_not;
     cout << "finish " << mp_Id->func_getName() << endl;
     return flag1;
 }
@@ -437,7 +476,7 @@ bool Expression::error_detect(string symbol_sheet_name) {
 bool Expression_List::error_detect(string symbol_sheet_name) {
     bool flag = true;
     for (auto &i : mv_Expression) {
-        flag = flag && i->error_detect(symbol_sheet_name);
+        flag = i->error_detect(symbol_sheet_name)&&flag;
         mv_Type.push_back(i->getType());
         rangeVal.push_back(i->getRangeVal());
         rangeValid.push_back(i->getRangeValid());
@@ -463,7 +502,7 @@ bool Relop::error_detect(string symbol_sheet_name) {
 bool Simple_Expression::error_detect(string symbol_sheet_name) {
     if (mp_Addop) {
         bool flag = mp_Addop->error_detect(symbol_sheet_name);
-        setType(mp_Addop->func_checkAddopType());
+        setType(mp_Addop->getType());
         rangeVal = -1;
         rangeValid = false;
         return flag;
@@ -474,6 +513,7 @@ bool Simple_Expression::error_detect(string symbol_sheet_name) {
         rangeValid = mp_Term->getRangeValid();
         return flag;
     } else {
+        setType(-1);
         rangeVal = -1;
         rangeValid = false;
         std::cout << "行" << m_lineno << "语法树出错" << endl;
@@ -505,13 +545,13 @@ bool Addop::error_detect(string symbol_sheet_name) {
 bool Term::error_detect(string symbol_sheet_name) {
     if (mp_Mulop) {
         bool flag = mp_Mulop->error_detect(symbol_sheet_name);
-        setType(mp_Mulop->func_checkMulopType());
+        setType(mp_Mulop->getType());
         rangeVal = -1;
         rangeValid = false;
         return flag;
     } else if (mp_Factor) {
         bool flag = mp_Factor->error_detect(symbol_sheet_name);
-        setType(mp_Factor->func_checkFactorType());
+        setType(mp_Factor->getType());
         rangeVal = mp_Factor->getRangeVal();
         rangeValid = mp_Factor->getRangeValid();
         return flag;
@@ -676,6 +716,7 @@ bool Uminus::error_detect(string symbol_sheet_name) {
 bool lookup_symbol(string symbolSheet_name, string symbol_name) {
 //    cout << "looking up symbol" << endl;
     bool flag = true;
+    cout<<symbolSheet_name<<endl;
     symbolSheet global_sheet = symbolSheet_list.at("0");
     symbolSheet sheet;
     if (symbolSheet_name == "0") {
@@ -692,20 +733,19 @@ bool lookup_symbol(string symbolSheet_name, string symbol_name) {
     } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
 //        cout << "found the symbol sheet " << symbolSheet_name << endl;
         // subprgrm symbol sheet, first lookup in the global sheet
+        //cout<<symbolSheet_name<<endl;
         sheet = symbolSheet_list[symbolSheet_name];
-        if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
+         if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            cout << "found " << symbol_name << " in the subsymbol sheet" << symbolSheet_name << endl;
+            flag = true;
+        }else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
             cout << "found " << symbol_name << " in global symbol sheet" << endl;
             flag = true;
         } else if (global_sheet.symbols.find(symbol_name) == global_sheet.symbols.end()) {
-            cout << "can't find " << symbol_name << " in global symbol sheet" << endl;
-            flag = false;
-        } else if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
-            cout << "found " << symbol_name << " in the subsymbol sheet" << symbolSheet_name << endl;
-            flag = true;
-        } else if (sheet.symbols.find(symbol_name) == sheet.symbols.end()) {
-            cout << "can't find " << symbol_name << " in the subsymbol sheet" << endl;
+            cout << "can't find " << symbol_name << " in symbol sheet" << endl;
             flag = false;
         }
+
     } else {
         cout << "can't find symbolsheet \"" << symbolSheet_name << "\"" << endl;
     }
@@ -822,6 +862,26 @@ int get_symbol_narg(string symbolSheet_name, string symbol_name) {
             return sheet.symbols[symbol_name].subprgrm_nargs;
         } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
             return global_sheet.symbols[symbol_name].subprgrm_nargs;
+        }
+    }
+}
+
+vector<bool> get_symbol_nargs_var_or_not(string symbolSheet_name, string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    symbolSheet sheet;
+    if (symbolSheet_name == "0") {
+        // global symbol sheet
+        sheet = global_sheet;
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].nargs_var_or_not;
+        }
+    } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
+        // subprgrm symbol sheet, first lookup in the local sheet, if dont exist then lookup in the global sheet
+        sheet = symbolSheet_list[symbolSheet_name];
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].nargs_var_or_not;
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+            return global_sheet.symbols[symbol_name].nargs_var_or_not;
         }
     }
 }
@@ -1044,7 +1104,7 @@ bool semantic_Error_Detect(Programstruct *input_Tree) {
     cout << endl << endl << "start checking semantic errors" << endl;
     // then, check semantic error
     if (flag) {
-        flag = flag && input_Tree->error_detect();
+        flag = input_Tree->error_detect()&&flag;
     }
     return flag;
 }

@@ -1376,9 +1376,6 @@ public:
     //        }
     //        return id_types;
     //    }
-    bool isVal() {
-        return mv_Id.front()->m_isVal;  // the vector should be the same kind
-    }
 
     int m_lineno;
 
