@@ -219,7 +219,7 @@ bool Statement::error_detect(string symbol_sheet_name) {
     }
     else
         cout << "null" << endl;
-    cout<<flag<<" Statement"<<endl;
+    cout<<flag<<" return Statement"<<endl;
     return flag;
 }
 
@@ -298,6 +298,7 @@ bool Variable::error_detect(string symbol_sheet_name) {
     if (mp_Id) {
         if (lookup_symbol(symbol_sheet_name, mp_Id->func_getName())) {
             int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName());
+            cout<<"Variable "<<type1<<endl;
             bool flag = true;
             if (mp_Expression_List && type1 != 5) {
                 m_isArray = false;
@@ -774,7 +775,7 @@ int get_symbol_type(string symbolSheet_name, string symbol_name) {
             } else {
                 return TYPE_NULL;  // in fact this is the array type
             }
-        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
             if (global_sheet.symbols[symbol_name].array_ranges.empty()) {
                 return global_sheet.symbols[symbol_name].type;  // not array
             } else {
