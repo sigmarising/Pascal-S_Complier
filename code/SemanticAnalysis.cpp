@@ -14,6 +14,8 @@ bool Programstruct::error_detect() {
     bool flag = true;
     if (this->mp_Program_Body)
         flag = mp_Program_Body->error_detect();
+
+    cout << "program struct finished"<< endl;
     return flag;
 }
 
@@ -22,8 +24,10 @@ bool Program_Body::error_detect() {
     bool flag = true;
     if (mp_SubProgram_Declarations)
         flag = mp_SubProgram_Declarations->definition_error_detect();
+    cout << "definition finished" << endl;
     if (mp_Statement_List)
         flag = flag && mp_Statement_List->error_detect("0");
+    cout << "program body finished" << endl;
     return flag;                                  //此处需要为flag&&另一个bool值
 }
 
@@ -163,16 +167,22 @@ bool Parameter_List::error_detect(string symbolSheet_name) {
 // Statement_List的语义错误检测
 bool Statement_List::error_detect(string symbol_sheet_name) {
     bool flag = true;
+    cout << mv_Statement.size() << endl;
     for (auto i : mv_Statement) {
-        flag = flag && i->error_detect(symbol_sheet_name);
+        if (i)
+            flag = flag && i->error_detect(symbol_sheet_name);
+        else
+            cout << "null"<< endl;
 
     }
+    cout << "statement list finished" << endl;
     return flag;
 }
 
 
 bool Statement::error_detect(string symbol_sheet_name) {
-    bool flag;
+//    cout << "processing line " << m_lineno << " statement" << endl;
+    bool flag = true;
     if (mp_Assignop)
         flag = mp_Assignop->error_detect(symbol_sheet_name);
     else if (mp_Procedure_call)
@@ -181,8 +191,11 @@ bool Statement::error_detect(string symbol_sheet_name) {
         flag = mp_Statement_List->error_detect(symbol_sheet_name);
     else if (mp_If_Then_Else)
         flag = mp_If_Then_Else->error_detect(symbol_sheet_name);
-    else
+    else if (mp_For)
         flag = mp_For->error_detect(symbol_sheet_name);
+    else
+        cout << "null" << endl;
+//    cout << "finish line " << m_lineno << endl;
     return flag;
 }
 
@@ -367,6 +380,7 @@ bool Function_Call::error_detect(string symbol_sheet_name)
 
 bool Procedure_Call::error_detect(string symbol_sheet_name)
 {
+//    cout << "beep" << endl;
     bool flag1 = lookup_procedure(mp_Id->func_getName());
     if (!flag1)
     {
@@ -375,8 +389,10 @@ bool Procedure_Call::error_detect(string symbol_sheet_name)
     }
     flag1 = mp_Expression_List->error_detect(symbol_sheet_name);
     int nrgs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
-    if (nrgs == -1)
+    if (nrgs == -1) {
+//        cout << "beepbeep" << endl;
         return flag1;
+    }
     if (nrgs != mp_Expression_List->func_get_mv_type().size())
     {
         std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
@@ -384,12 +400,13 @@ bool Procedure_Call::error_detect(string symbol_sheet_name)
     }
     vector<int> types = mp_Expression_List->func_get_mv_type();
     vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
-    for (int i = 0; i<types.size(); i++)
-        if (types[i] != arg_types[i])
-        {
+    for (int i = 0; i<types.size(); i++) {
+        if (types[i] != arg_types[i]) {
             std::cout << "行" << m_lineno << ": 第" << i << "个实参形参不匹配" << endl;
             return false;
         }
+    }
+    cout << "finish " << mp_Id->func_getName() << endl;
     return flag1;
 }
 
