@@ -1,48 +1,13 @@
-#include "SemanticAnalysis.h"
+#include "../include/SemanticAnalysis.h"
 #include <iostream>
-#include <set>
+#include <map>
 #include <cassert>
+#include <utility>
 
-map<symbolsheet_name, symbolSheet> symbolSheet_list;
+typedef map<symbolsheet_name, symbolSheet>::value_type symbolsheet_list_item;
+map <symbolsheet_name, symbolSheet> symbolSheet_list;
 typedef pair<bool, symbolsheet_name> symbolSheet_create_result;
-
-symbolSheet_create_result Program_Body::create_symbolsheet() {
-    symbolSheet global_sheet;
-    global_sheet.sheet_name = "0";
-    if (mp_Const_Declarations->error_detect(global_sheet.sheet_name) &&
-        global_sheet.add_const_symbols(mp_Const_Declarations) &&
-        mp_Var_Declarations->error_detect(global_sheet.sheet_name) &&
-        global_sheet.add_var_symbols(mp_Var_Declarations) &&
-        mp_SubProgram_Declarations->error_detect(global_sheet.sheet_name) &&
-        global_sheet.add_subprgrm_symbols(mp_SubProgram_Declarations))
-        symbolSheet_list.insert(symbolsheet_list_item(global_sheet.sheet_name, global_sheet));
-    return symbolSheet_create_result(!symbolSheet_list.empty(), global_sheet.sheet_name);
-}
-
-symbolSheet_create_result Procedure::create_symbolsheet() {
-    auto s = symbolSheet_list.size();
-    symbolSheet proc_sheet;
-    proc_sheet.sheet_name = mp_Id->m_name;  // uses proc name
-    if (mp_Parameter_List->error_detect(proc_sheet.sheet_name) &&
-        proc_sheet.add_parameter_symbols(mp_Parameter_List) &&
-        mp_Const_Declarations->error_detect(proc_sheet.sheet_name) &&
-        proc_sheet.add_const_symbols(mp_Const_Declarations) &&
-        mp_Var_Declarations->error_detect(proc_sheet.sheet_name) &&
-        proc_sheet.add_var_symbols(mp_Var_Declarations))
-        symbolSheet_list.insert(symbolsheet_list_item(proc_sheet.sheet_name, proc_sheet));
-    return symbolSheet_create_result(bool(symbolSheet_list.size() - s), proc_sheet.sheet_name);
-}
-
-symbolSheet_create_result Function::create_symbolsheet() {
-    auto s = symbolSheet_list.size();
-    symbolSheet func_sheet;
-    func_sheet.sheet_name = mp_Id->m_name;  // uses proc name
-    if (func_sheet.add_parameter_symbols(mp_Parameter_List) &&
-        func_sheet.add_const_symbols(mp_Const_Declarations) &&
-        func_sheet.add_var_symbols(mp_Var_Declarations))
-        symbolSheet_list.insert(symbolsheet_list_item(func_sheet.sheet_name, func_sheet));
-    return symbolSheet_create_result(bool(symbolSheet_list.size() - s), func_sheet.sheet_name);
-}
+//const string globalsheet_name = "0";
 
 //注意 Programstruct的错误检测，还不是特别完善
 bool Programstruct::error_detect() {
@@ -54,18 +19,16 @@ bool Programstruct::error_detect() {
 
 //声明部分已经解决
 bool Program_Body::error_detect() {
-    symbolSheet_create_result re = Program_Body::create_symbolsheet();
-    symbolsheet_name name = re.second;
     bool flag = true;
     if (mp_SubProgram_Declarations)
         flag = mp_SubProgram_Declarations->definition_error_detect();
     if (mp_Statement_List)
-        flag = flag && mp_Statement_List->error_detect(name);
+        flag = flag && mp_Statement_List->error_detect("0");
     return flag;                                  //此处需要为flag&&另一个bool值
 }
 
 bool Const_Declarations::error_detect(string symbolSheet_name) {
-    set<string> id_set;
+    set <string> id_set;
     bool flag = true;
     for (auto const_symbol: mv_Const) {
         if (symbolSheet_name != "0" && const_symbol.first->m_name == symbolSheet_name) {
@@ -89,9 +52,9 @@ bool Const_Declarations::error_detect(string symbolSheet_name) {
 }
 
 bool Var_Declarations::error_detect(string symbolSheet_name) {
-    set<string> id_set;
+    set <string> id_set;
+    symbolSheet sheet;
     bool flag = true;
-    symbolSheet sheet = symbolSheet_list[symbolSheet_name];
     for (auto type_group: mv_Var) {
         for (auto id: type_group.first->mv_Id) {
             string id_name = id->m_name;
@@ -102,7 +65,7 @@ bool Var_Declarations::error_detect(string symbolSheet_name) {
                 break;
             }
             auto result = id_set.insert(id_name);
-            if (!result.second || sheet.exists(id_name)) {
+            if (!result.second) {
                 if (symbolSheet_name == "0") {
                     cout << "全局变量声明行中存在重复声明错误" << endl;
                 } else {
@@ -117,13 +80,12 @@ bool Var_Declarations::error_detect(string symbolSheet_name) {
 }
 
 bool SubProgram_Declarations::error_detect(string symbolSheet_name) {
-    set<string> id_set;
+    set <string> id_set;
     bool flag = true;
-    symbolSheet sheet = symbolSheet_list[symbolSheet_name];
     for (auto subprgrm: mv_Common) {
         string id_name = subprgrm->get_func_id()->m_name;
         auto result = id_set.insert(id_name);
-        if (!result.second || sheet.exists(id_name)) {
+        if (!result.second) {
             cout << "子程序\"" << id_name << "\"重复声明错误" << endl;
             flag = false;
             break;
@@ -174,11 +136,10 @@ bool Function::error_detect() {
 }
 
 bool Parameter_List::error_detect(string symbolSheet_name) {
-    set<string> id_set;
+    set <string> id_set;
     bool flag = true;
-    symbolSheet sheet = symbolSheet_list[symbolSheet_name];
     for (auto parameter: mv_Patameter) {
-        vector<Id*> parameter_symbols = parameter->func_get_mv_id();
+        vector < Id * > parameter_symbols = parameter->func_get_mv_id();
         for (auto id: parameter_symbols) {
             string id_name = id->m_name;
             if (id_name == symbolSheet_name) {
@@ -189,7 +150,7 @@ bool Parameter_List::error_detect(string symbolSheet_name) {
             }
             auto result = id_set.insert(id_name);
             if (!result.second) {
-                cout << "子程序\"" << symbolSheet_name <<"\"声明行中形式参数\"" << id_name
+                cout << "子程序\"" << symbolSheet_name << "\"声明行中形式参数\"" << id_name
                      << "\"存在重复声明错误" << endl;
                 flag = false;
                 break;
@@ -211,7 +172,7 @@ bool Statement_List::error_detect(string symbol_sheet_name) {
 
 
 bool Statement::error_detect(string symbol_sheet_name) {
-    bool flag = true;
+    bool flag;
     if (mp_Assignop)
         flag = mp_Assignop->error_detect(symbol_sheet_name);
     else if (mp_Procedure_call)
@@ -226,7 +187,7 @@ bool Statement::error_detect(string symbol_sheet_name) {
 }
 
 bool Assignop::error_detect(string symbol_sheet_name) {
-    bool flag;
+    bool flag = true;
     if (mp_Variable)
         flag = flag && mp_Variable->error_detect(symbol_sheet_name);
     if (mp_Expression)
@@ -267,8 +228,9 @@ bool For::error_detect(string symbol_sheet_name) {
             flag = flag && mp_Expression_2->error_detect(symbol_sheet_name);
             int type2 = mp_Expression_1->getType();
             int type3 = mp_Expression_2->getType();
-            if ((type1 == TYPE_INTERGER || type1 == TYPE_CHAR) && type1 == type2 && type1 == type3)
-                flag = flag;
+            if ((type1 == TYPE_INTERGER || type1 == TYPE_CHAR) && type1 == type2 && type1 == type3){
+
+            }
             else {
                 flag = false;
                 std::cout << "行" << m_lineno << ": 循环变量有问题" << endl;
@@ -277,7 +239,7 @@ bool For::error_detect(string symbol_sheet_name) {
             flag = flag && mp_Statment->error_detect(symbol_sheet_name);
             return flag;
         } else {
-            std::cout << "行" << m_lineno << ": 未声明变量" << endl;
+            std::cout << "行" << m_lineno << ": 未声明变量\"" << mp_Id->func_getName() << "\"" << endl;
             return false;
         }
     } else {
@@ -302,31 +264,25 @@ bool Variable::error_detect(string symbol_sheet_name) {
                 m_isArray = true;
                 std::cout << "行" << m_lineno << ": 数组维数不对" << endl;
                 flag = false;
-			}
-			else if (mp_Expression_List)
-			{
-				flag = flag&&mp_Expression_List->error_detect(symbol_sheet_name);
-				this->type = get_array_type(symbol_sheet_name, mp_Id->func_getName());
-				vector<int> rangeVal1 = mp_Expression_List->rangeVal;
-				vector<bool> rangeValid1 = mp_Expression_List->rangeValid;
-				vector<pair<int, int> > rangeTemp = get_symbol_range(symbol_sheet_name, mp_Id->func_getName());
-				for (int i = 0; i < rangeTemp.size(); i++)
-				{
-					if (rangeValid1[i])
-					{
-						if (rangeVal1[i]<rangeTemp[i].first&&rangeVal1[i]>rangeTemp[i].second)
-						{
-							std::cout << "行" << m_lineno << ": 数组越界" << endl;
-							flag = false;
-						}
-					}
-				}
-			}
-			else
+            } else if (mp_Expression_List) {
+                flag = flag && mp_Expression_List->error_detect(symbol_sheet_name);
+                this->type = get_array_type(symbol_sheet_name, mp_Id->func_getName());
+                vector<int> rangeVal1 = mp_Expression_List->rangeVal;
+                vector<bool> rangeValid1 = mp_Expression_List->rangeValid;
+                vector <pair<int, int>> rangeTemp = get_symbol_range(symbol_sheet_name, mp_Id->func_getName());
+                for (int i = 0; i < rangeTemp.size(); i++) {
+                    if (rangeValid1[i]) {
+                        if (rangeVal1[i] < rangeTemp[i].first && rangeVal1[i] > rangeTemp[i].second) {
+                            std::cout << "行" << m_lineno << ": 数组越界" << endl;
+                            flag = false;
+                        }
+                    }
+                }
+            } else
                 m_isArray = false;
             return flag;
         } else {
-            std::cout << "行" << m_lineno << ": 未声明变量" << endl;
+            std::cout << "行" << m_lineno << ": 未声明变量\"" << mp_Id->func_getName() << "\"" << endl;
             return false;
         }
     } else {
@@ -336,70 +292,124 @@ bool Variable::error_detect(string symbol_sheet_name) {
 
 }
 
-
 //注意，
-bool Function_Call::error_detect(string symbol_sheet_name) {
+//bool Function_Call::error_detect(string symbol_sheet_name) {
+//    bool flag1 = lookup_func(mp_Id->func_getName());
+//    if (!flag1) {
+//        std::cout << "行" << m_lineno << ": 非函数" << endl;
+//        return false;
+//    }
+//    int nrgs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
+//    if (nrgs != mp_Expression_List->func_get_mv_type().size()) {
+//        std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
+//        return false;
+//    }
+//    vector<int> types = mp_Expression_List->func_get_mv_type();
+//    vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
+//    for (int i = 0; i < types.size(); i++)
+//        if (types[i] != arg_types[i]) {
+//            std::cout << "行" << m_lineno << ": 第" << i << "个实参形参不匹配" << endl;
+//            return false;
+//        }
+//    return true;
+//
+//}
+
+bool Function_Call::error_detect(string symbol_sheet_name)
+{
     bool flag1 = lookup_func(mp_Id->func_getName());
-    if (!flag1) {
+    if (!flag1)
+    {
         std::cout << "行" << m_lineno << ": 非函数" << endl;
         return false;
     }
-    int nrgs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
-    if (nrgs != mp_Expression_List->func_get_mv_type().size()) {
+    int nrgs = get_symbol_narg(symbol_sheet_name,mp_Id->func_getName());
+    flag1 = mp_Expression_List->error_detect(symbol_sheet_name);
+    if (nrgs == -1)
+        return flag1;
+    if (nrgs != mp_Expression_List->func_get_mv_type().size())
+    {
         std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
         return false;
     }
     vector<int> types = mp_Expression_List->func_get_mv_type();
     vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
-    for (int i = 0; i < types.size(); i++)
-        if (types[i] != arg_types[i]) {
-            std::cout << "行" << m_lineno << ": 第" << i << "个实参形参不匹配" << endl;
+    for (int i=0;i<types.size();i++)
+        if (types[i] != arg_types[i])
+        {
+            std::cout << "行" << m_lineno << ": 第"<<i<<"个实参形参不匹配" << endl;
             return false;
         }
-    return true;
+    return flag1;
 
 }
 
+//bool Procedure_Call::error_detect(string symbol_sheet_name) {
+//    bool flag1 = lookup_procedure(mp_Id->func_getName());
+//    if (!flag1) {
+//        std::cout << "行" << m_lineno << ": 非过程" << endl;
+//        return false;
+//    }
+//    int nrgs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
+//    if (nrgs != mp_Expression_List->func_get_mv_type().size()) {
+//        std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
+//        return false;
+//    }
+//    vector<int> types = mp_Expression_List->func_get_mv_type();
+//    vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
+//    for (int i = 0; i < types.size(); i++)
+//        if (types[i] != arg_types[i]) {
+//            std::cout << "行" << m_lineno << ": 第" << i << "个实参形参不匹配" << endl;
+//            return false;
+//        }
+//    return true;
+//}
 
-bool Procedure_Call::error_detect(string symbol_sheet_name) {
+bool Procedure_Call::error_detect(string symbol_sheet_name)
+{
     bool flag1 = lookup_procedure(mp_Id->func_getName());
-    if (!flag1) {
+    if (!flag1)
+    {
         std::cout << "行" << m_lineno << ": 非过程" << endl;
         return false;
     }
+    flag1 = mp_Expression_List->error_detect(symbol_sheet_name);
     int nrgs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
-    if (nrgs != mp_Expression_List->func_get_mv_type().size()) {
+    if (nrgs == -1)
+        return flag1;
+    if (nrgs != mp_Expression_List->func_get_mv_type().size())
+    {
         std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
         return false;
     }
     vector<int> types = mp_Expression_List->func_get_mv_type();
     vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
-    for (int i = 0; i < types.size(); i++)
-        if (types[i] != arg_types[i]) {
+    for (int i = 0; i<types.size(); i++)
+        if (types[i] != arg_types[i])
+        {
             std::cout << "行" << m_lineno << ": 第" << i << "个实参形参不匹配" << endl;
             return false;
         }
-    return true;
+    return flag1;
 }
+
 
 bool Expression::error_detect(string symbol_sheet_name) {
     if (mp_Relop) {
         bool flag = mp_Relop->error_detect(symbol_sheet_name);
         this->setType(mp_Relop->getType());
-		rangeVal = -1;
-		rangeValid = false;
+        rangeVal = -1;
+        rangeValid = false;
         return flag;
     } else if (mp_Simple_Expression) {
         bool flag = mp_Simple_Expression->error_detect(symbol_sheet_name);
         setType(mp_Simple_Expression->getType());
-		rangeVal = mp_Simple_Expression->getRangeVal();
-		rangeValid = mp_Simple_Expression->getRangeValid();
+        rangeVal = mp_Simple_Expression->getRangeVal();
+        rangeValid = mp_Simple_Expression->getRangeValid();
         return flag;
-	}
-	else
-	{
-		rangeVal = -1;
-		rangeValid = false;
+    } else {
+        rangeVal = -1;
+        rangeValid = false;
         std::cout << "行" << m_lineno << "语法树出错" << endl;
         return false;
     }
@@ -409,11 +419,11 @@ bool Expression::error_detect(string symbol_sheet_name) {
 
 bool Expression_List::error_detect(string symbol_sheet_name) {
     bool flag = true;
-    for (int i = 0; i < mv_Expression.size(); i++) {
-        flag = flag && mv_Expression[i]->error_detect(symbol_sheet_name);
-        mv_Type.push_back(mv_Expression[i]->getType());
-		rangeVal.push_back(mv_Expression[i]->getRangeVal());
-		rangeValid.push_back(mv_Expression[i]->getRangeValid());
+    for (auto &i : mv_Expression) {
+        flag = flag && i->error_detect(symbol_sheet_name);
+        mv_Type.push_back(i->getType());
+        rangeVal.push_back(i->getRangeVal());
+        rangeValid.push_back(i->getRangeValid());
     }
     return flag;
 }
@@ -437,20 +447,18 @@ bool Simple_Expression::error_detect(string symbol_sheet_name) {
     if (mp_Addop) {
         bool flag = mp_Addop->error_detect(symbol_sheet_name);
         setType(mp_Addop->func_checkAddopType());
-		rangeVal = -1;
-		rangeValid = false;
+        rangeVal = -1;
+        rangeValid = false;
         return flag;
     } else if (mp_Term) {
         bool flag = mp_Term->error_detect(symbol_sheet_name);
         setType(mp_Term->getType());
-		rangeVal = mp_Term->getRangeVal();
-		rangeValid = mp_Term->getRangeValid();
+        rangeVal = mp_Term->getRangeVal();
+        rangeValid = mp_Term->getRangeValid();
         return flag;
-	}
-	else
-	{
-		rangeVal = -1;
-		rangeValid = false;
+    } else {
+        rangeVal = -1;
+        rangeValid = false;
         std::cout << "行" << m_lineno << "语法树出错" << endl;
         return false;
     }
@@ -474,27 +482,25 @@ bool Addop::error_detect(string symbol_sheet_name) {
         flag3 = (type1 == type2 && type1 == TYPE_BOOLEAN);
         setType(TYPE_BOOLEAN);
     }
-    return flag1 && flag1 && flag3;
+    return flag1 && flag2 && flag3;
 }
 
 bool Term::error_detect(string symbol_sheet_name) {
     if (mp_Mulop) {
         bool flag = mp_Mulop->error_detect(symbol_sheet_name);
         setType(mp_Mulop->func_checkMulopType());
-		rangeVal = -1;
-		rangeValid = false;
+        rangeVal = -1;
+        rangeValid = false;
         return flag;
     } else if (mp_Factor) {
         bool flag = mp_Factor->error_detect(symbol_sheet_name);
         setType(mp_Factor->func_checkFactorType());
-		rangeVal = mp_Factor->getRangeVal();
-		rangeValid = mp_Factor->getRangeValid();
+        rangeVal = mp_Factor->getRangeVal();
+        rangeValid = mp_Factor->getRangeValid();
         return flag;
-	}
-	else
-	{
-		rangeVal = -1;
-		rangeValid = false;
+    } else {
+        rangeVal = -1;
+        rangeValid = false;
         std::cout << "行" << m_lineno << "语法树出错" << endl;
         return false;
     }
@@ -537,89 +543,76 @@ bool Mulop::error_detect(string symbol_sheet_name) {
 bool Factor::error_detect(string symbol_sheet_name) {
     bool flag = true;
     switch (m_factorType) {
-		case FACTOR_vALUE_BOOL:
-		{
-			rangeVal = -1;
-			rangeValid = false;
+        case FACTOR_VALUE_BOOL: {
+            rangeVal = -1;
+            rangeValid = false;
             setType(TYPE_BOOLEAN);
             break;
         }
-		case FACTOR_VALUE_INT:
-		{
+        case FACTOR_VALUE_INT: {
 
-			rangeVal = m_int;
-			rangeValid = true;
+            rangeVal = m_int;
+            rangeValid = true;
             setType(TYPE_INTERGER);
             break;
         }
-		case FACTOR_VALUE_CHAR:
-		{
-			rangeVal = -1;
-			rangeValid = false;
+        case FACTOR_VALUE_CHAR: {
+            rangeVal = -1;
+            rangeValid = false;
             setType(TYPE_CHAR);
             break;
         }
-		case FACTOR_VALUE_REAL:
-		{
-			rangeVal = -1;
-			rangeValid = false;
+        case FACTOR_VALUE_REAL: {
+            rangeVal = -1;
+            rangeValid = false;
             setType(TYPE_REAL);
             break;
         }
-		case FACTOR_VAR:
-		{
-			rangeVal = -1;
-			rangeValid = false;
+        case FACTOR_VAR: {
+            rangeVal = -1;
+            rangeValid = false;
             flag = mp_Variable->error_detect(symbol_sheet_name);
             setType(mp_Variable->getType());
             break;
         }
-		case FACTOR_FUNCCALL:
-		{
-			rangeVal = -1;
-			rangeValid = false;
+        case FACTOR_FUNCCALL: {
+            rangeVal = -1;
+            rangeValid = false;
             flag = mp_Function_Call->error_detect(symbol_sheet_name);
             setType(get_func_return_type(mp_Function_Call->mp_Id->func_getName()));
             break;
         }
-		case FACTOR_BRACKETS:
-		{
-			rangeVal = -1;
-			rangeValid = false;
+        case FACTOR_BRACKETS: {
+            rangeVal = -1;
+            rangeValid = false;
             flag = mp_Expression->error_detect(symbol_sheet_name);
             setType(mp_Expression->getType());
             break;
         }
-		case FACTOR_NOT:
-		{
-			rangeVal = -1;
-			rangeValid = false;
+        case FACTOR_NOT: {
+            rangeVal = -1;
+            rangeValid = false;
             flag = mp_Not->error_detect(symbol_sheet_name);
             setType(TYPE_BOOLEAN);
             break;
         }
-		case FACTOR_UMINUS:
-		{
-			int typeTemp = mp_Uminus->getType();
+        case FACTOR_UMINUS: {
+            int typeTemp = mp_Uminus->getType();
             flag = mp_Uminus->error_detect(symbol_sheet_name);
             setType(mp_Uminus->getType());
-			if (typeTemp != TYPE_INTERGER)
-			{
-				rangeVal = -1;
-				rangeValid = false;
-			}
-			else
-			{
-				rangeVal = mp_Uminus->getRangeVal();
-				rangeValid = true;
-			}
+            if (typeTemp != TYPE_INTERGER) {
+                rangeVal = -1;
+                rangeValid = false;
+            } else {
+                rangeVal = mp_Uminus->getRangeVal();
+                rangeValid = true;
+            }
             break;
         }
 
-		default:
-		{
-			rangeVal = -1;
-			rangeValid = false;
+        default: {
+            rangeVal = -1;
+            rangeValid = false;
             std::cout << "行" << m_lineno << "语法树出错" << endl;
             return false;
         }
@@ -630,7 +623,7 @@ bool Factor::error_detect(string symbol_sheet_name) {
 bool Not::error_detect(string symbol_sheet_name) {
     if (mp_Factor) {
         bool flag = true;
-        flag = mp_Factor->error_detect(symbol_sheet_name);
+        flag = mp_Factor->error_detect(std::move(symbol_sheet_name));
         int typeTemp = mp_Factor->getType();
         if (typeTemp != TYPE_BOOLEAN) {
             flag = false;
@@ -645,44 +638,61 @@ bool Not::error_detect(string symbol_sheet_name) {
 
 bool Uminus::error_detect(string symbol_sheet_name) {
     if (mp_Factor) {
-        bool flag = mp_Factor->error_detect(symbol_sheet_name);
+        bool flag = mp_Factor->error_detect(std::move(symbol_sheet_name));
         int typeTemp = mp_Factor->getType();
         if (typeTemp != TYPE_INTERGER && typeTemp != TYPE_REAL) {
             flag = false;
             std::cout << "行" << m_lineno << ": 类型不匹配" << endl;
         }
-		rangeVal = mp_Factor->getRangeVal();
-		rangeVal = m_unimusType == 0 ? rangeVal : rangeValid;
-		rangeValid = mp_Factor->getRangeValid();
+        rangeVal = mp_Factor->getRangeVal();
+        rangeVal = m_unimusType == 0 ? rangeVal : rangeValid;
+        rangeValid = mp_Factor->getRangeValid();
         setType(typeTemp);
         return flag;
-	}
-	else
-	{
-		setType(TYPE_INTERGER);
+    } else {
+        setType(TYPE_INTERGER);
         std::cout << "行" << m_lineno << ": 语法树出错" << endl;
         return false;
     }
 }
 
 bool lookup_symbol(string symbolSheet_name, string symbol_name) {
-    symbolSheet global_sheet = symbolSheet_list["0"];
+//    cout << "looking up symbol" << endl;
+    bool flag = true;
+    symbolSheet global_sheet = symbolSheet_list.at("0");
     symbolSheet sheet;
     if (symbolSheet_name == "0") {
         // global symbol sheet
+//        cout << "using global sheet" << endl;
         sheet = global_sheet;
         if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
-            return true;
+            cout << "found " << symbol_name << " in global symbol sheet" << endl;
+            flag = true;
+        } else {
+            cout << "can't find " << symbol_name << " in global symbol sheet" << endl;
+            flag = false;
         }
     } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
+//        cout << "found the symbol sheet " << symbolSheet_name << endl;
         // subprgrm symbol sheet, first lookup in the global sheet
         sheet = symbolSheet_list[symbolSheet_name];
-        if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end() ||
-            sheet.symbols.find(symbol_name) != sheet.symbols.find(symbol_name)) {
-            return true;
+        if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
+            cout << "found " << symbol_name << " in global symbol sheet" << endl;
+            flag = true;
+        } else if (global_sheet.symbols.find(symbol_name) == global_sheet.symbols.end()) {
+            cout << "can't find " << symbol_name << " in global symbol sheet" << endl;
+            flag = false;
+        } else if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            cout << "found " << symbol_name << " in the subsymbol sheet" << symbolSheet_name << endl;
+            flag = true;
+        } else if (sheet.symbols.find(symbol_name) == sheet.symbols.end()) {
+            cout << "can't find " << symbol_name << " in the subsymbol sheet" << endl;
+            flag = false;
         }
+    } else {
+        cout << "can't find symbolsheet \"" << symbolSheet_name << "\"" << endl;
     }
-    return false;
+    return flag;
 }
 
 int get_symbol_type(string symbolSheet_name, string symbol_name) {
@@ -819,26 +829,205 @@ vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name) {
     }
 }
 
-bool semantic_Error_Detect(Programstruct *input_Tree) {
-    // TODO: add semantic error detection api
-    bool flag = true;
+symbolSheet_create_result Program_Body::create_symbolsheet() {
+    symbolSheet global_sheet;
+    global_sheet.sheet_name = "0";
+    bool f0, f1 = false, f2 = false, f3 = false;
+    f0 = global_sheet.add_reserved();
+    if (!mp_Const_Declarations->mv_Const.empty() && f0) {
+        if (mp_Const_Declarations->error_detect(global_sheet.sheet_name)) {
+            f1 = global_sheet.add_const_symbols(mp_Const_Declarations);
+            if (!f1) {
+                cout << "error occurs when adding parameter symbols into global sheet" << endl;
+            }
+        }
+    } else {
+        cout << "no parameter symbols to be added into global sheet" << endl;
+        f1 = true;
+    }
+    if (!mp_Var_Declarations->mv_Var.empty() && f1) {
+        if (mp_Var_Declarations->error_detect(global_sheet.sheet_name)) {
+            f2 = global_sheet.add_var_symbols(mp_Var_Declarations);
+            if (!f2) {
+                cout << "error occurs when adding const symbols into global sheet" << endl;
+            }
+        }
+    } else {
+        cout << "no const symbols to be added into global sheet" << endl;
+        f2 = true;
+    }
+    if (!mp_SubProgram_Declarations->mv_Common.empty() && f2) {
+        if (mp_SubProgram_Declarations->error_detect(global_sheet.sheet_name)) {
+            f3 = global_sheet.add_subprgrm_symbols(mp_SubProgram_Declarations);
+            if (!f3) {
+                cout << "error occurs when adding variable symbols into global sheet" << endl;
+            }
+        }
+    } else {
+        cout << "no variable symbols to be added into global sheet" << endl;
+        f3 = true;
+    }
+    if (f0 && f1 && f2 && f3) {
+        auto re = symbolSheet_list.insert(symbolsheet_list_item(global_sheet.sheet_name, global_sheet));
+        if (re.second) {
+            cout << "these symbols have been added to global sheet:" << endl;
+            for (auto i:global_sheet.symbols) {
+                cout << i.first << " ";
+            }
+            cout << endl;
+        } else {
+            cout << "no symbols have been added to global sheet" << endl;
+        }
+    } else {
+        cout << "error occurs when building global symbol sheets, pls check the above info." << endl;
+    }
+    return symbolSheet_create_result(!symbolSheet_list.empty(), global_sheet.sheet_name);
+}
 
+symbolSheet_create_result Procedure::create_symbolsheet() {
+    auto s = symbolSheet_list.size();
+    symbolSheet proc_sheet;
+    proc_sheet.sheet_name = mp_Id->m_name;  // uses proc name
+    bool f0, f1 = false, f2 = false, f3 = false;
+    f0 = proc_sheet.add_reserved();
+    if (mp_Parameter_List && f0) {
+        if (mp_Parameter_List->error_detect(proc_sheet.sheet_name)) {
+            f1 = proc_sheet.add_parameter_symbols(mp_Parameter_List);
+            if (!f1) {
+                cout << "error occurs when adding parameter symbols into " << proc_sheet.sheet_name << endl;
+            }
+        }
+    } else {
+        cout << "no parameter symbols to be added into " << proc_sheet.sheet_name << endl;
+        f1 = true;
+    }
+    if (mp_Const_Declarations && f1) {
+        if (mp_Const_Declarations->error_detect(proc_sheet.sheet_name)) {
+            f2 = proc_sheet.add_const_symbols(mp_Const_Declarations);
+            if (!f2) {
+                cout << "error occurs when adding const symbols into " << proc_sheet.sheet_name << endl;
+            }
+        }
+    } else {
+        cout << "no const symbols to be added into " << proc_sheet.sheet_name << endl;
+        f2 = true;
+    }
+    if (mp_Var_Declarations && f2) {
+        if (mp_Var_Declarations->error_detect(proc_sheet.sheet_name)) {
+            f3 = proc_sheet.add_var_symbols(mp_Var_Declarations);
+            if (!f3) {
+                cout << "error occurs when adding variable symbols into " << proc_sheet.sheet_name << endl;
+            }
+        }
+    } else {
+        cout << "no variable symbols to be added into " << proc_sheet.sheet_name << endl;
+        f3 = true;
+    }
+
+    if (f0 && f1 && f2 && f3) {
+        auto re = symbolSheet_list.insert(symbolsheet_list_item(proc_sheet.sheet_name, proc_sheet));
+        if (re.second) {
+            cout << "these symbols have been added to " << proc_sheet.sheet_name << ":" << endl;
+            for (auto i:proc_sheet.symbols) {
+                cout << i.first << " ";
+            }
+            cout << endl;
+        } else {
+            cout << proc_sheet.sheet_name << "'s symbol sheet not added" << endl;
+        }
+    } else {
+        cout << "error occurs when building " << proc_sheet.sheet_name << "'s symbol sheets, pls check the above info." << endl;
+    }
+    return symbolSheet_create_result(bool(symbolSheet_list.size() - s), proc_sheet.sheet_name);
+}
+
+symbolSheet_create_result Function::create_symbolsheet() {
+    auto s = symbolSheet_list.size();
+    symbolSheet func_sheet;
+    func_sheet.sheet_name = mp_Id->m_name;  // uses proc name
+    bool f0, f1 = false, f2 = false, f3 = false;
+    f0 = func_sheet.add_reserved();
+    if (mp_Parameter_List && f0) {
+        if (mp_Parameter_List->error_detect(func_sheet.sheet_name)) {
+            f1 = func_sheet.add_parameter_symbols(mp_Parameter_List);
+            if (!f1) {
+                cout << "error occurs when adding parameter symbols into " << func_sheet.sheet_name << endl;
+            }
+        }
+    } else {
+        cout << "no parameter symbols to be added into " << func_sheet.sheet_name << endl;
+        f1 = true;
+    }
+    if (mp_Const_Declarations && f1) {
+        if (mp_Const_Declarations->error_detect(func_sheet.sheet_name)) {
+            f2 = func_sheet.add_const_symbols(mp_Const_Declarations);
+            if (!f2) {
+                cout << "error occurs when adding const symbols into " << func_sheet.sheet_name << endl;
+            }
+        }
+    } else {
+        cout << "no const symbols to be added into " << func_sheet.sheet_name << endl;
+        f2 = true;
+    }
+    if (mp_Var_Declarations && f2) {
+        if (mp_Var_Declarations->error_detect(func_sheet.sheet_name)) {
+            f3 = func_sheet.add_var_symbols(mp_Var_Declarations);
+            if (!f3) {
+                cout << "error occurs when adding variable symbols into " << func_sheet.sheet_name << endl;
+            }
+        }
+    } else {
+        cout << "no variable symbols to be added into " << func_sheet.sheet_name << endl;
+        f3 = true;
+    }
+
+    if (f0 && f1 && f2 && f3) {
+        auto re = symbolSheet_list.insert(symbolsheet_list_item(func_sheet.sheet_name, func_sheet));
+        if (re.second) {
+            cout << "these symbols have been added to " << func_sheet.sheet_name << ":" << endl;
+            for (auto i: func_sheet.symbols) {
+                cout << i.first << " ";
+            }
+            cout << endl;
+        } else {
+            cout << func_sheet.sheet_name << "'s symbol sheet not added" << endl;
+        }
+    } else {
+        cout << "error occurs when building " << func_sheet.sheet_name << "'s symbol sheets, pls check the above info." << endl;
+    }
+    return symbolSheet_create_result(bool(symbolSheet_list.size() - s), func_sheet.sheet_name);
+}
+
+
+bool semantic_Error_Detect(Programstruct *input_Tree) {
+    bool flag = true;
     // first, build the symbol sheets
     if (input_Tree->mp_Program_Body)
         flag = input_Tree->mp_Program_Body->create_symbolsheet().first;
+    assert(!symbolSheet_list.empty());
+//    cout << "global sheet is added" << endl;
+    cout << endl;
     if (!input_Tree->mp_Program_Body->mp_SubProgram_Declarations->mv_Common.empty()) {
         for (auto subprogram: input_Tree->mp_Program_Body->mp_SubProgram_Declarations->mv_Common) {
+            cout << "processing " << subprogram->get_func_id()->m_name << endl;
             flag = flag && subprogram->create_symbolsheet().first;
             if (!flag) {
                 break;
+            } else {
+//                cout << subprogram->get_func_id()->m_name << "'s sheet is added" << endl;
+                cout << endl;
             }
         }
     }
-    assert(!symbolSheet_list.empty());
     assert(symbolSheet_list.find("0") != symbolSheet_list.end());
+    cout << "finish building symbol sheets, sheets added to the list:" << endl;
+    for (auto i: symbolSheet_list) {
+        cout << i.first << " ";
+    }
+    cout << endl << endl << "start checking semantic errors" << endl;
     // then, check semantic error
     if (flag) {
-        flag = flag && input_Tree->mp_Program_Body->error_detect();
+        flag = flag && input_Tree->error_detect();
     }
     return flag;
 }
