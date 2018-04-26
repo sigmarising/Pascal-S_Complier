@@ -167,11 +167,11 @@ string SubProgram_Declarations::func_codeGeneration() {
 	return Code_return;
 }
 
-string Statement_List::func_codeGeneration() {
+string Statement_List::func_codeGeneration(string name) {
 	string Code_return = "\n";
 
 	for (int i = 0; i < mv_Statement.size(); i++) {
-		Code_return += mv_Statement[i]->func_codeGeneration();
+		Code_return += mv_Statement[i]->func_codeGeneration(name);
 		Code_return += "\n";
 	}
 
@@ -184,14 +184,15 @@ string Procedure::func_codeGeneration() {
 	string Code_return = "\n";
 
 	Code_return += "void ";
-	Code_return += mp_Id->func_codeGeneration();
+	string pro_name = mp_Id->func_codeGeneration();
+	Code_return += pro_name;
 	Code_return += "(";
 	Code_return += mp_Parameter_List->func_codeGeneration();
 	Code_return += ") {\n";
 
 	Code_return += mp_Const_Declarations->func_codeGeneration();
 	Code_return += mp_Var_Declarations->func_codeGeneration();
-	Code_return += mp_Statement_List->func_codeGeneration();
+	Code_return += mp_Statement_List->func_codeGeneration(pro_name);
 
 	Code_return += "}\n";
 	Code_return += "\n";
@@ -224,14 +225,15 @@ string Function::func_codeGeneration() {
 		break;
 	}
 
-	Code_return += mp_Id->func_codeGeneration();
+	string func_name = mp_Id->func_codeGeneration();
+	Code_return += func_name;
 	Code_return += "(";
 	Code_return += mp_Parameter_List->func_codeGeneration();
 	Code_return += ") {\n";
 
 	Code_return += mp_Const_Declarations->func_codeGeneration();
 	Code_return += mp_Var_Declarations->func_codeGeneration();
-	Code_return += mp_Statement_List->func_codeGeneration();
+	Code_return += mp_Statement_List->func_codeGeneration(func_name);
 
 	Code_return += "}\n";
 	Code_return += "\n";
@@ -239,12 +241,12 @@ string Function::func_codeGeneration() {
 	return Code_return;
 }
 
-string Statement::func_codeGeneration() {
+string Statement::func_codeGeneration(string name) {
 	string Code_return = "";
 
 	switch (m_stateType) {
 	case STATEMENT_ASSIGN:
-		Code_return += mp_Assignop->func_codeGeneration();
+		Code_return += mp_Assignop->func_codeGeneration(name);
 		break;
 
 	case STATEMENT_PROCEDURE:
@@ -253,16 +255,16 @@ string Statement::func_codeGeneration() {
 
 	case STATEMENT_COMPOUND:
 		Code_return += "{\n";
-		Code_return += mp_Statement_List->func_codeGeneration();
+		Code_return += mp_Statement_List->func_codeGeneration(name);
 		Code_return += "}\n";
 		break;
 
 	case STATEMENT_IF:
-		Code_return += mp_If_Then_Else->func_codeGeneration();
+		Code_return += mp_If_Then_Else->func_codeGeneration(name);
 		break;
 
 	case STATEMENT_FOR:
-		Code_return += mp_For->func_codeGeneration();
+		Code_return += mp_For->func_codeGeneration(name);
 		break;
 
 	default:
@@ -407,50 +409,6 @@ string Procedure_Call::func_codeGeneration() {
 	}
 
 
-	//switch (m_proCall_Tpye) {
-	//case PROCECALL_NORMAL:
-	//	Code_return += mp_Id->func_codeGeneration();
-	//	Code_return += "(";
-	//	Code_return += mp_Expression_List->func_codeGeneration();
-	//	Code_return += ");";
-	//	break;
-
-	//case PROCECALL_READ:
-	//	Code_return += "scanf(\"";
-	//	Code_return += Code_FormateStr;
-	//	Code_return += "\", ";
-	//	Code_return += mp_Expression_List->func_codeGeneration();
-	//	Code_return += ");";
-	//	break;
-
-	//case PROCECALL_READLN:
-	//	Code_return += "scanf(\"";
-	//	Code_return += Code_FormateStr;
-	//	Code_return += "\\n\", ";
-	//	Code_return += mp_Expression_List->func_codeGeneration();
-	//	Code_return += ");";
-	//	break;
-
-	//case PROCECALL_WRITE:
-	//	Code_return += "printf(\"";
-	//	Code_return += Code_FormateStr;
-	//	Code_return += "\", ";
-	//	Code_return += mp_Expression_List->func_codeGeneration();
-	//	Code_return += ");";
-	//	break;
-
-	//case PROCECALL_WRITELN:
-	//	Code_return += "scanf(\"";
-	//	Code_return += Code_FormateStr;
-	//	Code_return += "\\n\", ";
-	//	Code_return += mp_Expression_List->func_codeGeneration();
-	//	Code_return += ");";
-	//	break;
-	//
-	//default:
-	//	throw "Invalid PROCECALL!!!";
-	//	break;
-	//}
 
 	return Code_return;
 }
@@ -590,36 +548,40 @@ string Uminus::func_codeGeneration() {
 	return Code_return;
 }
 
-string Assignop::func_codeGeneration() {
+string Assignop::func_codeGeneration(string name) {
 	string Code_return = "";
 
 	Code_return += mp_Variable->func_codeGeneration();
-	Code_return += " = ";
+	if (Code_return != name){
+		Code_return += " = ";
+	}
+	else{
+		Code_return = "return ";
+	}
 	Code_return += mp_Expression->func_codeGeneration();
 	Code_return += ";";
-
 
 	return Code_return;
 }
 
-string If_Then_Else::func_codeGeneration() {
+string If_Then_Else::func_codeGeneration(string name) {
 	string Code_return = "if (";
 
 	Code_return += mp_Expression->func_codeGeneration();
 	Code_return += ") {\n";
-	Code_return += mp_Statement_1->func_codeGeneration();
+	Code_return += mp_Statement_1->func_codeGeneration(name);
 	Code_return += "\n}";
 
 	if (mp_Statement_2 != NULL) {
 		Code_return += "\nelse {\n";
-		Code_return += mp_Statement_2->func_codeGeneration();
+		Code_return += mp_Statement_2->func_codeGeneration(name);
 		Code_return += "\n}";
 	}
 
 	return Code_return;
 }
 
-string For::func_codeGeneration() {
+string For::func_codeGeneration(string name) {
 	string Code_return = "for (";
 
 	Code_return += mp_Id->func_codeGeneration();
@@ -635,7 +597,7 @@ string For::func_codeGeneration() {
 	Code_return += mp_Id->func_codeGeneration();
 	Code_return += "++ ) {\n";
 
-	Code_return += mp_Statment->func_codeGeneration();
+	Code_return += mp_Statment->func_codeGeneration(name);
 	Code_return += "\n}";
 
 	return Code_return;

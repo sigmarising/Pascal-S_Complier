@@ -431,7 +431,7 @@ public:
 
     ~Statement_List();
 
-    string func_codeGeneration();
+    string func_codeGeneration(string name = "");
 
     bool error_detect(string);
 
@@ -602,7 +602,7 @@ public:
     };
     ~Statement();
 
-    string func_codeGeneration();
+    string func_codeGeneration(string name = "");
 
 //    void func_checkType();
 
@@ -1079,7 +1079,7 @@ public:
 
     ~Assignop();
 
-    string func_codeGeneration();
+    string func_codeGeneration(string name = "");
 
     bool error_detect(string symbol_sheet_name);
 
@@ -1106,7 +1106,7 @@ public:
 
     ~If_Then_Else();
 
-    string func_codeGeneration();
+    string func_codeGeneration(string name = "");
 
     bool error_detect(string symbol_sheet_name);
 
@@ -1137,7 +1137,7 @@ public:
 
     ~For();
 
-    string func_codeGeneration();
+    string func_codeGeneration(string name = "");
 
     bool error_detect(string symbol_sheet_name);
 

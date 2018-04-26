@@ -67,6 +67,7 @@ character [\']({letter}|[' '])[\']
 "record"		{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return RECORD; }
 "repeat"		{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return REPEAT; }
 "then"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return THEN; }
+"to"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return TO; }
 "type"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return TYPE; }
 "until"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return UNTIL; }
 "var"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return VAR; }
@@ -76,7 +77,7 @@ character [\']({letter}|[' '])[\']
 {character}     { yylval.m_char=yytext[1]; yyrowno+=yyleng;  return LETTER; }
 {id}            { yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return IDENTIFIER; }
 {digits}        { yylval.m_int=atoi(yytext); yyrowno+=yyleng;  return DIGITS; }
-{num}           { yylval.m_float=atof(yytext); yyrowno+=yyleng; printf("num: %f\n", atof(yytext));  return NUMBER; }
+{num}           { yylval.m_float=atof(yytext); yyrowno+=yyleng;  return NUMBER; }
 ".."			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return SUBBOUNDARY; }
 ":="            { yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return ASSIGNOP; }
 
