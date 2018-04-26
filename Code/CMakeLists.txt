@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 #project name
-PROJECT(MyCompiler)
+PROJECT(Pascal2C_Compiler)
 set(CMAKE_CXX_STANDARD 11)
 MESSAGE(STATUS "Source dir: " ${PROJECT_SOURCE_DIR})
 MESSAGE(STATUS "Binary dir: " ${PROJECT_BINARY_DIR})

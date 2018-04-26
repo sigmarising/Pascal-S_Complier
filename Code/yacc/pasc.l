@@ -76,7 +76,7 @@ character [\']({letter}|[' '])[\']
 {character}     { yylval.m_char=yytext[1]; yyrowno+=yyleng;  return LETTER; }
 {id}            { yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return IDENTIFIER; }
 {digits}        { yylval.m_int=atoi(yytext); yyrowno+=yyleng;  return DIGITS; }
-{num}           { yylval.m_float=atof(yytext); yyrowno+=yyleng;  return NUMBER; }
+{num}           { yylval.m_float=atof(yytext); yyrowno+=yyleng; printf("num: %f\n", atof(yytext));  return NUMBER; }
 ".."			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return SUBBOUNDARY; }
 ":="            { yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return ASSIGNOP; }
 

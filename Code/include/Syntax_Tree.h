@@ -1207,7 +1207,7 @@ public:
         m_relopType = M_relopType;
         m_lineno = M_lineno;
         mp_Simple_Expression_1 = Mp_Simple_Expression_1;
-        mp_Simple_Expression_2 = Mp_Simple_Expression_1;
+        mp_Simple_Expression_2 = Mp_Simple_Expression_2;
     }
 
     ~Relop();

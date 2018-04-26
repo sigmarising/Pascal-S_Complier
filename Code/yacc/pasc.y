@@ -1,7 +1,7 @@
 /*警告：书上的文法具有移进规约冲突,135-137行部分，已解决*/
 %code requires {
-	#include "Public_define.h"
-	#include "Syntax_Tree.h"
+	#include "../include/Public_define.h"
+	#include "../include/Syntax_Tree.h"
 }
 
 %code top {
@@ -18,7 +18,6 @@
 	int yyparse(void);
 	extern int yylineno;
 	void yyerror(const char* s);
-
 	#define YYERROR_VERBOSE 1
 	extern int yydebug;
 	#define YYDEBUG 1
@@ -474,10 +473,12 @@ compound_statement
 statement_list 
 	: statement_list ';' statement {
 		$$ = new Statement_List($1 -> mv_Statement);
+		if($3 != NULL)
 		$$ -> mv_Statement.push_back($3);
 	}
 	| statement {
 		$$ = new Statement_List();
+		if($1 != NULL)
 		$$ -> mv_Statement.push_back($1);
 	}
 	| statement_list ';' error {
@@ -581,7 +582,7 @@ statement
 		$$ -> mp_If_Then_Else = NULL;
 	}
 	| {
-		$$ = new Statement();
+		$$ = NULL;
 	}
 	;
 
@@ -827,8 +828,8 @@ factor
 %%
 
 
-int yacc() {
-	yydebug = 1;
+int main() {
+    yydebug = 1;
     yyparse();
     //ROOT->outputTree();
     return errorNum;
@@ -846,6 +847,6 @@ extern void yyerror(const char* s) {
 	vfprintf(stderr,s,ap);
 	fprintf(stderr,"\n");
 	*/
-	printf("line: %d, Error '%s'\n",yylineno,s);
+  printf("line: %d, Error '%s'\n",yylineno,s);
 	errorNum++;
 }

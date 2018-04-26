@@ -42,8 +42,8 @@ extern int yydebug;
 /* "%code requires" blocks.  */
 #line 2 "pasc.y" /* yacc.c:1909  */
 
-	#include "Public_define.h"
-	#include "Syntax_Tree.h"
+	#include "../include/Public_define.h"
+	#include "../include/Syntax_Tree.h"
 
 #line 49 "pasc.tab.h" /* yacc.c:1909  */
 
@@ -102,7 +102,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 39 "pasc.y" /* yacc.c:1909  */
+#line 38 "pasc.y" /* yacc.c:1909  */
 
 	Programstruct* programstruct;
 	Program_Body* program_Body;
@@ -168,6 +168,6 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-int Lexical_Syntax();
+int Lexic_Syntax();
 
 #endif /* !YY_YY_PASC_TAB_H_INCLUDED  */

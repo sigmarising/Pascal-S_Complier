@@ -1092,7 +1092,7 @@ YY_RULE_SETUP
 case 38:
 YY_RULE_SETUP
 #line 79 "pasc.l"
-{ yylval.m_float=atof(yytext); yyrowno+=yyleng;  return NUMBER; }
+{ yylval.m_float=atof(yytext); yyrowno+=yyleng; printf("num: %f\n", atof(yytext));  return NUMBER; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP

@@ -228,7 +228,7 @@ bool Assignop::error_detect(string symbol_sheet_name) {
     if (mp_Variable)
         flag = flag && mp_Variable->error_detect(symbol_sheet_name);
     if (mp_Expression)
-        flag = flag && mp_Variable->error_detect(symbol_sheet_name);
+        flag = flag && mp_Expression->error_detect(symbol_sheet_name);
     int type1=mp_Variable->getType();
     int type2=mp_Expression->getType();
     bool flag1 = (type1 == type2 || type1 == TYPE_INTERGER&&type2 == TYPE_REAL ||
@@ -418,21 +418,34 @@ bool Function_Call::error_detect(string symbol_sheet_name)
 
 bool Procedure_Call::error_detect(string symbol_sheet_name)
 {
+    // set m_proCall_type
+    if (mp_Id->func_getName() == "read") {
+        m_proCall_Tpye = PROCECALL_READ;
+    } else if (mp_Id->func_getName() == "readln") {
+        m_proCall_Tpye = PROCECALL_READLN;
+    } else if (mp_Id->func_getName() == "write") {
+        m_proCall_Tpye = PROCECALL_WRITE;
+    } else if (mp_Id->func_getName() == "writeln") {
+        m_proCall_Tpye = PROCECALL_WRITELN;
+    } else {
+        m_proCall_Tpye = PROCECALL_NORMAL;
+    }
+
 //    cout << "beep" << endl;
     bool flag1 = lookup_procedure(mp_Id->func_getName())||lookup_func(mp_Id->func_getName());
-    if (!flag1)
-    {
+    if (!flag1) {
         std::cout << "行" << m_lineno << ": 非过程或者函数" << endl;
         return false;
     }
     flag1 = mp_Expression_List->error_detect(symbol_sheet_name);
     int nrgs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
     if (nrgs == -1) {
-        //cout << "beepbeep" << endl;
+        // nrgs == -1 -> the proc has variable length of parameters
+        vector<bool> nargs_var_or_not(this->mp_Expression_List->mv_Expression.size(), false);
+        this->mp_Expression_List->mv_VarDefine = nargs_var_or_not;
         return flag1;
     }
-    if (nrgs != mp_Expression_List->func_get_mv_type().size())
-    {
+    if (nrgs != mp_Expression_List->func_get_mv_type().size()) {
         std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
         return false;
     }
@@ -579,14 +592,16 @@ bool Mulop::error_detect(string symbol_sheet_name) {
             else
                 setType(TYPE_INTERGER);
         } else if (opType == MULOP_MOD) {
-            flag3 = (type1 == type2) && (type1 = TYPE_INTERGER);
+            flag3 = (type1 == type2) && (type1 == TYPE_INTERGER);
             setType(TYPE_INTERGER);
         } else {
             flag3 = (type1 == type2 && type1 == TYPE_BOOLEAN);
             setType(TYPE_BOOLEAN);
         }
         if (!(flag1 && flag2 && flag3)) {
+            if(!flag3) {
             std::cout << "行" << m_lineno << ": 类型不匹配." << endl;
+            }
             return false;
         }
         return true;
@@ -800,7 +815,7 @@ ranges get_symbol_range(string symbolSheet_name, string symbol_name) {
         sheet = symbolSheet_list[symbolSheet_name];
         if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
             return sheet.symbols[symbol_name].array_ranges;
-        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
             return global_sheet.symbols[symbol_name].array_ranges;
         }
     }
@@ -820,7 +835,7 @@ int get_array_type(string symbolSheet_name, string symbol_name) {
         sheet = symbolSheet_list[symbolSheet_name];
         if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
             return sheet.symbols[symbol_name].type;
-        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
             return global_sheet.symbols[symbol_name].type;
         }
     }
@@ -861,10 +876,11 @@ int get_symbol_narg(string symbolSheet_name, string symbol_name) {
         sheet = symbolSheet_list[symbolSheet_name];
         if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
             return sheet.symbols[symbol_name].subprgrm_nargs;
-        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
             return global_sheet.symbols[symbol_name].subprgrm_nargs;
         }
     }
+    return -1;
 }
 
 vector<bool> get_symbol_nargs_var_or_not(string symbolSheet_name, string symbol_name) {
@@ -881,7 +897,7 @@ vector<bool> get_symbol_nargs_var_or_not(string symbolSheet_name, string symbol_
         sheet = symbolSheet_list[symbolSheet_name];
         if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
             return sheet.symbols[symbol_name].nargs_var_or_not;
-        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
             return global_sheet.symbols[symbol_name].nargs_var_or_not;
         }
     }
@@ -901,7 +917,7 @@ vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name) {
         sheet = symbolSheet_list[symbolSheet_name];
         if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
             return sheet.symbols[symbol_name].nargs_types;
-        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.find(symbol_name)) {
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
             return global_sheet.symbols[symbol_name].nargs_types;
         }
     }
