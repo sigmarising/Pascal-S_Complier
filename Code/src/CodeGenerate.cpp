@@ -8,6 +8,10 @@
 #include <strstream>
 using namespace std;
 
+// string for arr id
+// int for x index
+vector< pair<string, vector<int> > >arr_id_list;
+
 
 // any simple type convert to string
 template<class src_type>
@@ -118,6 +122,7 @@ string Var_Declarations::func_codeGeneration() {
 			string Code_Period = mv_Var[i].second->func_code_getperiod();
 
 			for (int i = 0; i < mv_Id.size(); i++) {
+			    // no use the below note
 				// range x..y
 				// n = y - x + 1
 				//
@@ -126,19 +131,26 @@ string Var_Declarations::func_codeGeneration() {
 
 				string Code_Id = mv_Id[i]->func_codeGeneration();
 
-				Code_return += "__";		// __
+				//Code_return += "__";		// __
 				Code_return += Code_Id;		// A
 				Code_return += Code_Period;	// [n]
-				Code_return += ", *";		// *
-				Code_return += Code_Id;		// A
-				Code_return += " = &(__";
-				Code_return += Code_Id;
-				Code_return += "[-1 * ";
-				Code_return += type2str(mv_Period[i].first);
-				Code_return += "])";
+				//Code_return += ", *";		// *
+				//Code_return += Code_Id;		// A
+				//Code_return += " = &(__";
+				//Code_return += Code_Id;
+				//Code_return += "[-1 * ";
+				//Code_return += type2str(mv_Period[i].first);
+				//Code_return += "])";
 
 				if (i != mv_Id.size() - 1)
 					Code_return += ", ";
+
+				// add the my list
+				arr_id_list.push_back(pair<string, vector<int>>(Code_Id, vector<int>()));
+				for (int i = 0; i < mv_Period.size(); i++){
+				    arr_id_list[arr_id_list.size() - 1].second.push_back(mv_Period[i].first);
+				}
+
 			}
 
 			Code_return += ";\n";
@@ -335,10 +347,21 @@ string Variable::func_codeGeneration() {
 	if (m_isArray) {
 		vector<Expression*>mv_Expression = mp_Expression_List->func_get_mv_exp();
 
+		int index = -1;
+		for(int i = 0 ; i< arr_id_list.size(); i++)
+		    if (arr_id_list[i].first == Code_return ){
+                index = i;
+                break;
+            }
+
 		for (int i = 0; i < mv_Expression.size(); i++) {
 			Code_return += "[";
 
 			Code_return += mv_Expression[i]->func_codeGeneration();
+
+			Code_return += " - ";
+
+			Code_return += type2str(arr_id_list[index].second[i]);
 
 			Code_return += "]";
 		}
@@ -391,12 +414,12 @@ string Procedure_Call::func_codeGeneration() {
 	else if (m_proCall_Tpye == PROCECALL_READLN) {
 		Code_return += "scanf(\"";
 		Code_return += Code_FormateStr;
-		Code_return += "\\n\"";
+		Code_return += "\"";
 		if(mp_Expression_List){
 			Code_return += ", ";
 			Code_return += mp_Expression_List->func_codeGeneration(true);
 		}
-		Code_return += ");";
+		Code_return += "); getchar();";
 	}
 	else if (m_proCall_Tpye == PROCECALL_WRITE) {
 		Code_return += "printf(\"";
