@@ -316,17 +316,19 @@ public:
             bool is_const = false;
             float const_val = 0;
             ranges array_ranges;
-            vector<Parameter *> parameters = subprgrm->get_param_list()->mv_Patameter;
             int subprgrm_nargs = 0;
             vector<bool> nargs_var_or_not;
             subprgrm_nargs_types nargs_types;
-            for (auto ids: parameters) {
-                bool isVar = ids->m_isVal;
-                subprgrm_nargs += ids->get_idlist()->get_id_num();
-                Id_List *id_list = ids->get_idlist();
-                for (auto id: id_list->mv_Id) {
-                    nargs_types.push_back(id->m_idType);
-                    nargs_var_or_not.push_back(isVar);
+            if (subprgrm->get_param_list()) {
+                vector<Parameter *> parameters = subprgrm->get_param_list()->mv_Patameter;
+                for (auto ids: parameters) {
+                    bool isVar = ids->m_isVal;
+                    subprgrm_nargs += ids->get_idlist()->get_id_num();
+                    Id_List *id_list = ids->get_idlist();
+                    for (auto id: id_list->mv_Id) {
+                        nargs_types.push_back(id->m_idType);
+                        nargs_var_or_not.push_back(isVar);
+                    }
                 }
             }
             int dec_line = subprgrm->get_lineno();
