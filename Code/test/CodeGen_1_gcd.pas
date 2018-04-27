@@ -3,8 +3,8 @@ var
     x,y,z : integer;
 function gcd(a,b:integer) : integer;
     begin
-        if b = 0.1 
-            then gcd := a
+        if a mod b = 0
+            then gcd := b
             else gcd := gcd(b, a mod b)
     end;
 begin
