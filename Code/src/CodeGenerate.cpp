@@ -187,7 +187,8 @@ string Procedure::func_codeGeneration() {
 	string pro_name = mp_Id->func_codeGeneration();
 	Code_return += pro_name;
 	Code_return += "(";
-	Code_return += mp_Parameter_List->func_codeGeneration();
+	if (mp_Parameter_List)
+		Code_return += mp_Parameter_List->func_codeGeneration();
 	Code_return += ") {\n";
 
 	Code_return += mp_Const_Declarations->func_codeGeneration();
@@ -228,7 +229,8 @@ string Function::func_codeGeneration() {
 	string func_name = mp_Id->func_codeGeneration();
 	Code_return += func_name;
 	Code_return += "(";
-	Code_return += mp_Parameter_List->func_codeGeneration();
+	if (mp_Parameter_List)
+		Code_return += mp_Parameter_List->func_codeGeneration();
 	Code_return += ") {\n";
 
 	Code_return += mp_Const_Declarations->func_codeGeneration();
@@ -348,63 +350,79 @@ string Variable::func_codeGeneration() {
 string Procedure_Call::func_codeGeneration() {
 	string Code_return = "";
 	string Code_FormateStr = "";
-	vector<int>mv_Type = mp_Expression_List->func_get_mv_type();
 
-	if (m_proCall_Tpye != PROCECALL_NORMAL) {
-		for (int i = 0; i < mv_Type.size(); i++) {
-			switch (mv_Type[i]) {
-			case TYPE_INTERGER:
-				Code_FormateStr += "%d";
-				break;
+	if(mp_Expression_List) {
+		vector<int> mv_Type = mp_Expression_List->func_get_mv_type();
 
-			case TYPE_REAL:
-				Code_FormateStr += "%f";
-				break;
+		if (m_proCall_Tpye != PROCECALL_NORMAL) {
+			for (int i = 0; i < mv_Type.size(); i++) {
+				switch (mv_Type[i]) {
+					case TYPE_INTERGER:
+						Code_FormateStr += "%d";
+						break;
 
-			case TYPE_CHAR:
-				Code_FormateStr += "%c";
-				break;
+					case TYPE_REAL:
+						Code_FormateStr += "%f";
+						break;
 
-			default:
-				break;
+					case TYPE_CHAR:
+						Code_FormateStr += "%c";
+						break;
+
+					default:
+						break;
+				}
 			}
 		}
 	}
 
 
 	string t_id_name = mp_Id->func_getName();
-	if (t_id_name == "read") {
+	if (m_proCall_Tpye == PROCECALL_READ) {
 		Code_return += "scanf(\"";
 		Code_return += Code_FormateStr;
-		Code_return += "\", ";
-		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += "\"";
+		if(mp_Expression_List){
+			Code_return += ", ";
+			Code_return += mp_Expression_List->func_codeGeneration(true);
+		}
 		Code_return += ");";
 	}
-	else if (t_id_name == "readln") {
+	else if (m_proCall_Tpye == PROCECALL_READLN) {
 		Code_return += "scanf(\"";
 		Code_return += Code_FormateStr;
-		Code_return += "\\n\", ";
-		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += "\\n\"";
+		if(mp_Expression_List){
+			Code_return += ", ";
+			Code_return += mp_Expression_List->func_codeGeneration(true);
+		}
 		Code_return += ");";
 	}
-	else if (t_id_name == "write") {
+	else if (m_proCall_Tpye == PROCECALL_WRITE) {
 		Code_return += "printf(\"";
 		Code_return += Code_FormateStr;
-		Code_return += "\", ";
-		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += "\"";
+		if(mp_Expression_List){
+			Code_return += ", ";
+			Code_return += mp_Expression_List->func_codeGeneration();
+		}
 		Code_return += ");";
 	}
-	else if (t_id_name == "writeln") {
-		Code_return += "scanf(\"";
+	else if (m_proCall_Tpye == PROCECALL_WRITELN) {
+		Code_return += "printf(\"";
 		Code_return += Code_FormateStr;
-		Code_return += "\\n\", ";
-		Code_return += mp_Expression_List->func_codeGeneration();
+		Code_return += "\\n\"";
+		if(mp_Expression_List){
+			Code_return += ", ";
+			Code_return += mp_Expression_List->func_codeGeneration();
+		}
 		Code_return += ");";
 	}
 	else {
 		Code_return += mp_Id->func_codeGeneration();
 		Code_return += "(";
-		Code_return += mp_Expression_List->func_codeGeneration();
+		if(mp_Expression_List)
+			Code_return += mp_Expression_List->func_codeGeneration();
 		Code_return += ");";
 	}
 
@@ -418,7 +436,8 @@ string Function_Call::func_codeGeneration() {
 
 	Code_return += mp_Id->func_codeGeneration();
 	Code_return += "(";
-	Code_return += mp_Expression_List->func_codeGeneration();
+	if(mp_Expression_List)
+		Code_return += mp_Expression_List->func_codeGeneration();
 	Code_return += ")";
 
 	return Code_return;
@@ -826,14 +845,14 @@ string Mulop::func_codeGeneration() {
 	return Code_return;
 }
 
-string Expression_List::func_codeGeneration() {
+string Expression_List::func_codeGeneration(bool is_Scanf) {
 	string Code_return = "";
 
 	for (int i = 0; i < mv_Expression.size(); i++) {
-		if (mv_VarDefine[i])
+		if (mv_VarDefine[i] || is_Scanf)
 			Code_return += "&( ";
 		Code_return += mv_Expression[i]->func_codeGeneration();
-		if (mv_VarDefine[i])
+		if (mv_VarDefine[i] || is_Scanf)
 			Code_return += " )";
 
 		if (i != mv_Expression.size() - 1)

@@ -9,7 +9,7 @@ using namespace std;
 extern Programstruct *ROOT;
 
 int main(int argc, char *argv[]) {
-    freopen("../test/CodeGen_1_gcd.pas", "r", stdin);
+    freopen("../test/CodeGen_2_ssort.pas", "r", stdin);
 
 
     if (Lexic_Syntax() == 1)

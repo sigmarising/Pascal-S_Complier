@@ -348,37 +348,43 @@ bool Function_Call::error_detect(string symbol_sheet_name)
         return false;
     }
     int nargs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
-    if (nargs) {
-        if (mp_Expression_List) {  // check if the builtin/proc has arguments, not a must, just in case
-            flag = mp_Expression_List->error_detect(symbol_sheet_name);
-            if (!flag) {
-                return false;
-            }
-        }
+    if (nargs) {  // builtins n == -1, normal procs n > 0
         if (nargs == -1) {
             // if this proc is a builtin
-            // nargs == -1 -> the proc has variable length of parameters of any type,
+            // nargs == -1 -> the proc has variable length (or none) of parameters of any type,
             // used in the builtin procedures, which dont require type & num check
-            return flag;
-        }
-        if (nargs != mp_Expression_List->func_get_mv_type().size()) {
-            std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
-            return false;
-        }
-        vector<int> types = mp_Expression_List->func_get_mv_type();
-        vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
-        for (int i = 0; i<types.size(); i++) {
-            if (types[i] != arg_types[i]) {
-                std::cout << "行" << m_lineno << ": 第" << i+1 << "个实参形参不匹配" << endl;
-                flag=false;
+            if (mp_Expression_List) {
+                if (!mp_Expression_List->error_detect(symbol_sheet_name)) {
+                    return false;
+                }
+                // for builtins, the argument cannot be a variable type
+                vector<bool> nargs_var_or_not(this->mp_Expression_List->mv_Expression.size(), false);
+                this->mp_Expression_List->mv_VarDefine = nargs_var_or_not;
+            }
+            return true;
+        } else {
+            if (mp_Expression_List) {
+                if (!mp_Expression_List->error_detect(symbol_sheet_name)) {
+                    return false;
+                }
+                if (nargs != mp_Expression_List->func_get_mv_type().size()) {
+                    std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
+                    return false;
+                }
+                vector<int> types = mp_Expression_List->func_get_mv_type();
+                vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
+                for (int i = 0; i < types.size(); i++) {
+                    if (types[i] != arg_types[i]) {
+                        std::cout << "行" << m_lineno << ": 第" << i + 1 << "个实参形参不匹配" << endl;
+                        flag = false;
+                    }
+                }
+                vector<bool> nargs_var_or_not = get_symbol_nargs_var_or_not(symbol_sheet_name, mp_Id->func_getName());
+                this->mp_Expression_List->mv_VarDefine = nargs_var_or_not;
             }
         }
-        vector<bool> nargs_var_or_not(this->mp_Expression_List->mv_Expression.size(), false);
-        this->mp_Expression_List->mv_VarDefine = nargs_var_or_not;
     }
-    cout << "finish " << mp_Id->func_getName() << endl;
     return flag;
-
 }
 
 bool Procedure_Call::error_detect(string symbol_sheet_name)
@@ -403,32 +409,40 @@ bool Procedure_Call::error_detect(string symbol_sheet_name)
     }
     int nargs = get_symbol_narg(symbol_sheet_name, mp_Id->func_getName());
     if (nargs) {  // builtins n == -1, normal procs n > 0
-        if (mp_Expression_List) {  // check if the builtin/proc has arguments, not a must, just in case
-            flag = mp_Expression_List->error_detect(symbol_sheet_name);
-            if (!flag) {
-                return false;
-            }
-        }
         if (nargs == -1) {
             // if this proc is a builtin
-            // nargs == -1 -> the proc has variable length of parameters of any type,
+            // nargs == -1 -> the proc has variable length (or none) of parameters of any type,
             // used in the builtin procedures, which dont require type & num check
-            return flag;
-        }
-        if (nargs != mp_Expression_List->func_get_mv_type().size()) {
-            std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
-            return false;
-        }
-        vector<int> types = mp_Expression_List->func_get_mv_type();
-        vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
-        for (int i = 0; i<types.size(); i++) {
-            if (types[i] != arg_types[i]) {
-                std::cout << "行" << m_lineno << ": 第" << i+1 << "个实参形参不匹配" << endl;
-                flag=false;
+            if (mp_Expression_List) {
+                if (!mp_Expression_List->error_detect(symbol_sheet_name)) {
+                    return false;
+                }
+                // for builtins, the argument cannot be a variable type
+                vector<bool> nargs_var_or_not(this->mp_Expression_List->mv_Expression.size(), false);
+                this->mp_Expression_List->mv_VarDefine = nargs_var_or_not;
+            }
+            return true;
+        } else {
+            if (mp_Expression_List) {
+                if (!mp_Expression_List->error_detect(symbol_sheet_name)) {
+                    return false;
+                }
+                if (nargs != mp_Expression_List->func_get_mv_type().size()) {
+                    std::cout << "行" << m_lineno << ": 实参形参数量不匹配" << endl;
+                    return false;
+                }
+                vector<int> types = mp_Expression_List->func_get_mv_type();
+                vector<int> arg_types = get_symbol_narg_type(symbol_sheet_name, mp_Id->func_getName());
+                for (int i = 0; i < types.size(); i++) {
+                    if (types[i] != arg_types[i]) {
+                        std::cout << "行" << m_lineno << ": 第" << i + 1 << "个实参形参不匹配" << endl;
+                        flag = false;
+                    }
+                }
+                vector<bool> nargs_var_or_not = get_symbol_nargs_var_or_not(symbol_sheet_name, mp_Id->func_getName());
+                this->mp_Expression_List->mv_VarDefine = nargs_var_or_not;
             }
         }
-        vector<bool> nargs_var_or_not(this->mp_Expression_List->mv_Expression.size(), false);
-        this->mp_Expression_List->mv_VarDefine = nargs_var_or_not;
     }
     cout << "finish " << mp_Id->func_getName() << endl;
     return flag;

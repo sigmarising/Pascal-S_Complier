@@ -1418,7 +1418,7 @@ public:
 
     ~Expression_List();
 
-    string func_codeGeneration();
+    string func_codeGeneration(bool is_Scanf = false);
 
     bool error_detect(string symbol_sheet_name);
 
