@@ -94,6 +94,8 @@
 %token <m_str> IDENTIFIER
 %token <m_char> LETTER;
 
+%type <m_int> SDIGITS
+%type <m_float> SNUMBER
 %type <programstruct> program
 %type <program_Head> program_head
 %type <program_Body> program_body
@@ -368,14 +370,29 @@ standard_type
 
 
 period 
-	: period ',' DIGITS SUBBOUNDARY DIGITS {
+	: period ',' SDIGITS SUBBOUNDARY SDIGITS {
 		$$ = new Period($1 -> mv_dims);
 		$$ -> mv_dims.push_back(p_Per($3, $5));
 	}
-	| DIGITS SUBBOUNDARY DIGITS {
+	| SDIGITS SUBBOUNDARY SDIGITS {
 		$$ = new Period();
 		$$ -> mv_dims.push_back(p_Per($1, $3));
 	}
+
+SDIGITS
+	: DIGITS{
+		$$ = $1;
+	}	
+	| '+' DIGITS{
+		$$ = $2;
+	}
+	| '-' DIGITS{
+		$$ = -$2;
+	}
+
+
+
+
 
 
 subprogram_declarations 
@@ -437,9 +454,12 @@ parameter_list
 parameter
 	: var_parameter {
 		$$ = new Parameter(true, yylineno, $1 -> m_Value_Parameter -> m_Id_List);
+		$$ -> m_Type = $1 -> m_Value_Parameter -> Simple_Type;
+
 	}
 	| value_parameter {
 		$$ = new Parameter(false, yylineno, $1 -> m_Id_List);
+		$$ -> m_Type = $1 -> Simple_Type;
 	}
 	;
 
@@ -768,14 +788,21 @@ term
 	}
 	;
 
+SNUMBER: NUMBER{
+		$$ = $1;
+	}
+	| '-' NUMBER{
+		$$ = -$2;
+	}
+
 factor 
-	: DIGITS {
+	: SDIGITS {
 		$$ = new Factor();
 		$$ -> m_lineno = yylineno;
 		$$ -> m_int = $1;
 		$$ -> m_factorType = FACTOR_VALUE_INT;
 	}
-	| NUMBER {
+	| SNUMBER {
 		$$ = new Factor();
 		$$ -> m_lineno = yylineno;
 		$$ -> m_real = $1;
@@ -799,6 +826,19 @@ factor
 		tmp -> m_name = *($1);
 		tmp -> m_lineno = yylineno;
 		$$ -> mp_Function_Call = new Function_Call($3 -> mv_Expression.size(), yylineno, tmp, $3);
+		$$ -> mp_Expression = NULL;
+		$$ -> mp_Not = NULL;
+		$$ -> mp_Uminus = NULL;
+		$$ -> m_factorType = FACTOR_FUNCCALL;
+	}
+	| IDENTIFIER '(' ')'{
+		$$ = new Factor();
+		$$ -> m_lineno = yylineno;
+		$$ -> mp_Variable = NULL;
+		Id* tmp = new Id();
+		tmp -> m_name = *($1);
+		tmp -> m_lineno = yylineno;
+		$$ -> mp_Function_Call = new Function_Call(0, yylineno, tmp, NULL);
 		$$ -> mp_Expression = NULL;
 		$$ -> mp_Not = NULL;
 		$$ -> mp_Uminus = NULL;
@@ -830,7 +870,7 @@ factor
 
 
 int yacc() {
-	//yydebug = 1;
+	yydebug = 1;
     yyparse();
     //ROOT->outputTree();
     return errorNum;

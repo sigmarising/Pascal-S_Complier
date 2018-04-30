@@ -45,6 +45,7 @@ struct Property {
     SUBPRGRM_TYPE subprgrm_type;  // = NONE;
     bool is_const;  // = false;
     float const_val;  // = 0;
+    bool is_Var;
     ranges array_ranges;  // not none -> array
     int subprgrm_nargs;  // = 0;
     vector<bool> nargs_var_or_not;
@@ -67,6 +68,7 @@ public:
             SUBPRGRM_TYPE subprgrm_type = NONE;
             bool is_const = false;
             float const_val = 0;
+            bool is_Var = false;
             int func_nargs = 0;
             vector<bool> nargs_var_or_not = {false};
             subprgrm_nargs_types nargs_types;
@@ -78,6 +80,7 @@ public:
                     subprgrm_type,
                     is_const,
                     const_val,
+                    is_Var,
                     array_ranges,
                     func_nargs,
                     nargs_var_or_not,
@@ -100,6 +103,7 @@ public:
             SUBPRGRM_TYPE subprgrm_type = PROC;
             bool is_const = false;
             float const_val = 0;
+            bool is_Var = false;
             int func_nargs = -1;  // -1 indicates the subprogram could have variable length of parameters
             vector<bool> nargs_var_or_not = {false};
             subprgrm_nargs_types nargs_types;
@@ -111,6 +115,7 @@ public:
                     subprgrm_type,
                     is_const,
                     const_val,
+                    is_Var,
                     array_ranges,
                     func_nargs,
                     nargs_var_or_not,
@@ -138,6 +143,7 @@ public:
             SUBPRGRM_TYPE subprgrm_type = NONE;
             bool is_const = false;
             float const_val = 0;
+            bool is_Var = parameter->m_isVal;
             int func_nargs = 0;
             vector<bool> nargs_var_or_not = {false};
             subprgrm_nargs_types nargs_types;
@@ -156,6 +162,7 @@ public:
                         subprgrm_type,
                         is_const,
                         const_val,
+                        is_Var,
                         array_ranges,
                         func_nargs,
                         nargs_var_or_not,
@@ -210,6 +217,7 @@ public:
                 flag = false;
                 break;
             }
+            bool is_Var = false;
             ranges array_ranges = {};
             int func_nargs = 0;
             vector<bool> nargs_var_or_not = {false};
@@ -221,6 +229,7 @@ public:
                     subprgrm_type,
                     is_const,
                     const_val,
+                    is_Var,
                     array_ranges,
                     func_nargs,
                     nargs_var_or_not,
@@ -253,6 +262,7 @@ public:
             bool is_const = false;
 //            bool is_func = false;
             float const_val = 0;
+            bool is_Var = false;
             ranges array_ranges;
             if (vars.second->func_check_isArray()) {
                 array_ranges = vars.second->func_get_Period();
@@ -275,6 +285,7 @@ public:
                         subprgrm_type,
                         is_const,
                         const_val,
+                        is_Var,
                         array_ranges,
                         func_nargs,
                         nargs_var_or_not,
@@ -315,6 +326,7 @@ public:
             auto subprgrm_type = (SUBPRGRM_TYPE) subprgrm->func_get_Common_Type();  // none-subprgrm | func | proc
             bool is_const = false;
             float const_val = 0;
+            bool is_Var = false;
             ranges array_ranges;
             int subprgrm_nargs = 0;
             vector<bool> nargs_var_or_not;
@@ -338,6 +350,7 @@ public:
                     subprgrm_type,
                     is_const,
                     const_val,
+                    is_Var,
                     array_ranges,
                     subprgrm_nargs,
                     nargs_var_or_not,
@@ -392,5 +405,5 @@ bool lookup_procedure(string symbol_name);
 int get_symbol_narg(string symbolSheet_name, string symbol_name);  //返回参数个数
 vector<bool> get_symbol_nargs_var_or_not(string symbolSheet_name, string symbol_name);  // return the subprogram's 'nargs_var_or_not' list
 vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name);
-
+bool get_symbol_var_type(string symbolSheet_name, string symbol_name);
 #endif

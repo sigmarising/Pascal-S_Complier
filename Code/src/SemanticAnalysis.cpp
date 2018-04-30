@@ -150,8 +150,10 @@ bool Parameter_List::error_detect(string symbolSheet_name) {
     set <string> id_set;
     bool flag = true;
     for (auto parameter: mv_Patameter) {
+        bool is_Val = parameter->m_isVal;
         vector < Id * > parameter_symbols = parameter->func_get_mv_id();
         for (auto id: parameter_symbols) {
+            id->m_isVal = is_Val;
             string id_name = id->m_name;
             if (id_name == symbolSheet_name) {
                 cout << "子程序\"" << symbolSheet_name << "\"声明的形式参数\"" << id_name
@@ -267,6 +269,7 @@ bool For::error_detect(string symbol_sheet_name) {
     if (mp_Id && mp_Expression_1 && mp_Expression_2)            //判断语法树是否出错
     {
         if (lookup_symbol(symbol_sheet_name, mp_Id->func_getName())) {
+            mp_Id->m_isVal = get_symbol_var_type(symbol_sheet_name, mp_Id->func_getName());
             bool flag = true;
             int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName());
             flag = flag && mp_Expression_1->error_detect(symbol_sheet_name);
@@ -298,6 +301,7 @@ bool Variable::error_detect(string symbol_sheet_name) {
     if (mp_Id) {
         if (lookup_symbol(symbol_sheet_name, mp_Id->func_getName())) {
             int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName());
+            mp_Id->m_isVal = get_symbol_var_type(symbol_sheet_name, mp_Id->func_getName());
             cout<<"Variable "<<type1<<endl;
             bool flag = true;
             if (mp_Expression_List && type1 != 5) {
@@ -906,6 +910,27 @@ vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name) {
             return global_sheet.symbols[symbol_name].nargs_types;
         }
     }
+}
+
+bool get_symbol_var_type(string symbolSheet_name, string symbol_name) {
+    symbolSheet global_sheet = symbolSheet_list["0"];
+    symbolSheet sheet;
+    if (symbolSheet_name == "0") {
+        // global symbol sheet
+        sheet = global_sheet;
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].is_Var;
+        }
+    } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
+        // subprgrm symbol sheet, first lookup in the local sheet, if dont exist then lookup in the global sheet
+        sheet = symbolSheet_list[symbolSheet_name];
+        if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
+            return sheet.symbols[symbol_name].is_Var;
+        } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
+            return global_sheet.symbols[symbol_name].is_Var;
+        }
+    }
+    return false;
 }
 
 symbolSheet_create_result Program_Body::create_symbolsheet() {

@@ -392,6 +392,10 @@ string Procedure_Call::func_codeGeneration() {
 						Code_FormateStr += "%c";
 						break;
 
+					case TYPE_BOOLEAN:
+						Code_FormateStr += "%d";
+						break;
+
 					default:
 						break;
 				}
