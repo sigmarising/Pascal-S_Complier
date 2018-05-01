@@ -818,7 +818,7 @@ factor
 	| LETTER {
 		$$ = new Factor();
 		$$ -> m_lineno = yylineno;
-		$$ -> m_bool = $1;
+		$$ -> m_char = $1;
 		$$ -> m_factorType = FACTOR_VALUE_CHAR;
 	}
 	| BOOL {

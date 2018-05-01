@@ -2395,7 +2395,7 @@ yyreduce:
     {
 		(yyval.factor) = new Factor();
 		(yyval.factor) -> m_lineno = yylineno;
-		(yyval.factor) -> m_bool = (yyvsp[0].m_char);
+		(yyval.factor) -> m_char = (yyvsp[0].m_char);
 		(yyval.factor) -> m_factorType = FACTOR_VALUE_CHAR;
 	}
 #line 2402 "pasc.tab.c" /* yacc.c:1646  */
