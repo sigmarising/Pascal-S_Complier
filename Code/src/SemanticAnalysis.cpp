@@ -5,9 +5,7 @@
 #include <utility>
 
 typedef map<symbolsheet_name, symbolSheet>::value_type symbolsheet_list_item;
-map <symbolsheet_name, symbolSheet> symbolSheet_list;
 typedef pair<bool, symbolsheet_name> symbolSheet_create_result;
-//const string globalsheet_name = "0";
 
 //注意 Programstruct的错误检测，还不是特别完善
 bool Programstruct::error_detect() {
@@ -931,6 +929,10 @@ bool get_symbol_var_type(string symbolSheet_name, string symbol_name) {
         }
     }
     return false;
+}
+
+float get_const_symbol_value(string symbolSheet_name, string symbol_name) {
+
 }
 
 symbolSheet_create_result Program_Body::create_symbolsheet() {

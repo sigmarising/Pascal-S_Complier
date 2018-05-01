@@ -71,36 +71,48 @@ string Const_Declarations::func_codeGeneration() {
 	string Code_return = "\n";
 
 	for (int i = 0; i < mv_Const.size(); i++) {
-
-		Code_return += "const ";
+		bool CONST_ID = false;
 
 		switch (mv_Const[i].second->func_checkValueType()) {
 		case TYPE_INTERGER:
-			Code_return += "int ";
+			Code_return += "const int ";
 			break;
 
 		case TYPE_REAL:
-			Code_return += "float ";
+			Code_return += "const float ";
 			break;
 
 		case TYPE_CHAR:
-			Code_return += "char ";
+			Code_return += "const char ";
 			break;
 
 		case TYPE_BOOLEAN:
-			Code_return += "bool ";
+			Code_return += "const bool ";
+			break;
+
+		case TYPE_ID:
+			Code_return += "#define ";
+			Code_return += mv_Const[i].first->func_codeGeneration();
+			Code_return += " ";
+
+			if(mv_Const[i].second->m_postNeg == CONST_POSTNEG_NEGATIVE)
+				Code_return += "-";
+			Code_return += mv_Const[i].second->mp_Id->func_codeGeneration();
+			Code_return += " \n";
+			CONST_ID = true;
+
 			break;
 
 		default:
 			throw "Invalid Type!!!";
 			break;
 		}
-
-		Code_return += mv_Const[i].first->func_codeGeneration();
-		Code_return += " = ";
-		Code_return += mv_Const[i].second->func_codeGeneration();
-		Code_return += ";\n";
-
+		if(!CONST_ID) {
+			Code_return += mv_Const[i].first->func_codeGeneration();
+			Code_return += " = ";
+			Code_return += mv_Const[i].second->func_codeGeneration();
+			Code_return += ";\n";
+		}
 	}
 
 	Code_return += "\n";

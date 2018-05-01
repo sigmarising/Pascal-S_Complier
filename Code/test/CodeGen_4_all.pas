@@ -17,10 +17,10 @@ var
     x, y, z : integer;      // 检测int赋值
     b, c : real;            // 检测real赋值
 
-    {
+
     x1, x2, x3 : boolean;
     c1, c2, c3 : char;
-    }
+
 
 procedure pro1(a : integer; b : real);  // 带参数过程
     const
@@ -90,11 +90,14 @@ begin
 
     b := 1.1 / 10;      // 检测 / .
     writeln(b);
+    writeln;
 
-    {
+
     x1 := true;
     x2 := false;
-    c1 := '1';
-    }
+    c1 := '2';
+    readln(c2);
+    writeln(x1, c1, c2);
+
 
 end.

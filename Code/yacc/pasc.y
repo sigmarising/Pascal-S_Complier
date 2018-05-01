@@ -86,13 +86,14 @@
 	float m_float;
 	std::string* m_str;
 	char m_char;
- 	
+ 	bool m_bool;
 }
 
 %token <m_int> DIGITS
 %token <m_float> NUMBER
 %token <m_str> IDENTIFIER
 %token <m_char> LETTER;
+%token <m_bool> BOOL;
 
 %type <m_int> SDIGITS
 %type <m_float> SNUMBER
@@ -275,7 +276,13 @@ const_variable
 		$$ = new Const_Value();
 		$$ -> m_postNeg = CONST_POSTNEG_NULL;
 		$$ -> m_valueType = TYPE_CHAR;
-		$$ -> m_real = $1;
+		$$ -> m_char = $1;
+	}
+	| BOOL {
+		$$ = new Const_Value();
+		$$ -> m_postNeg = CONST_POSTNEG_NULL;
+		$$ -> m_valueType = TYPE_BOOLEAN;
+		$$ -> m_bool = $1;
 	}
 
 /*
@@ -808,6 +815,18 @@ factor
 		$$ -> m_real = $1;
 		$$ -> m_factorType = FACTOR_VALUE_REAL;
 	}
+	| LETTER {
+		$$ = new Factor();
+		$$ -> m_lineno = yylineno;
+		$$ -> m_bool = $1;
+		$$ -> m_factorType = FACTOR_VALUE_CHAR;
+	}
+	| BOOL {
+		$$ = new Factor();
+		$$ -> m_lineno = yylineno;
+		$$ -> m_bool = $1;
+		$$ -> m_factorType = FACTOR_VALUE_BOOL;
+	}
 	| variable {
 		$$ = new Factor();
 		$$ -> m_lineno = yylineno;
@@ -860,17 +879,19 @@ factor
 		$$ -> mp_Variable = NULL;
 		$$ -> mp_Function_Call = NULL;
 		$$ -> mp_Expression = NULL;
+		$$ -> mp_Not = new Not();
 		$$ -> mp_Not -> mp_Factor = $2;
 		$$ -> mp_Not -> m_lineno = yylineno;
 		$$ -> mp_Uminus = NULL;
 		$$ -> m_factorType = FACTOR_NOT;
 	}
+
 	;
 %%
 
 
-int yacc() {
-	yydebug = 1;
+int Lexic_Syntax() {
+	yydebug = 0;
     yyparse();
     //ROOT->outputTree();
     return errorNum;

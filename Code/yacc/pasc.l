@@ -33,7 +33,7 @@ E [E][+-]?{digit}+
 id {letter}({letter}|{digit})*
 num {digit}+("."{digit}+)?({E})?
 
-character [\']({letter}|[' '])[\']
+character [\']({letter}|{digit}|[' '])[\']
  
 %%
 {comments3}     {yyrowno+=yyleng;}
@@ -41,6 +41,8 @@ character [\']({letter}|[' '])[\']
 {comments1}     {yyrowno+=yyleng;}
 
 
+"true"			{ yylval.m_bool=true; yyrowno+=yyleng;  return BOOL;}
+"false"			{ yylval.m_bool=false; yyrowno+=yyleng;  return BOOL;}
 "and"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return AND; }
 "array"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return ARRAY; }
 "begin"			{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return BEGIN_L; }

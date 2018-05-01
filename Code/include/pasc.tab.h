@@ -93,7 +93,8 @@ extern int yydebug;
     DIGITS = 296,
     NUMBER = 297,
     IDENTIFIER = 298,
-    LETTER = 299
+    LETTER = 299,
+    BOOL = 300
   };
 #endif
 
@@ -153,9 +154,9 @@ union YYSTYPE
 	float m_float;
 	std::string* m_str;
 	char m_char;
- 	
+ 	bool m_bool;
 
-#line 159 "pasc.tab.h" /* yacc.c:1909  */
+#line 160 "pasc.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

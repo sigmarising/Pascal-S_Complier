@@ -56,6 +56,36 @@ struct Property {
 typedef pair<symbol_name, Property> symbol_item;
 typedef map <symbol_name, Property> symbol_items;
 
+//	the interface to call code_genaration
+//		input_Tree	: the syntax tree
+//      output      : whether to continue
+bool semantic_Error_Detect(Programstruct *input_Tree);
+
+bool lookup_symbol(string symbolSheet_name, string symbol_name);
+
+int get_symbol_type(string symbolSheet_name, string symbol_name);
+
+ranges get_symbol_range(string symbolSheet_name, string symbol_name);
+
+int get_array_type(string symbolSheet_name, string symbol_name);
+
+int get_func_return_type(string symbol_name);
+
+bool lookup_func(string symbol_name);                          //判断是否是函数
+
+bool lookup_procedure(string symbol_name);
+
+int get_symbol_narg(string symbolSheet_name, string symbol_name);  //返回参数个数
+
+vector<bool> get_symbol_nargs_var_or_not(string symbolSheet_name, string symbol_name);  // return the subprogram's 'nargs_var_or_not' list
+
+vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name);
+
+bool get_symbol_var_type(string symbolSheet_name, string symbol_name);
+
+class symbolSheet;
+static map <symbolsheet_name, symbolSheet> symbolSheet_list;
+
 class symbolSheet {
 public:
     string sheet_name;
@@ -199,24 +229,37 @@ public:
                 flag = false;
                 break;
             }
-            auto type = (TYPES) const_symbol.second->m_valueType;
+            TYPES type;
             SUBPRGRM_TYPE subprgrm_type = NONE;
-            bool is_const = true;
-//            bool is_func = false;
             float const_val = 0;
-            if (type == INT) {
-                const_val = const_symbol.second->m_int;
-            } else if (type == _REAL) {
-                const_val = const_symbol.second->m_int;
-            } else if (type == _CHAR) {
-                const_val = const_symbol.second->m_int;
-            } else if (type == _BOOLEAN) {
-                const_val = const_symbol.second->m_int;
+            bool is_const = true;
+            if (!const_symbol.second->mp_Id) {
+                type = (TYPES) const_symbol.second->m_valueType;
+                if (type == INT) {
+                    const_val = const_symbol.second->m_int;
+                } else if (type == _REAL) {
+                    const_val = const_symbol.second->m_real;
+                } else if (type == _CHAR) {
+                    const_val = const_symbol.second->m_char;
+                } else if (type == _BOOLEAN) {
+                    const_val = const_symbol.second->m_bool;
+                } else {
+                    std::cout << "行" << const_symbol.second->m_lineno << ": 常量声明的类型错误" << endl;
+                    flag = false;
+                    break;
+                }
             } else {
-                std::cout << "行" << const_symbol.second->m_lineno << ": 常量声明的类型错误" << endl;
-                flag = false;
-                break;
+                Id * that_symbol = const_symbol.second->mp_Id;
+                type = (TYPES) that_symbol->m_idType;
+                const_val = get_const_symbol_value(that_symbol->m_name);
+                if (type != INT && type != _REAL && type != _CHAR && type != _BOOLEAN) {
+                    std::cout << "行" << const_symbol.second->m_lineno << ": 常量声明的类型错误" << endl;
+                    flag = false;
+                    break;
+                }
             }
+            if (const_symbol.second->m_postNeg == 2)
+                const_val = - const_val;
             bool is_Var = false;
             ranges array_ranges = {};
             int func_nargs = 0;
@@ -380,30 +423,32 @@ public:
         return keywords.find(symbol_name) != keywords.end() || builtin_functions.find(symbol_name) != builtin_functions.end();
     }
 
+    float get_const_symbol_value(const string &symbol_name) {
+//        symbolSheet global_sheet;
+//        if (symbolSheet_list.find("0") != symbolSheet_list.end())
+//            global_sheet = symbolSheet_list["0"];
+        if (this->sheet_name == "0") {
+            // global symbol sheet
+            if (this->symbols.find(symbol_name) != this->symbols.end()) {
+                return this->symbols[symbol_name].const_val;
+            }
+        } else {
+            // subprgrm symbol sheet, first lookup in the local sheet, if dont exist then lookup in the global sheet
+            symbolSheet global_sheet;
+            if (symbolSheet_list.find("0") != symbolSheet_list.end())
+                global_sheet = symbolSheet_list["0"];
+            else {
+                cout << "error: no global sheet found" << endl;
+                exit(1);
+            }
+            if (this->symbols.find(symbol_name) != this->symbols.end()) {
+                return this->symbols[symbol_name].const_val;
+            } else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
+                return global_sheet.symbols[symbol_name].const_val;
+            }
+        }
+    }
+
 };
 
-
-
-//	the interface to call code_genaration
-//		input_Tree	: the syntax tree
-//      output      : whether to continue
-bool semantic_Error_Detect(Programstruct *input_Tree);
-
-bool lookup_symbol(string symbolSheet_name, string symbol_name);
-
-int get_symbol_type(string symbolSheet_name, string symbol_name);
-
-ranges get_symbol_range(string symbolSheet_name, string symbol_name);
-
-int get_array_type(string symbolSheet_name, string symbol_name);
-
-int get_func_return_type(string symbol_name);
-
-bool lookup_func(string symbol_name);                          //判断是否是函数
-bool lookup_procedure(string symbol_name);
-
-int get_symbol_narg(string symbolSheet_name, string symbol_name);  //返回参数个数
-vector<bool> get_symbol_nargs_var_or_not(string symbolSheet_name, string symbol_name);  // return the subprogram's 'nargs_var_or_not' list
-vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name);
-bool get_symbol_var_type(string symbolSheet_name, string symbol_name);
 #endif
