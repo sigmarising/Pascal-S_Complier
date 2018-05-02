@@ -108,7 +108,7 @@ character [\']({letter}|{digit}|[' '])[\']
 "+"				{ yylval.m_str=new std::string(yytext); yyrowno+=yyleng;  return '+'; }
 
 
-
+[\r]			{}
 [\n]            { yyrowno = 1; }
 [\t]		    { yyrowno += 4; }
 .				{ printf("Error:lexical error : %s happens on Row : %d, Line : %d - %d\n",yytext,yylineno,yyrowno-yyleng+1,yyrowno); }
