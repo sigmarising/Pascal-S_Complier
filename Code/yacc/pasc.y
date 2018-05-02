@@ -149,10 +149,20 @@ program_head
 		tmp -> m_idType = TYPE_ID;
 		$$ = new Program_Head(tmp, $4);
 	}
+	| PROGRAM error {
+		$$ = new Program_Head(NULL,NULL);
+	}
+	| error {
+		$$ = new Program_Head(NULL,NULL);
+	}
 
 program_body 
 	: const_declarations var_declarations subprogram_declarations compound_statement {
 		$$ = new Program_Body($1, $2, $3, $4);
+	}
+	//解决声明部分的语法错误
+	| error const_declarations var_declarations subprogram_declarations compound_statement{
+		$$ = new Program_Body();
 	}
 
 identifier_list 
@@ -172,6 +182,11 @@ identifier_list
 		$$ -> mv_Id.push_back(tmp);
 		$$ -> m_lineno = yylineno;
 	}
+	/*
+	| error {
+		$$ = new Id_List();
+	}
+	*/
 	;
 
 const_declarations 
@@ -185,7 +200,6 @@ const_declarations
 
 const_declaration 
 	: const_declaration ';' IDENTIFIER '=' const_variable {
-
 		Id* tmp = new Id();
 		tmp -> m_name = *($3);
 		tmp -> m_lineno = yylineno;
@@ -285,44 +299,6 @@ const_variable
 		$$ -> m_bool = $1;
 	}
 
-/*
-type_declarations 
-	: TYPE type_declaration ';' {
-
-	}
-
-type_declaration 
-	: type_declaration ';' IDENTIFIER '=' type
-	| IDENTIFIER '=' type
-	;
-
-type 
-	: standard_type
-	| RECORD record_body END
-	| ARRAY '[' periods ']' OF type
-	;
-
-
-standard_type 
-	: INTEGER
-	| REAL
-	| BOOLEAN
-	| CHAR
-	;
-
-record_body 
-	: var_declaration
-	;
-
-periods 
-	: periods ',' period
-	| period
-	;
-
-period 
-	: const_variable SUBBOUNDARY const_variable
-*/
-
 var_declarations 
 	: VAR var_declaration ';' {
 		$$ = new Var_Declarations($2 -> mv_Var);
@@ -357,6 +333,9 @@ type
 		$$ -> m_isArray = true;
 		$$ -> mp_Period = $3;
 		$$ -> m_simpleType = $6; 
+	}
+	| error {
+		$$ = new Type();
 	}
 	;
 
@@ -435,6 +414,14 @@ subprogram_head
 		tmp -> m_lineno = yylineno;
 		$$ = new Subprogram_Head(tmp, $3, TYPE_NULL);
 	}
+	| FUNCTION error ';' {
+		Id* tmp = new Id();
+		$$ = new Subprogram_Head(tmp,new Formal_Parameter(),TYPE_NULL);
+	}
+	| PROCEDURE error ';'{
+		Id* tmp = new Id();
+		$$ = new Subprogram_Head(tmp,new Formal_Parameter(),TYPE_NULL);
+	}
 	;
 
 formal_parameter 
@@ -486,11 +473,9 @@ subprogram_body
 	: const_declarations var_declarations compound_statement {
 		$$ = new Subprogram_Body($1, $2, $3);
 	}
-	/*
 	| error const_declarations var_declarations compound_statement{
-		$$ = new Subprogram_Body(NULL,NULL,NULL);
+		$$ = new Subprogram_Body(NULL,NULL,new Compound_Statement());
 	}
-	*/
 
 compound_statement 
 	: BEGIN_L statement_list END {
@@ -517,19 +502,7 @@ statement_list
 	}
 	;
 
-/*
-statement 
-	: variable ASSIGNOP expression
-	| call_procedure_statement
-	| compound_statement
-	| IF expression THEN statement else_part
-	| CASE expression OF case_body END
-	| WHILE expression DO statement
-	| REPEAT statement_list UNTIL expression
-	| FOR IDENTIFIER ASSIGNOP expression updown expression DO statement
-	|
-	;
-*/
+
 statement 
 	: variable ASSIGNOP expression {	//赋值
 		$$ = new Statement();
@@ -572,30 +545,9 @@ statement
 		$$ -> mp_Statement_List = NULL;
 		$$ -> mp_For = NULL;
 	}
-	/*
-	| IF error THEN statement else_part {
+	| IF error THEN statement else_part {	//expression部分出错
 		$$ = new Statement();
-		$$ -> m_stateType = STATEMENT_IF;
-		$$ -> m_lineno = yylineno;
-		$$ -> mp_If_Then_Else = new If_Then_Else(new Expression(), $4, $5);
-		$$ -> mp_Assignop = NULL;
-		$$ -> mp_Procedure_call = NULL;
-		$$ -> mp_Statement_List = NULL;
-		$$ -> mp_For = NULL;
-	}
-	*/
-	/*
-	| IF expression THEN error else_part {
-		$$ = new Statement();
-		$$ -> m_stateType = STATEMENT_IF;
-		$$ -> m_lineno = yylineno;
-		$$ -> mp_If_Then_Else = new If_Then_Else($2, new Statement(), $5);
-		$$ -> mp_Assignop = NULL;
-		$$ -> mp_Procedure_call = NULL;
-		$$ -> mp_Statement_List = NULL;
-		$$ -> mp_For = NULL;
-	}
-	*/
+	} 
 	| FOR IDENTIFIER ASSIGNOP expression TO expression DO statement {	//for循环
 		Id* tmp = new Id();
 		tmp -> m_name = *($2);
@@ -608,6 +560,12 @@ statement
 		$$ -> mp_Procedure_call = NULL;
 		$$ -> mp_Statement_List = NULL;
 		$$ -> mp_If_Then_Else = NULL;
+	}
+	| FOR error TO expression DO statement {
+		$$ = new Statement();
+	}
+	| FOR IDENTIFIER ASSIGNOP expression TO error DO statement {
+		$$ = new Statement();
 	}
 	| {
 		$$ = NULL;
@@ -632,12 +590,7 @@ variable
 		}
 	}
 
-/*
-id_varparts 
-	: id_varparts id_varpart
-	|
-	;
-*/
+
 
 id_varpart 
 	: '[' expression_list ']' {
@@ -675,32 +628,12 @@ call_procedure_statement
 else_part 
 	: ELSE statement {
 		$$ = $2;
-	}	
-	| {
+	}
+	|%prec else_conflict {
 		$$ = NULL;
 	}
 	;
 
-/*
-case_body : branch_list
-|
-;
-
-branch_list :branch_list ';' branch
-| branch
-;
-
-
-branch : const_list ':' statement
-
-const_list : const_list ';' const_variable
-| const_variable 
-;     
-
-updown : TO
-| DOWNTO
-;
-*/
 
 
 expression_list 
@@ -885,30 +818,18 @@ factor
 		$$ -> mp_Uminus = NULL;
 		$$ -> m_factorType = FACTOR_NOT;
 	}
-
 	;
 %%
 
 
 int Lexic_Syntax() {
 	yydebug = 0;
-    yyparse();
-    //ROOT->outputTree();
-    return errorNum;
-    //cout<<"begin"<<endl;
+	int ans = yyparse();
+    return ans;
 }
 
 
 extern void yyerror(const char* s) {
-	/*
-	va_list ap;
-	va_start(ap,s);
-	if(yylloc.first_line){
-		fprintf(stderr,"%d.%d-%d.%d:error: ",yylloc.first_line,yylloc.first_column,yylloc.last_line,yylloc.last_column);
-	}
-	vfprintf(stderr,s,ap);
-	fprintf(stderr,"\n");
-	*/
 	printf("line: %d, Error '%s'\n",yylineno,s);
 	errorNum++;
 }
