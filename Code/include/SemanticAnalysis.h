@@ -284,7 +284,7 @@ public:
                 symbols[name] = p;
             } else {
                 if (symbols.insert(symbol_item(name, p)).second) {
-                    cout << name << " inserted into symbol sheet " << sheet_name << endl;
+                    // cout << name << " inserted into symbol sheet " << sheet_name << endl;
                     continue;
                 } else {
                     cout << "error happens when adding const symbol " << name << " into the symbol sheet" << endl;

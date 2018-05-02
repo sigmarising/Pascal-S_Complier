@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <exception>
+#define DETIAL_OUTPUT false
 
 using namespace std;
 
@@ -35,21 +36,28 @@ int main(int argc, char *argv[]) {
 
         // the pas2c mission
         {
+            if (DETIAL_OUTPUT)
+                cout << "START\t->\tMISSION START!" << endl;
+
+
             if (Lexic_Syntax() == 1)
                 exit(1);
-            cout << "PART 1 : Lexical and Syntax Analyse Done!" << endl;
+            if (DETIAL_OUTPUT)
+                cout << "   PAS2C PART 1 : Lexical and Syntax Analyse Done!" << endl;
 
 
             if (!semantic_Error_Detect(ROOT))
                 exit(2);
-            cout << "PART 2 : Semantic Analyse Done!" << endl;
+            if (DETIAL_OUTPUT)
+                cout << "   PAS2C PART 2 : Semantic Analyse Done!" << endl;
 
 
             Code_Generate(ROOT, filename_WithoutExten);
-            cout << "PART 3 : Code Generate Done!" << endl;
+            if (DETIAL_OUTPUT)
+                cout << "   PAS2C PART 3 : Code Generate Done!" << endl;
 
 
-            cout << "PAS2C ---> Compile .pas to .c Done!" << endl;
+            cout << "PAS2C\t->\tCompile .pas to .c Done!" << endl;
         }
 
         // the gcc mission
@@ -59,12 +67,14 @@ int main(int argc, char *argv[]) {
             gcc_job += " ";
             gcc_job += filename_WithoutExten;
             gcc_job += ".c";
-            cout << endl << "PART 4 : Doing gcc Compile!\n    "+ gcc_job << endl;
+            if (DETIAL_OUTPUT)
+                cout << "   GCC PART 1: Doing gcc Compile!\n     "+ gcc_job << endl;
             system(gcc_job.data());
-            cout << "GCC ---> gcc Compile Done!" << endl;
+            cout << "GCC\t->\tgcc Compile Done!" << endl;
 
 
-            cout << endl << "END ---> All Done!" << endl;
+            cout << "____________________________________________________________" << endl << endl;
+            cout << "DONE\t->\tOutput EXE is \'" + filename_WithoutExten + "\'"<< endl;
             return 0;
         }
 

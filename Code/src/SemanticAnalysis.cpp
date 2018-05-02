@@ -13,7 +13,7 @@ bool Programstruct::error_detect() {
     if (this->mp_Program_Body)
         flag = mp_Program_Body->error_detect();
 
-    cout << "program struct finished"<< endl;
+    // cout << "program struct finished"<< endl;
     return flag;
 }
 
@@ -25,12 +25,12 @@ bool Program_Body::error_detect() {
         flag = mp_SubProgram_Declarations->definition_error_detect();
 
     }
-    cout << "definition finished" << endl;
+    // cout << "definition finished" << endl;
     if (mp_Statement_List) {
         //cout<<" Program_Body Statement_list "<<endl;
         flag = mp_Statement_List->error_detect("0") && flag;
     }
-    cout << "program body finished" << endl;
+    // cout << "program body finished" << endl;
     return flag;                                  //此处需要为flag&&另一个bool值
 }
 
@@ -174,7 +174,7 @@ bool Parameter_List::error_detect(string symbolSheet_name) {
 // Statement_List的语义错误检测
 bool Statement_List::error_detect(string symbol_sheet_name) {
     bool flag = true;
-    cout << "Statement_size "<<mv_Statement.size() << endl;
+    // cout << "Statement_size "<<mv_Statement.size() << endl;
     for (int i=0;i<mv_Statement.size();i++) {
         if (mv_Statement[i]) {
 
@@ -182,17 +182,17 @@ bool Statement_List::error_detect(string symbol_sheet_name) {
             flag1 = mv_Statement[i]->error_detect(symbol_sheet_name);
             flag =flag &&flag1;
         }
-        else
-            cout << "null"<< endl;
+        // else
+           // cout << "null"<< endl;
 
     }
-    cout << "statement list finished" << endl;
+    // cout << "statement list finished" << endl;
     return flag;
 }
 
 
 bool Statement::error_detect(string symbol_sheet_name) {
-    cout << "processing line " << m_lineno << " statement" << endl;
+    // cout << "processing line " << m_lineno << " statement" << endl;
     bool flag = true;
     if (mp_Assignop)
     {
@@ -219,7 +219,7 @@ bool Statement::error_detect(string symbol_sheet_name) {
     }
     else
         cout << "null" << endl;
-    cout<<flag<<" return Statement"<<endl;
+    // cout<<flag<<" return Statement"<<endl;
     return flag;
 }
 
@@ -300,7 +300,7 @@ bool Variable::error_detect(string symbol_sheet_name) {
         if (lookup_symbol(symbol_sheet_name, mp_Id->func_getName())) {
             int type1 = get_symbol_type(symbol_sheet_name, mp_Id->func_getName());
             mp_Id->m_isVal = get_symbol_var_type(symbol_sheet_name, mp_Id->func_getName());
-            cout<<"Variable "<<type1<<endl;
+            // cout<<"Variable "<<type1<<endl;
             bool flag = true;
             if (mp_Expression_List && type1 != 5) {
                 m_isArray = false;
@@ -446,7 +446,7 @@ bool Procedure_Call::error_detect(string symbol_sheet_name)
             }
         }
     }
-    cout << "finish " << mp_Id->func_getName() << endl;
+    // cout << "finish " << mp_Id->func_getName() << endl;
     return flag;
 }
 
@@ -719,7 +719,7 @@ bool Uminus::error_detect(string symbol_sheet_name) {
 bool lookup_symbol(string symbolSheet_name, string symbol_name) {
 //    cout << "looking up symbol" << endl;
     bool flag = true;
-    cout<<symbolSheet_name<<endl;
+    // cout<<symbolSheet_name<<endl;
     symbolSheet global_sheet = symbolSheet_list.at("0");
     symbolSheet sheet;
     if (symbolSheet_name == "0") {
@@ -727,10 +727,10 @@ bool lookup_symbol(string symbolSheet_name, string symbol_name) {
 //        cout << "using global sheet" << endl;
         sheet = global_sheet;
         if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
-            cout << "found " << symbol_name << " in global symbol sheet" << endl;
+            // cout << "found " << symbol_name << " in global symbol sheet" << endl;
             flag = true;
         } else {
-            cout << "can't find " << symbol_name << " in global symbol sheet" << endl;
+            // cout << "can't find " << symbol_name << " in global symbol sheet" << endl;
             flag = false;
         }
     } else if (symbolSheet_list.find(symbolSheet_name) != symbolSheet_list.end()) {
@@ -739,13 +739,13 @@ bool lookup_symbol(string symbolSheet_name, string symbol_name) {
         //cout<<symbolSheet_name<<endl;
         sheet = symbolSheet_list[symbolSheet_name];
          if (sheet.symbols.find(symbol_name) != sheet.symbols.end()) {
-            cout << "found " << symbol_name << " in the subsymbol sheet" << symbolSheet_name << endl;
+            // cout << "found " << symbol_name << " in the subsymbol sheet" << symbolSheet_name << endl;
             flag = true;
         }else if (global_sheet.symbols.find(symbol_name) != global_sheet.symbols.end()) {
-            cout << "found " << symbol_name << " in global symbol sheet" << endl;
+            // cout << "found " << symbol_name << " in global symbol sheet" << endl;
             flag = true;
         } else if (global_sheet.symbols.find(symbol_name) == global_sheet.symbols.end()) {
-            cout << "can't find " << symbol_name << " in symbol sheet" << endl;
+            // cout << "can't find " << symbol_name << " in symbol sheet" << endl;
             flag = false;
         }
 
@@ -931,10 +931,6 @@ bool get_symbol_var_type(string symbolSheet_name, string symbol_name) {
     return false;
 }
 
-float get_const_symbol_value(string symbolSheet_name, string symbol_name) {
-
-}
-
 symbolSheet_create_result Program_Body::create_symbolsheet() {
     symbolSheet global_sheet;
     global_sheet.sheet_name = "0";
@@ -948,7 +944,7 @@ symbolSheet_create_result Program_Body::create_symbolsheet() {
             }
         }
     } else {
-        cout << "no parameter symbols to be added into global sheet" << endl;
+        // cout << "no parameter symbols to be added into global sheet" << endl;
         f1 = true;
     }
     if (!mp_Var_Declarations->mv_Var.empty() && f1) {
@@ -959,7 +955,7 @@ symbolSheet_create_result Program_Body::create_symbolsheet() {
             }
         }
     } else {
-        cout << "no const symbols to be added into global sheet" << endl;
+        // cout << "no const symbols to be added into global sheet" << endl;
         f2 = true;
     }
     if (!mp_SubProgram_Declarations->mv_Common.empty() && f2) {
@@ -970,17 +966,17 @@ symbolSheet_create_result Program_Body::create_symbolsheet() {
             }
         }
     } else {
-        cout << "no variable symbols to be added into global sheet" << endl;
+        // cout << "no variable symbols to be added into global sheet" << endl;
         f3 = true;
     }
     if (f0 && f1 && f2 && f3) {
         auto re = symbolSheet_list.insert(symbolsheet_list_item(global_sheet.sheet_name, global_sheet));
         if (re.second) {
-            cout << "these symbols have been added to global sheet:" << endl;
-            for (auto i:global_sheet.symbols) {
-                cout << i.first << " ";
-            }
-            cout << endl;
+            // cout << "these symbols have been added to global sheet:" << endl;
+            // for (auto i:global_sheet.symbols) {
+            //    cout << i.first << " ";
+            // }
+            // cout << endl;
         } else {
             cout << "no symbols have been added to global sheet" << endl;
         }
@@ -1004,7 +1000,7 @@ symbolSheet_create_result Procedure::create_symbolsheet() {
             }
         }
     } else {
-        cout << "no parameter symbols to be added into " << proc_sheet.sheet_name << endl;
+        // cout << "no parameter symbols to be added into " << proc_sheet.sheet_name << endl;
         f1 = true;
     }
     if (mp_Const_Declarations && f1) {
@@ -1015,7 +1011,7 @@ symbolSheet_create_result Procedure::create_symbolsheet() {
             }
         }
     } else {
-        cout << "no const symbols to be added into " << proc_sheet.sheet_name << endl;
+        // cout << "no const symbols to be added into " << proc_sheet.sheet_name << endl;
         f2 = true;
     }
     if (mp_Var_Declarations && f2) {
@@ -1026,18 +1022,18 @@ symbolSheet_create_result Procedure::create_symbolsheet() {
             }
         }
     } else {
-        cout << "no variable symbols to be added into " << proc_sheet.sheet_name << endl;
+        // cout << "no variable symbols to be added into " << proc_sheet.sheet_name << endl;
         f3 = true;
     }
 
     if (f0 && f1 && f2 && f3) {
         auto re = symbolSheet_list.insert(symbolsheet_list_item(proc_sheet.sheet_name, proc_sheet));
         if (re.second) {
-            cout << "these symbols have been added to " << proc_sheet.sheet_name << ":" << endl;
-            for (auto i:proc_sheet.symbols) {
-                cout << i.first << " ";
-            }
-            cout << endl;
+            // cout << "these symbols have been added to " << proc_sheet.sheet_name << ":" << endl;
+            // for (auto i:proc_sheet.symbols) {
+            //    cout << i.first << " ";
+            // }
+            // cout << endl;
         } else {
             cout << proc_sheet.sheet_name << "'s symbol sheet not added" << endl;
         }
@@ -1061,7 +1057,7 @@ symbolSheet_create_result Function::create_symbolsheet() {
             }
         }
     } else {
-        cout << "no parameter symbols to be added into " << func_sheet.sheet_name << endl;
+        // cout << "no parameter symbols to be added into " << func_sheet.sheet_name << endl;
         f1 = true;
     }
     if (mp_Const_Declarations && f1) {
@@ -1072,7 +1068,7 @@ symbolSheet_create_result Function::create_symbolsheet() {
             }
         }
     } else {
-        cout << "no const symbols to be added into " << func_sheet.sheet_name << endl;
+        // cout << "no const symbols to be added into " << func_sheet.sheet_name << endl;
         f2 = true;
     }
     if (mp_Var_Declarations && f2) {
@@ -1083,18 +1079,18 @@ symbolSheet_create_result Function::create_symbolsheet() {
             }
         }
     } else {
-        cout << "no variable symbols to be added into " << func_sheet.sheet_name << endl;
+        // cout << "no variable symbols to be added into " << func_sheet.sheet_name << endl;
         f3 = true;
     }
 
     if (f0 && f1 && f2 && f3) {
         auto re = symbolSheet_list.insert(symbolsheet_list_item(func_sheet.sheet_name, func_sheet));
         if (re.second) {
-            cout << "these symbols have been added to " << func_sheet.sheet_name << ":" << endl;
-            for (auto i: func_sheet.symbols) {
-                cout << i.first << " ";
-            }
-            cout << endl;
+            // cout << "these symbols have been added to " << func_sheet.sheet_name << ":" << endl;
+            // for (auto i: func_sheet.symbols) {
+            //    cout << i.first << " ";
+            // }
+            // cout << endl;
         } else {
             cout << func_sheet.sheet_name << "'s symbol sheet not added" << endl;
         }
@@ -1112,25 +1108,25 @@ bool semantic_Error_Detect(Programstruct *input_Tree) {
         flag = input_Tree->mp_Program_Body->create_symbolsheet().first;
     assert(!symbolSheet_list.empty());
 //    cout << "global sheet is added" << endl;
-    cout << endl;
+//    cout << endl;
     if (!input_Tree->mp_Program_Body->mp_SubProgram_Declarations->mv_Common.empty()) {
         for (auto subprogram: input_Tree->mp_Program_Body->mp_SubProgram_Declarations->mv_Common) {
-            cout << "processing " << subprogram->get_func_id()->m_name << endl;
+            // cout << "processing " << subprogram->get_func_id()->m_name << endl;
             flag = flag && subprogram->create_symbolsheet().first;
             if (!flag) {
                 break;
             } else {
 //                cout << subprogram->get_func_id()->m_name << "'s sheet is added" << endl;
-                cout << endl;
+//                cout << endl;
             }
         }
     }
     assert(symbolSheet_list.find("0") != symbolSheet_list.end());
-    cout << "finish building symbol sheets, sheets added to the list:" << endl;
-    for (auto i: symbolSheet_list) {
-        cout << i.first << " ";
-    }
-    cout << endl << endl << "start checking semantic errors" << endl;
+    // cout << "finish building symbol sheets, sheets added to the list:" << endl;
+    // for (auto i: symbolSheet_list) {
+    //    cout << i.first << " ";
+    // }
+//    cout << endl << endl << "start checking semantic errors" << endl;
     // then, check semantic error
     if (flag) {
         flag = input_Tree->error_detect()&&flag;
