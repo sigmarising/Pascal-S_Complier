@@ -1,7 +1,7 @@
-//	File Name	: CodeGenerate.h
-//	Notes		: Define the code generation interface
-//	Version		: 0.1
-//	Author		: Yun Zhang
+//	File Name	: SemanticAnalysis.h
+//	Notes		: Define the code semantic interface
+//	Version		: 0.2
+//	Author		: Yang Zhenghao, Chen Wentao
 
 #pragma once
 #ifndef SEMANTICANALYSIS_H_

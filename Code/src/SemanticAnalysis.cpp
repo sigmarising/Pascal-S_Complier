@@ -237,6 +237,27 @@ bool Assignop::error_detect(string symbol_sheet_name) {
         std::cout << "行" << m_lineno << ": 类型不能转化" << endl;
         flag=false;
     }
+    if(flag1&&type1==5&&type2==5)
+    {
+        int type3= get_array_type(symbol_sheet_name, mp_Variable->mp_Id->func_getName());
+        int type4=-1;
+        try {
+            type4 = get_array_type(symbol_sheet_name,
+                                   mp_Expression->mp_Simple_Expression->mp_Term->mp_Factor->mp_Variable->mp_Id->func_getName());
+            if(type3!=type4) {
+                std::cout << "行" << m_lineno << ": 数组类型不能转化" << endl;
+                flag=false;
+            }
+
+        }
+        catch(...)
+        {
+            flag=false;
+            std::cout << "行" << m_lineno << ": 语法树错误" << endl;
+        }
+
+
+    }
     if (!mp_Variable || !mp_Expression) {
         flag = false;
         std::cout << "行" << m_lineno << ": 语法树错误" << endl;
@@ -492,6 +513,8 @@ bool Relop::error_detect(string symbol_sheet_name) {
         int type2 = mp_Simple_Expression_2->getType();
         flag = (type1 == type2 || type1 == TYPE_INTERGER && type2 == TYPE_REAL ||
                 type2 == TYPE_INTERGER && type1 == TYPE_REAL);
+        if(flag==false)
+            std::cout << "行" << m_lineno << "逻辑运算符两边操作数不匹配" << endl;
         setType(TYPE_BOOLEAN);
         return flag;
     } else {
@@ -532,12 +555,16 @@ bool Addop::error_detect(string symbol_sheet_name) {
     if (m_addopType == ADDOP_ADD || m_addopType == ADDOP_SUB) {
         flag3 = ((type1 == TYPE_INTERGER || type1 == TYPE_REAL) && (type2 == TYPE_INTERGER || type2 == TYPE_REAL));
         //即使类型不对也会附一个正确类型，出错以后不会再继续执行代码翻译
+        if(flag3==false)
+            std::cout << "行" << m_lineno << "加减号两边应该为integer 或者 real" << endl;
         if (type1 == TYPE_REAL || type2 == TYPE_REAL)
             setType(TYPE_REAL);
         else
             setType(TYPE_INTERGER);
     } else {
         flag3 = (type1 == type2 && type1 == TYPE_BOOLEAN);
+        if(flag3==false)
+            std::cout << "行" << m_lineno << "运算符两边应该为boolean类型" << endl;
         setType(TYPE_BOOLEAN);
     }
     return flag1 && flag2 && flag3;
@@ -587,7 +614,7 @@ bool Mulop::error_detect(string symbol_sheet_name) {
         }
         if (!(flag1 && flag2 && flag3)) {
             if(!flag3) {
-            std::cout << "行" << m_lineno << ": 类型不匹配." << endl;
+            std::cout << "行" << m_lineno << ": 运算符类型不匹配." << endl;
             }
             return false;
         }
