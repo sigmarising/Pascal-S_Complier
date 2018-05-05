@@ -4,7 +4,9 @@
 #include <string>
 #include <iostream>
 #include <exception>
-#define DETIAL_OUTPUT false
+
+#define DETIAL_OUTPUT   false
+#define DO_GCC_JOB      true
 
 using namespace std;
 
@@ -61,7 +63,7 @@ int main(int argc, char *argv[]) {
         }
 
         // the gcc mission
-        {
+        if (DO_GCC_JOB) {
             string gcc_job = "gcc -o ";
             gcc_job += filename_WithoutExten;
             gcc_job += " ";
@@ -71,12 +73,11 @@ int main(int argc, char *argv[]) {
                 cout << "   GCC PART 1: Doing gcc Compile!\n     "+ gcc_job << endl;
             system(gcc_job.data());
             cout << "GCC\t->\tgcc Compile Done!" << endl;
-
-
-            cout << "____________________________________________________________" << endl << endl;
-            cout << "DONE\t->\tOutput EXE is \'" + filename_WithoutExten + "\'"<< endl;
-            return 0;
         }
+
+        cout << "____________________________________________________________" << endl << endl;
+        cout << "DONE\t->\tOutput EXE is \'" + filename_WithoutExten + "\'"<< endl;
+        return 0;
 
     }
     catch (exception &e){
