@@ -63,13 +63,13 @@ bool semantic_Error_Detect(Programstruct *input_Tree);
 
 bool lookup_symbol(string symbolSheet_name, string symbol_name);
 
-int get_symbol_type(string symbolSheet_name, string symbol_name);
+int get_symbol_type(string symbolSheet_name, string symbol_name);  // get the symbol's basic type
 
-ranges get_symbol_range(string symbolSheet_name, string symbol_name);
+ranges get_symbol_range(string symbolSheet_name, string symbol_name);  // get the array symbol's ranges
 
-int get_array_type(string symbolSheet_name, string symbol_name);
+int get_array_type(string symbolSheet_name, string symbol_name);  // get the array symbol's elements' type
 
-int get_func_return_type(string symbol_name);
+int get_func_return_type(string symbol_name);  // get the function symbol's return type
 
 bool lookup_func(string symbol_name);                          //判断是否是函数
 
@@ -79,9 +79,9 @@ int get_symbol_narg(string symbolSheet_name, string symbol_name);  //返回参�
 
 vector<bool> get_symbol_nargs_var_or_not(string symbolSheet_name, string symbol_name);  // return the subprogram's 'nargs_var_or_not' list
 
-vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name);
+vector<int> get_symbol_narg_type(string symbolSheet_name, string symbol_name);  // get the subprogram symbol's parameters' type list
 
-bool get_symbol_var_type(string symbolSheet_name, string symbol_name);
+bool get_symbol_var_type(string symbolSheet_name, string symbol_name);  // return if the symbol is a variadic
 
 class symbolSheet;
 static map <symbolsheet_name, symbolSheet> symbolSheet_list;
@@ -200,7 +200,7 @@ public:
                         dec_line,
                         ref_line
                 };
-                if (exists(name)) {
+                if (exists(name)) {  // if exists then override with a new property
                     symbols[name] = p;
                 } else {
                     if (symbols.insert(symbol_item(name, p)).second) {
@@ -258,7 +258,7 @@ public:
                     break;
                 }
             }
-            if (const_symbol.second->m_postNeg == 2)
+            if (const_symbol.second->m_postNeg == 2)  // a negative const value
                 const_val = - const_val;
             bool is_Var = false;
             ranges array_ranges = {};
@@ -280,7 +280,7 @@ public:
                     dec_line,
                     ref_line
             };
-            if (exists(name)) {
+            if (exists(name)) {  // if exists then override with a new property
                 symbols[name] = p;
             } else {
                 if (symbols.insert(symbol_item(name, p)).second) {
@@ -308,7 +308,7 @@ public:
             bool is_Var = false;
             ranges array_ranges;
             if (vars.second->func_check_isArray()) {
-                array_ranges = vars.second->func_get_Period();
+                array_ranges = vars.second->func_get_Period();  // get the array ranges
             }
             int func_nargs = 0;
             vector<bool> nargs_var_or_not = {false};
@@ -336,7 +336,7 @@ public:
                         dec_line,
                         ref_line
                 };
-                if (exists(name)) {
+                if (exists(name)) {  // if exists then override with a new property
                     symbols[name] = p;
                 } else {
                     if (symbols.insert(symbol_item(name, p)).second) {
