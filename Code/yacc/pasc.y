@@ -1,27 +1,28 @@
-/*警告：书上的文法具有移进规约冲突,135-137行部分，已解决*/
 %code requires {
 	#include "Public_define.h"
 	#include "Syntax_Tree.h"
 }
 
 %code top {
+	#include "lex.yy.c"
 	#include <stdio.h>
 	#include <string>
-	#include "lex.yy.c"
 	#include <iostream>
+
 	typedef pair<Id*, Const_Value*> p_Const;
 	typedef pair<Id_List*, Type*> p_Var;
 	typedef pair<int,int> p_Per;
-	Programstruct* ROOT;
-	int errorNum = 0;
 
-	int yyparse(void);
-	extern int yylineno;
-	void yyerror(const char* s);
+	Programstruct* ROOT;			//语法树根节点
+	int errorNum = 0;				//错误数量
 
-	#define YYERROR_VERBOSE 1
+	int yyparse(void);				//语法分析接口
+	void yyerror(const char* s);	//输出错误信息
+	extern int yylineno;			//行号信息
+
+	#define YYERROR_VERBOSE 1		//输出详细的错误信息
 	extern int yydebug;
-	#define YYDEBUG 1
+	#define YYDEBUG 1				//输出yacc的分析过程
 
 	using namespace std;
 }
@@ -825,7 +826,13 @@ factor
 int Lexic_Syntax() {
 	yydebug = 0;
 	int ans = yyparse();
-    return ans;
+	if(errorNum)
+		cout<<"The number of syntax error is: "<<errorNum<<endl;
+	//ROOT -> outputTree();
+    if(ans || errorNum !=0 )
+    	return 1;
+    else
+    	return 0;
 }
 
 

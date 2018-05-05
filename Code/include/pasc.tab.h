@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 2 "pasc.y" /* yacc.c:1909  */
+#line 1 "pasc.y" /* yacc.c:1909  */
 
 	#include "Public_define.h"
 	#include "Syntax_Tree.h"
@@ -103,7 +103,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 39 "pasc.y" /* yacc.c:1909  */
+#line 40 "pasc.y" /* yacc.c:1909  */
 
 	Programstruct* programstruct;
 	Program_Body* program_Body;
